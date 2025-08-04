@@ -92,3 +92,22 @@ export type PaginationProps = {
   disabled?: boolean;
   className?: string;
 };
+
+// Search API types
+export interface SearchCoin {
+  id: string;
+  name: string;
+  symbol: string;
+  market_cap_rank: number;
+  thumb: string;
+}
+
+export interface SearchResponse {
+  coins: SearchCoin[];
+  exchanges: Array<unknown>; // Not used
+  categories: Array<unknown>; // Not used
+}
+
+export interface SearchParams {
+  query: string;
+}
