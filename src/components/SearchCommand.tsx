@@ -11,6 +11,7 @@ import {
   CommandItem,
   CommandList,
 } from '@/components/ui/command';
+import { DialogTitle } from '@/components/ui/dialog';
 import { SearchCoin } from '@/types/coingecko';
 
 interface SearchCommandProps {
@@ -59,6 +60,7 @@ export function SearchCommand({
 
   return (
     <CommandDialog open={open} onOpenChange={onOpenChange}>
+      <DialogTitle className="sr-only">Search cryptocurrencies</DialogTitle>
       <CommandInput
         placeholder="Search cryptocurrencies..."
         value={query}
