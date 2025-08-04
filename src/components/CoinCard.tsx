@@ -62,8 +62,8 @@ export const CoinCard: React.FC<CoinCardProps> = ({
             />
           </div>
           <div>
-            <h3 className="font-semibold text-gray-900 text-sm">{coin.name}</h3>
-            <p className="text-xs text-gray-500 uppercase">{coin.symbol}</p>
+            <h3 className="text-lg font-semibold text-gray-900">{coin.name}</h3>
+            <p className="text-sm text-gray-500 uppercase">{coin.symbol}</p>
           </div>
         </div>
 
@@ -77,7 +77,7 @@ export const CoinCard: React.FC<CoinCardProps> = ({
       {/* Price and change */}
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <span className="text-lg font-bold text-gray-900">
+          <span className="text-xl font-bold text-gray-900">
             {safeFormatPrice(coin.current_price)}
           </span>
           <div
@@ -97,7 +97,7 @@ export const CoinCard: React.FC<CoinCardProps> = ({
 
         {/* Market Cap */}
         <div className="flex items-center justify-between text-sm">
-          <span className="text-gray-500">Market Cap</span>
+          <span className="text-gray-600">Market Cap</span>
           <span className="font-medium text-gray-700">
             {safeFormatMarketCap(coin.market_cap)}
           </span>
@@ -105,7 +105,7 @@ export const CoinCard: React.FC<CoinCardProps> = ({
 
         {/* Volume */}
         <div className="flex items-center justify-between text-sm">
-          <span className="text-gray-500">Volume (24h)</span>
+          <span className="text-gray-600">Volume (24h)</span>
           <span className="font-medium text-gray-700">
             {safeFormatMarketCap(coin.total_volume)}
           </span>
