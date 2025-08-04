@@ -2,7 +2,10 @@
  * General utility functions
  */
 
-export const formatPrice = (price: number, currency: string = 'USD'): string => {
+export const formatPrice = (
+  price: number,
+  currency: string = 'USD'
+): string => {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: currency,
@@ -43,7 +46,7 @@ export const truncateText = (text: string, maxLength: number): string => {
 export const debounce = <T extends (...args: any[]) => any>(
   func: T,
   wait: number
-): (...args: Parameters<T>) => void => {
+): ((...args: Parameters<T>) => void) => {
   let timeout: NodeJS.Timeout;
   return (...args: Parameters<T>) => {
     clearTimeout(timeout);
@@ -51,6 +54,9 @@ export const debounce = <T extends (...args: any[]) => any>(
   };
 };
 
-export const cn = (...classes: (string | undefined | null | false)[]): string => {
+export const cn = (
+  ...classes: (string | undefined | null | false)[]
+): string => {
   return classes.filter(Boolean).join(' ');
-};
+}; // Test change
+// Test
