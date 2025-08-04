@@ -4,14 +4,9 @@
 
 import React from 'react';
 import Image from 'next/image';
+import { TrendingUp, TrendingDown } from 'lucide-react';
 import { CoinData } from '@/types/coingecko';
-import {
-  safeFormatPrice,
-  safeFormatMarketCap,
-  safeFormatPercentageChange,
-  getPercentageChangeColor,
-  cn,
-} from '@/lib/utils';
+import { safeFormatPrice, safeFormatMarketCap, cn } from '@/lib/utils';
 
 interface CoinCardProps {
   coin: CoinData;
@@ -30,9 +25,8 @@ export const CoinCard: React.FC<CoinCardProps> = ({
     }
   };
 
-  const changeColor = getPercentageChangeColor(
-    coin.price_change_percentage_24h
-  );
+  const priceChange = coin.price_change_percentage_24h || 0;
+  const changeColor = priceChange >= 0 ? 'text-green-500' : 'text-red-500';
 
   return (
     <div
@@ -86,9 +80,19 @@ export const CoinCard: React.FC<CoinCardProps> = ({
           <span className="text-lg font-bold text-gray-900">
             {safeFormatPrice(coin.current_price)}
           </span>
-          <span className={cn('text-sm font-medium', changeColor)}>
-            {safeFormatPercentageChange(coin.price_change_percentage_24h)}
-          </span>
+          <div
+            className={cn(
+              'flex items-center gap-1 text-sm font-medium',
+              changeColor
+            )}
+          >
+            {priceChange >= 0 ? (
+              <TrendingUp size={16} />
+            ) : (
+              <TrendingDown size={16} />
+            )}
+            {Math.abs(priceChange).toFixed(2)}%
+          </div>
         </div>
 
         {/* Market Cap */}
