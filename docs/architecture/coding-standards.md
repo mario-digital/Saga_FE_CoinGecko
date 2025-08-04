@@ -1,6 +1,6 @@
 # Coding Standards
 
-This document outlines the coding standards and best practices for the Saga FE Coin Gecko project, built with Next.js 15, TypeScript, and Tailwind CSS.
+This document outlines the coding standards and best practices for the Saga FE Coin Gecko project, built with Next.js 15, React 19, TypeScript, and Tailwind CSS.
 
 ## Table of Contents
 
@@ -174,7 +174,7 @@ const handleButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
 
 ```typescript
 // ✅ Good - Page component structure
-export default function HomePage() {
+export default function HomePage(): JSX.Element {
   return (
     <main className="container mx-auto px-4 py-8">
       <h1>Cryptocurrency Market</h1>
@@ -188,7 +188,7 @@ export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
-}) {
+}): JSX.Element {
   return (
     <html lang="en">
       <body className="bg-gray-50 dark:bg-gray-900">
@@ -205,7 +205,7 @@ export default function RootLayout({
 // ✅ Good - API route with proper typing
 import { NextResponse } from 'next/server';
 
-export async function GET(request: Request) {
+export async function GET(request: Request): Promise<NextResponse> {
   try {
     const { searchParams } = new URL(request.url);
     const page = searchParams.get('page') || '1';
@@ -297,7 +297,7 @@ import './CoinCard.module.css';
 // ✅ Good - camelCase for variables and functions
 const coinPrice = 45000;
 const isLoading = true;
-const fetchCoinData = () => {};
+const fetchCoinData = (): void => {};
 
 // ✅ Good - Descriptive boolean names
 const isAuthenticated = user !== null;
@@ -308,13 +308,13 @@ const shouldShowLoader = isLoading && !data;
 ### Components and Types
 ```typescript
 // ✅ Good - PascalCase for components and types
-const CoinCard = () => {};
+const CoinCard = (): JSX.Element => {};
 interface UserPreferences {}
 type ApiResponse<T> = {};
 
 // ✅ Good - Descriptive component names
-const CoinPriceChart = () => {};
-const NavigationHeader = () => {};
+const CoinPriceChart = (): JSX.Element => {};
+const NavigationHeader = (): JSX.Element => {};
 ```
 
 ### Constants
@@ -391,7 +391,7 @@ class CoinListErrorBoundary extends React.Component<
     return { hasError: true, error };
   }
 
-  render() {
+  render(): JSX.Element {
     if (this.state.hasError) {
       return (
         <div className="error-fallback">
@@ -517,12 +517,17 @@ describe('useCoins', () => {
     "@typescript-eslint/recommended",
     "prettier"
   ],
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint"],
   "rules": {
     "@typescript-eslint/no-unused-vars": "error",
     "@typescript-eslint/explicit-function-return-type": "warn",
     "@typescript-eslint/no-explicit-any": "error",
+    "@typescript-eslint/prefer-const": "error",
     "react/prop-types": "off",
-    "react-hooks/exhaustive-deps": "error"
+    "react-hooks/exhaustive-deps": "error",
+    "prefer-const": "error",
+    "no-var": "error"
   }
 }
 ```
@@ -535,27 +540,46 @@ describe('useCoins', () => {
   "singleQuote": true,
   "printWidth": 80,
   "tabWidth": 2,
-  "useTabs": false
+  "useTabs": false,
+  "bracketSpacing": true,
+  "bracketSameLine": false,
+  "arrowParens": "avoid"
 }
 ```
 
 ### Git Hooks
 ```json
 {
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged",
-      "pre-push": "npm run type-check && npm run test"
-    }
-  },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
       "eslint --fix",
-      "prettier --write",
-      "git add"
+      "prettier --write"
+    ],
+    "*.{json,md,css}": [
+      "prettier --write"
     ]
   }
 }
+```
+
+### Available Scripts
+```bash
+# Development
+npm run dev              # Start development server
+npm run build           # Build for production
+npm run start           # Start production server
+
+# Code Quality
+npm run lint            # Run ESLint
+npm run lint:fix        # Fix ESLint issues
+npm run format          # Format code with Prettier
+npm run format:check    # Check code formatting
+npm run type-check      # Run TypeScript type checking
+
+# Testing
+npm run test            # Run tests
+npm run test:watch      # Run tests in watch mode
+npm run test:coverage   # Run tests with coverage
 ```
 
 ## Conclusion
