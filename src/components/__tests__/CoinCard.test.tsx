@@ -40,23 +40,33 @@ describe('CoinCard', () => {
     expect(screen.getByText('btc')).toBeInTheDocument();
     expect(screen.getByText('#1')).toBeInTheDocument();
     expect(screen.getByText('$45,000.00')).toBeInTheDocument();
-    expect(screen.getByText('+2.50%')).toBeInTheDocument();
+    expect(screen.getByText('2.50%')).toBeInTheDocument();
     expect(screen.getByText('Market Cap')).toBeInTheDocument();
     expect(screen.getByText('Volume (24h)')).toBeInTheDocument();
   });
 
-  it('displays positive price change in success color', () => {
+  it('displays positive price change in green color with up icon', () => {
     render(<CoinCard coin={mockCoinData} />);
 
-    const priceChange = screen.getByText('+2.50%');
-    expect(priceChange).toHaveClass('text-success-600');
+    const priceChange = screen.getByText('2.50%');
+    const container = priceChange.closest('.text-green-500');
+    expect(container).toBeInTheDocument();
+    expect(container).toHaveClass('text-green-500');
+    // Check for TrendingUp icon presence
+    const icon = container?.querySelector('svg');
+    expect(icon).toBeInTheDocument();
   });
 
-  it('displays negative price change in danger color', () => {
+  it('displays negative price change in red color with down icon', () => {
     render(<CoinCard coin={mockCoinDataNegativeChange} />);
 
-    const priceChange = screen.getByText('-3.20%');
-    expect(priceChange).toHaveClass('text-danger-600');
+    const priceChange = screen.getByText('3.20%');
+    const container = priceChange.closest('.text-red-500');
+    expect(container).toBeInTheDocument();
+    expect(container).toHaveClass('text-red-500');
+    // Check for TrendingDown icon presence
+    const icon = container?.querySelector('svg');
+    expect(icon).toBeInTheDocument();
   });
 
   it('handles click events correctly', async () => {
@@ -104,20 +114,25 @@ describe('CoinCard', () => {
     expect(mockOnClick).not.toHaveBeenCalled();
   });
 
-  it('applies custom className correctly', () => {
-    const customClass = 'custom-test-class';
-    render(<CoinCard coin={mockCoinData} className={customClass} />);
+  it('applies hover animation classes', () => {
+    render(<CoinCard coin={mockCoinData} />);
 
     const card = screen.getByRole('button');
-    expect(card).toHaveClass(customClass);
+    expect(card).toHaveClass('hover:scale-[1.02]');
+    expect(card).toHaveClass('active:scale-[0.98]');
+    expect(card).toHaveClass('transition-all');
   });
 
-  it('displays coin image with correct alt text', () => {
+  it('displays coin logo with correct size', () => {
     render(<CoinCard coin={mockCoinData} />);
 
     const image = screen.getByAltText('Bitcoin logo');
     expect(image).toBeInTheDocument();
-    expect(image).toHaveAttribute('src');
+    expect(image).toHaveClass('rounded-full');
+    expect(image).toHaveAttribute('loading', 'lazy');
+    // Check that the container has w-12 h-12
+    const container = image.parentElement;
+    expect(container).toHaveClass('w-12', 'h-12');
   });
 
   it('handles image error gracefully', () => {
@@ -144,6 +159,15 @@ describe('CoinCard', () => {
     expect(card).toHaveAttribute('tabIndex', '0');
   });
 
+  it('has modern card styling with rounded corners and shadows', () => {
+    render(<CoinCard coin={mockCoinData} />);
+
+    const card = screen.getByRole('button');
+    expect(card).toHaveClass('rounded-2xl');
+    expect(card).toHaveClass('shadow-sm');
+    expect(card).toHaveClass('hover:shadow-md');
+  });
+
   it('formats large numbers correctly', () => {
     const coinWithLargeNumbers: CoinData = {
       ...mockCoinData,
@@ -165,7 +189,9 @@ describe('CoinCard', () => {
 
     render(<CoinCard coin={coinWithZeroChange} />);
 
-    const priceChange = screen.getByText('+0.00%');
-    expect(priceChange).toHaveClass('text-gray-600');
+    const priceChange = screen.getByText('0.00%');
+    const container = priceChange.closest('.text-green-500');
+    expect(container).toBeInTheDocument();
+    expect(container).toHaveClass('text-green-500');
   });
 });
