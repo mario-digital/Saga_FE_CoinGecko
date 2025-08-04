@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { CoinCard } from '@/components/CoinCard';
+import { CoinCardSkeleton } from '@/components/CoinCardSkeleton';
 import { Pagination } from '@/components/Pagination';
 import { useCoins } from '@/hooks/useCoins';
 import { DEFAULT_PER_PAGE } from '@/lib/constants';
@@ -49,13 +50,10 @@ export default function HomePage() {
     <div className="max-w-7xl mx-auto px-4 py-8 space-y-8">
       {/* Loading State */}
       {isLoading && (
-        <div className="text-center py-8">
-          <div className="inline-flex items-center space-x-2">
-            <div className="w-5 h-5 border-2 border-primary-600 border-t-transparent rounded-full animate-spin"></div>
-            <span className="text-gray-600">
-              Loading cryptocurrency data...
-            </span>
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+          {Array.from({ length: DEFAULT_PER_PAGE }).map((_, index) => (
+            <CoinCardSkeleton key={index} />
+          ))}
         </div>
       )}
 
