@@ -2,6 +2,9 @@
  * General utility functions
  */
 
+import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+
 export const formatPrice = (
   price: number,
   currency: string = 'USD'
@@ -57,11 +60,9 @@ export const debounce = <T extends (...args: any[]) => any>(
   };
 };
 
-export const cn = (
-  ...classes: (string | undefined | null | false)[]
-): string => {
-  return classes.filter(Boolean).join(' ');
-};
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
 
 /**
  * Safely formats a number that might be null or undefined

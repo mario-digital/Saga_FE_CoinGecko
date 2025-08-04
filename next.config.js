@@ -4,7 +4,7 @@ const nextConfig = {
     typedRoutes: true,
   },
   // Enable static export for flexible deployment
-  output: 'export',
+  // output: 'export', // Temporarily disabled to fix CSS issues
   trailingSlash: true,
   images: {
     unoptimized: true,
