@@ -18,7 +18,7 @@ export default function HomePage() {
   );
 
   const handleCoinClick = (coinId: string): void => {
-    router.push(`/${coinId}` satisfies `/${string}`);
+    router.push(`/${coinId}` as any);
   };
 
   const handlePageChange = (page: number): void => {

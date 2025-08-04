@@ -28,14 +28,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-background">
           <Header />
 
           <main>{children}</main>
 
-          <footer className="bg-white border-t border-gray-200 mt-12">
+          <footer className="bg-card border-t border-border mt-12">
             <div className="container py-6">
-              <p className="text-center text-gray-500 text-sm">
+              <p className="text-center text-muted-foreground text-sm">
                 Powered by CoinGecko API • Built with Next.js 15 & React 19
               </p>
             </div>
