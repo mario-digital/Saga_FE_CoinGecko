@@ -68,7 +68,7 @@ export const CoinCard: React.FC<CoinCardProps> = ({
         </div>
 
         {coin.market_cap_rank && (
-          <span className="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full">
+          <span className="text-xs bg-gray-100 px-2 py-1 rounded-full">
             #{coin.market_cap_rank}
           </span>
         )}
