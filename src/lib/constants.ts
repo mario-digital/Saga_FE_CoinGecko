@@ -11,6 +11,7 @@ export const DEFAULT_ORDER = 'market_cap_desc';
 export const API_ENDPOINTS = {
   COINS_MARKETS: '/coins/markets',
   COIN_DETAIL: '/coins',
+  SEARCH: '/search',
 } as const;
 
 export const SWR_CONFIG = {

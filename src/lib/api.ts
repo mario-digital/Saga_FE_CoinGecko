@@ -2,7 +2,7 @@
  * API utility functions for CoinGecko integration
  */
 
-import { CoinsMarketsParams } from '@/types/coingecko';
+import { CoinsMarketsParams, SearchParams } from '@/types/coingecko';
 import {
   API_ENDPOINTS,
   DEFAULT_CURRENCY,
@@ -38,4 +38,12 @@ export const buildCoinsMarketsUrl = (
 
 export const buildCoinDetailUrl = (coinId: string): string => {
   return `${API_ENDPOINTS.COIN_DETAIL}/${coinId}`;
+};
+
+export const buildSearchUrl = (params: SearchParams): string => {
+  const searchParams = new URLSearchParams({
+    query: params.query,
+  });
+
+  return `${API_ENDPOINTS.SEARCH}?${searchParams.toString()}`;
 };
