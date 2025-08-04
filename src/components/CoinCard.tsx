@@ -53,13 +53,14 @@ export const CoinCard: React.FC<CoinCardProps> = ({
       {/* Header with coin info */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center space-x-3">
-          <div className="relative w-8 h-8">
+          <div className="relative w-12 h-12">
             <Image
               src={coin.image}
               alt={`${coin.name} logo`}
               fill
-              sizes="32px"
+              sizes="48px"
               className="rounded-full object-cover"
+              loading="lazy"
               onError={e => {
                 const target = e.target as HTMLImageElement;
                 target.src = '/images/placeholder-coin.svg';
