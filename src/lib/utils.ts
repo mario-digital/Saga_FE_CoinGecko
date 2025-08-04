@@ -38,10 +38,11 @@ export const formatPercentageChange = (change: number): string => {
 export const getPercentageChangeColor = (
   change: number | null | undefined
 ): string => {
-  if (change == null || isNaN(change)) return 'text-gray-600';
-  if (change > 0) return 'text-success-600';
-  if (change < 0) return 'text-danger-600';
-  return 'text-gray-600';
+  if (change == null || isNaN(change))
+    return 'text-gray-600 dark:text-gray-400';
+  if (change > 0) return 'text-success';
+  if (change < 0) return 'text-danger';
+  return 'text-gray-600 dark:text-gray-400';
 };
 
 export const truncateText = (text: string, maxLength: number): string => {

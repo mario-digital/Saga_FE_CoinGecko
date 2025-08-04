@@ -26,12 +26,12 @@ export const CoinCard: React.FC<CoinCardProps> = ({
   };
 
   const priceChange = coin.price_change_percentage_24h || 0;
-  const changeColor = priceChange >= 0 ? 'text-green-500' : 'text-red-500';
+  const changeColor = priceChange >= 0 ? 'text-success' : 'text-danger';
 
   return (
     <div
       className={cn(
-        'bg-white rounded-2xl shadow-sm hover:shadow-md transition-all duration-200 p-4 cursor-pointer hover:scale-[1.02] active:scale-[0.98]',
+        'bg-white dark:bg-gray-800 rounded-2xl shadow-sm hover:shadow-md dark:shadow-none dark:border dark:border-gray-700 transition-all duration-200 p-4 cursor-pointer hover:scale-[1.02] active:scale-[0.98]',
         className
       )}
       onClick={handleClick}
@@ -62,13 +62,17 @@ export const CoinCard: React.FC<CoinCardProps> = ({
             />
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-gray-900">{coin.name}</h3>
-            <p className="text-sm text-gray-500 uppercase">{coin.symbol}</p>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+              {coin.name}
+            </h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400 uppercase">
+              {coin.symbol}
+            </p>
           </div>
         </div>
 
         {coin.market_cap_rank && (
-          <span className="text-xs bg-gray-100 px-2 py-1 rounded-full">
+          <span className="text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-2 py-1 rounded-full">
             #{coin.market_cap_rank}
           </span>
         )}
@@ -77,7 +81,7 @@ export const CoinCard: React.FC<CoinCardProps> = ({
       {/* Price and change */}
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <span className="text-xl font-bold text-gray-900">
+          <span className="text-xl font-bold text-gray-900 dark:text-white">
             {safeFormatPrice(coin.current_price)}
           </span>
           <div
@@ -97,16 +101,16 @@ export const CoinCard: React.FC<CoinCardProps> = ({
 
         {/* Market Cap */}
         <div className="flex items-center justify-between text-sm">
-          <span className="text-gray-600">Market Cap</span>
-          <span className="font-medium text-gray-700">
+          <span className="text-gray-600 dark:text-gray-400">Market Cap</span>
+          <span className="font-medium text-gray-700 dark:text-gray-300">
             {safeFormatMarketCap(coin.market_cap)}
           </span>
         </div>
 
         {/* Volume */}
         <div className="flex items-center justify-between text-sm">
-          <span className="text-gray-600">Volume (24h)</span>
-          <span className="font-medium text-gray-700">
+          <span className="text-gray-600 dark:text-gray-400">Volume (24h)</span>
+          <span className="font-medium text-gray-700 dark:text-gray-300">
             {safeFormatMarketCap(coin.total_volume)}
           </span>
         </div>

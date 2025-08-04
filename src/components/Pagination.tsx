@@ -74,8 +74,8 @@ export const Pagination: React.FC<PaginationProps> = ({
         className={cn(
           'px-3 py-2 text-sm font-medium rounded-md transition-colors',
           canGoPrevious && !disabled
-            ? 'text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 hover:text-gray-900'
-            : 'text-gray-400 bg-gray-100 border border-gray-200 cursor-not-allowed'
+            ? 'text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white'
+            : 'text-gray-400 dark:text-gray-600 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 cursor-not-allowed'
         )}
         aria-label="Previous page"
       >
@@ -91,14 +91,16 @@ export const Pagination: React.FC<PaginationProps> = ({
             className={cn(
               'px-3 py-2 text-sm font-medium rounded-md transition-colors',
               disabled
-                ? 'text-gray-400 bg-gray-100 cursor-not-allowed'
-                : 'text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 hover:text-gray-900'
+                ? 'text-gray-400 dark:text-gray-600 bg-gray-100 dark:bg-gray-800 cursor-not-allowed'
+                : 'text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white'
             )}
           >
             1
           </button>
           {pageNumbers[0] > 2 && (
-            <span className="px-2 py-2 text-gray-400">...</span>
+            <span className="px-2 py-2 text-gray-400 dark:text-gray-600">
+              ...
+            </span>
           )}
         </>
       )}
@@ -112,10 +114,10 @@ export const Pagination: React.FC<PaginationProps> = ({
           className={cn(
             'px-3 py-2 text-sm font-medium rounded-md transition-colors',
             page === currentPage
-              ? 'text-white bg-primary-600 border border-primary-600'
+              ? 'text-white bg-primary border border-primary'
               : disabled
-                ? 'text-gray-400 bg-gray-100 cursor-not-allowed'
-                : 'text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 hover:text-gray-900'
+                ? 'text-gray-400 dark:text-gray-600 bg-gray-100 dark:bg-gray-800 cursor-not-allowed'
+                : 'text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white'
           )}
           aria-label={`Page ${page}`}
           aria-current={page === currentPage ? 'page' : undefined}
@@ -128,7 +130,9 @@ export const Pagination: React.FC<PaginationProps> = ({
       {pageNumbers[pageNumbers.length - 1] < totalPages && (
         <>
           {pageNumbers[pageNumbers.length - 1] < totalPages - 1 && (
-            <span className="px-2 py-2 text-gray-400">...</span>
+            <span className="px-2 py-2 text-gray-400 dark:text-gray-600">
+              ...
+            </span>
           )}
           <button
             onClick={() => handlePageClick(totalPages)}
@@ -136,8 +140,8 @@ export const Pagination: React.FC<PaginationProps> = ({
             className={cn(
               'px-3 py-2 text-sm font-medium rounded-md transition-colors',
               disabled
-                ? 'text-gray-400 bg-gray-100 cursor-not-allowed'
-                : 'text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 hover:text-gray-900'
+                ? 'text-gray-400 dark:text-gray-600 bg-gray-100 dark:bg-gray-800 cursor-not-allowed'
+                : 'text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white'
             )}
           >
             {totalPages}
@@ -152,8 +156,8 @@ export const Pagination: React.FC<PaginationProps> = ({
         className={cn(
           'px-3 py-2 text-sm font-medium rounded-md transition-colors',
           canGoNext && !disabled
-            ? 'text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 hover:text-gray-900'
-            : 'text-gray-400 bg-gray-100 border border-gray-200 cursor-not-allowed'
+            ? 'text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white'
+            : 'text-gray-400 dark:text-gray-600 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 cursor-not-allowed'
         )}
         aria-label="Next page"
       >

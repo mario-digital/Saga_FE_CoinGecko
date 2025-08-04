@@ -33,11 +33,11 @@ export default function HomePage() {
   if (error) {
     return (
       <div className="text-center py-12">
-        <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md mx-auto">
-          <h2 className="text-lg font-semibold text-red-900 mb-2">
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-6 max-w-md mx-auto">
+          <h2 className="text-lg font-semibold text-red-900 dark:text-red-400 mb-2">
             Error Loading Data
           </h2>
-          <p className="text-red-700 text-sm mb-4">{error}</p>
+          <p className="text-red-700 dark:text-red-300 text-sm mb-4">{error}</p>
           <button onClick={() => refetch()} className="btn-primary">
             Try Again
           </button>
@@ -86,11 +86,11 @@ export default function HomePage() {
       {/* Empty State */}
       {!isLoading && (!coins || coins.length === 0) && (
         <div className="text-center py-12">
-          <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 max-w-md mx-auto">
-            <h2 className="text-lg font-semibold text-gray-900 mb-2">
+          <div className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6 max-w-md mx-auto">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
               No Data Available
             </h2>
-            <p className="text-gray-600 text-sm mb-4">
+            <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">
               Unable to load cryptocurrency data at this time.
             </p>
             <button onClick={() => refetch()} className="btn-primary">
