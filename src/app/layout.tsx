@@ -31,7 +31,7 @@ export default function RootLayout({
         <div className="min-h-screen bg-gray-50">
           <Header />
 
-          <main className="container py-8">{children}</main>
+          <main>{children}</main>
 
           <footer className="bg-white border-t border-gray-200 mt-12">
             <div className="container py-6">
