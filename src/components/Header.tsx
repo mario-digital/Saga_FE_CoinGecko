@@ -1,12 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import { Search } from 'lucide-react';
 import { SearchCommand } from '@/components/SearchCommand';
 import { useSearch } from '@/hooks/useSearch';
 
-export function Header(): JSX.Element {
+export function Header(): ReactNode {
   const router = useRouter();
   const [searchOpen, setSearchOpen] = useState(false);
 

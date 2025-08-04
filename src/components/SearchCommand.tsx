@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import type { ReactNode } from 'react';
 import { Search } from 'lucide-react';
 import {
   CommandDialog,
@@ -11,7 +12,6 @@ import {
   CommandList,
 } from '@/components/ui/command';
 import { SearchCoin } from '@/types/coingecko';
-import { cn } from '@/lib/utils';
 
 interface SearchCommandProps {
   open: boolean;
@@ -21,7 +21,6 @@ interface SearchCommandProps {
   searchError: string | null;
   onSearch: (query: string) => void;
   onSelectCoin: (coinId: string) => void;
-  className?: string;
 }
 
 export function SearchCommand({
@@ -32,8 +31,7 @@ export function SearchCommand({
   searchError,
   onSearch,
   onSelectCoin,
-  className,
-}: SearchCommandProps): JSX.Element {
+}: SearchCommandProps): ReactNode {
   const [query, setQuery] = React.useState('');
 
   React.useEffect(() => {
@@ -60,11 +58,7 @@ export function SearchCommand({
   };
 
   return (
-    <CommandDialog
-      open={open}
-      onOpenChange={onOpenChange}
-      className={cn('max-w-2xl', className)}
-    >
+    <CommandDialog open={open} onOpenChange={onOpenChange}>
       <CommandInput
         placeholder="Search cryptocurrencies..."
         value={query}
@@ -93,6 +87,7 @@ export function SearchCommand({
                     onSelect={() => handleSelect(coin.id)}
                     className="flex items-center gap-3"
                   >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={coin.thumb}
                       alt={coin.name}
