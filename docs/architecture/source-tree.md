@@ -129,30 +129,35 @@ docs/
 ## Configuration Files
 
 ### TypeScript Configuration (`tsconfig.json`)
+
 - Strict mode enabled
 - Path aliases configured (`@/` → `src/`)
 - Next.js optimizations
 - Absolute imports support
 
 ### Next.js Configuration (`next.config.js`)
+
 - Static export configuration
 - Image optimization settings
 - Experimental features (if needed)
 - Port handling for development
 
 ### Tailwind Configuration (`tailwind.config.js`)
+
 - Content paths for purging
 - Custom theme extensions
 - Plugin configurations
 - Design system tokens
 
 ### ESLint Configuration (`.eslintrc.json`)
+
 - Next.js recommended rules
 - TypeScript integration
 - React hooks rules
 - Custom project rules
 
 ### Prettier Configuration (`.prettierrc`)
+
 - Code formatting rules
 - Consistent style enforcement
 - Integration with ESLint
@@ -173,6 +178,7 @@ public/
 ## Environment Configuration
 
 ### Local Development (`.env.local`)
+
 ```
 NEXT_PUBLIC_COINGECKO_API_KEY=your-demo-api-key
 NEXT_PUBLIC_API_BASE_URL=https://api.coingecko.com/api/v3
@@ -180,6 +186,7 @@ NODE_ENV=development
 ```
 
 ### Production Environment
+
 - Environment variables managed through deployment platform
 - API keys secured through platform secrets
 - Build-time optimizations enabled
@@ -204,6 +211,7 @@ coverage/                    # Test coverage reports
 ```
 
 This structure promotes:
+
 - **Separation of Concerns**: Clear boundaries between different types of code
 - **Scalability**: Easy to add new features and components
 - **Maintainability**: Consistent organization and naming

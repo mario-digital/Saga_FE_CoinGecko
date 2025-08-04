@@ -18,6 +18,7 @@ This document outlines the coding standards and best practices for the Saga FE C
 ## General Principles
 
 ### Code Quality
+
 - Write clean, readable, and maintainable code
 - Follow the principle of least surprise
 - Use meaningful variable and function names
@@ -26,6 +27,7 @@ This document outlines the coding standards and best practices for the Saga FE C
 - Use early returns to reduce complexity
 
 ### TypeScript First
+
 - Use TypeScript's strict mode (`"strict": true`)
 - Prefer explicit typing over `any`
 - Use `unknown` instead of `any` for API responses
@@ -73,7 +75,10 @@ function formatPrice(price: number, currency: string = 'USD'): string {
 }
 
 // ✅ Good - Arrow function with types
-const calculatePercentageChange = (oldValue: number, newValue: number): number => {
+const calculatePercentageChange = (
+  oldValue: number,
+  newValue: number
+): number => {
   return ((newValue - oldValue) / oldValue) * 100;
 };
 ```
@@ -148,10 +153,13 @@ const [loadingState, setLoadingState] = useState<LoadingState>('idle');
 const [selectedCoin, setSelectedCoin] = useState<CoinData | null>(null);
 
 // ✅ Good - useCallback with proper typing
-const handleCoinSelect = useCallback((coinId: string) => {
-  const coin = coins?.find(c => c.id === coinId);
-  setSelectedCoin(coin || null);
-}, [coins]);
+const handleCoinSelect = useCallback(
+  (coinId: string) => {
+    const coin = coins?.find(c => c.id === coinId);
+    setSelectedCoin(coin || null);
+  },
+  [coins]
+);
 ```
 
 ### Event Handling
@@ -212,7 +220,7 @@ export async function GET(request: Request): Promise<NextResponse> {
     const perPage = searchParams.get('per_page') || '50';
 
     const data = await fetchCoins(parseInt(page), parseInt(perPage));
-    
+
     return NextResponse.json(data);
   } catch (error) {
     return NextResponse.json(
@@ -229,11 +237,11 @@ export async function GET(request: Request): Promise<NextResponse> {
 // ✅ Good - SWR with proper error handling
 const fetcher = async (url: string): Promise<CoinData[]> => {
   const response = await fetch(url);
-  
+
   if (!response.ok) {
     throw new Error(`API call failed: ${response.status}`);
   }
-  
+
   return response.json();
 };
 ```
@@ -293,6 +301,7 @@ import './CoinCard.module.css';
 ## Naming Conventions
 
 ### Variables and Functions
+
 ```typescript
 // ✅ Good - camelCase for variables and functions
 const coinPrice = 45000;
@@ -306,6 +315,7 @@ const shouldShowLoader = isLoading && !data;
 ```
 
 ### Components and Types
+
 ```typescript
 // ✅ Good - PascalCase for components and types
 const CoinCard = (): JSX.Element => {};
@@ -318,6 +328,7 @@ const NavigationHeader = (): JSX.Element => {};
 ```
 
 ### Constants
+
 ```typescript
 // ✅ Good - SCREAMING_SNAKE_CASE for constants
 const API_BASE_URL = 'https://api.coingecko.com/api/v3';
@@ -326,6 +337,7 @@ const DEFAULT_CURRENCY = 'usd';
 ```
 
 ### Files and Directories
+
 ```typescript
 // ✅ Good - kebab-case for directories
 // src/components/coin-card/
@@ -343,6 +355,7 @@ const DEFAULT_CURRENCY = 'usd';
 ## Error Handling
 
 ### API Error Handling
+
 ```typescript
 // ✅ Good - Comprehensive error handling
 const useCoins = (page: number) => {
@@ -350,14 +363,14 @@ const useCoins = (page: number) => {
     `/api/coins?page=${page}`,
     async (url: string) => {
       const response = await fetch(url);
-      
+
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(
           errorData.message || `HTTP ${response.status}: ${response.statusText}`
         );
       }
-      
+
       return response.json();
     }
   );
@@ -371,6 +384,7 @@ const useCoins = (page: number) => {
 ```
 
 ### Component Error Boundaries
+
 ```typescript
 // ✅ Good - Error boundary for component isolation
 interface ErrorBoundaryState {
@@ -411,6 +425,7 @@ class CoinListErrorBoundary extends React.Component<
 ## Performance Standards
 
 ### Component Optimization
+
 ```typescript
 // ✅ Good - React.memo for expensive components
 const CoinCard = React.memo<CoinCardProps>(({ coin, onClick }) => {
@@ -424,10 +439,10 @@ const CoinCard = React.memo<CoinCardProps>(({ coin, onClick }) => {
 // ✅ Good - useMemo for expensive calculations
 const sortedCoins = useMemo(() => {
   if (!coins) return [];
-  
+
   return [...coins].sort((a, b) => {
     if (sortBy === 'price') {
-      return sortOrder === 'asc' 
+      return sortOrder === 'asc'
         ? a.current_price - b.current_price
         : b.current_price - a.current_price;
     }
@@ -442,6 +457,7 @@ const handleCoinClick = useCallback((coinId: string) => {
 ```
 
 ### Data Fetching Optimization
+
 ```typescript
 // ✅ Good - SWR configuration for performance
 const swrConfig = {
@@ -464,6 +480,7 @@ const useCoins = (page: number, perPage: number = 50) => {
 ## Testing Standards
 
 ### Component Testing
+
 ```typescript
 // ✅ Good - Component test structure
 import { render, screen, fireEvent } from '@testing-library/react';
@@ -473,7 +490,7 @@ import { mockCoinData } from '@/tests/__mocks__/coinData';
 describe('CoinCard', () => {
   it('renders coin information correctly', () => {
     render(<CoinCard coin={mockCoinData} />);
-    
+
     expect(screen.getByText(mockCoinData.name)).toBeInTheDocument();
     expect(screen.getByText(/\$45,000/)).toBeInTheDocument();
   });
@@ -481,7 +498,7 @@ describe('CoinCard', () => {
   it('calls onClick handler when clicked', () => {
     const handleClick = jest.fn();
     render(<CoinCard coin={mockCoinData} onClick={handleClick} />);
-    
+
     fireEvent.click(screen.getByRole('button'));
     expect(handleClick).toHaveBeenCalledWith(mockCoinData.id);
   });
@@ -489,6 +506,7 @@ describe('CoinCard', () => {
 ```
 
 ### Hook Testing
+
 ```typescript
 // ✅ Good - Custom hook testing
 import { renderHook, waitFor } from '@testing-library/react';
@@ -500,7 +518,7 @@ jest.mock('swr');
 describe('useCoins', () => {
   it('returns loading state initially', () => {
     const { result } = renderHook(() => useCoins(1));
-    
+
     expect(result.current.isLoading).toBe(true);
     expect(result.current.coins).toBeUndefined();
   });
@@ -510,6 +528,7 @@ describe('useCoins', () => {
 ## Code Quality Tools
 
 ### ESLint Configuration
+
 ```json
 {
   "extends": [
@@ -533,6 +552,7 @@ describe('useCoins', () => {
 ```
 
 ### Prettier Configuration
+
 ```json
 {
   "semi": true,
@@ -548,21 +568,18 @@ describe('useCoins', () => {
 ```
 
 ### Git Hooks
+
 ```json
 {
   "lint-staged": {
-    "*.{js,jsx,ts,tsx}": [
-      "eslint --fix",
-      "prettier --write"
-    ],
-    "*.{json,md,css}": [
-      "prettier --write"
-    ]
+    "*.{js,jsx,ts,tsx}": ["eslint --fix", "prettier --write"],
+    "*.{json,md,css}": ["prettier --write"]
   }
 }
 ```
 
 ### Available Scripts
+
 ```bash
 # Development
 npm run dev              # Start development server

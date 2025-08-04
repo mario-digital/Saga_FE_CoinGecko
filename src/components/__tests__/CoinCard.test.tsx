@@ -130,7 +130,8 @@ describe('CoinCard', () => {
   });
 
   it('does not display rank when market_cap_rank is undefined', () => {
-    const coinWithoutRank = { ...mockCoinData, market_cap_rank: undefined };
+    const coinWithoutRank = { ...mockCoinData };
+    delete (coinWithoutRank as any).market_cap_rank;
     render(<CoinCard coin={coinWithoutRank} />);
 
     expect(screen.queryByText('#1')).not.toBeInTheDocument();

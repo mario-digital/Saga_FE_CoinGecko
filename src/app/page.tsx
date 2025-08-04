@@ -7,14 +7,17 @@ import { Pagination } from '@/components/Pagination';
 import { useCoins } from '@/hooks/useCoins';
 import { DEFAULT_PER_PAGE } from '@/lib/constants';
 
-export default function HomePage(): JSX.Element {
+export default function HomePage() {
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState<number>(1);
-  
-  const { coins, isLoading, error, refetch } = useCoins(currentPage, DEFAULT_PER_PAGE);
+
+  const { coins, isLoading, error, refetch } = useCoins(
+    currentPage,
+    DEFAULT_PER_PAGE
+  );
 
   const handleCoinClick = (coinId: string): void => {
-    router.push(`/${coinId}`);
+    router.push(`/${coinId}` satisfies `/${string}`);
   };
 
   const handlePageChange = (page: number): void => {
@@ -33,13 +36,8 @@ export default function HomePage(): JSX.Element {
           <h2 className="text-lg font-semibold text-red-900 mb-2">
             Error Loading Data
           </h2>
-          <p className="text-red-700 text-sm mb-4">
-            {error}
-          </p>
-          <button
-            onClick={() => refetch()}
-            className="btn-primary"
-          >
+          <p className="text-red-700 text-sm mb-4">{error}</p>
+          <button onClick={() => refetch()} className="btn-primary">
             Try Again
           </button>
         </div>
@@ -54,7 +52,9 @@ export default function HomePage(): JSX.Element {
         <div className="text-center py-8">
           <div className="inline-flex items-center space-x-2">
             <div className="w-5 h-5 border-2 border-primary-600 border-t-transparent rounded-full animate-spin"></div>
-            <span className="text-gray-600">Loading cryptocurrency data...</span>
+            <span className="text-gray-600">
+              Loading cryptocurrency data...
+            </span>
           </div>
         </div>
       )}
@@ -63,7 +63,7 @@ export default function HomePage(): JSX.Element {
       {coins && coins.length > 0 && (
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {coins.map((coin) => (
+            {coins.map(coin => (
               <CoinCard
                 key={coin.id}
                 coin={coin}
@@ -95,10 +95,7 @@ export default function HomePage(): JSX.Element {
             <p className="text-gray-600 text-sm mb-4">
               Unable to load cryptocurrency data at this time.
             </p>
-            <button
-              onClick={() => refetch()}
-              className="btn-primary"
-            >
+            <button onClick={() => refetch()} className="btn-primary">
               Refresh
             </button>
           </div>

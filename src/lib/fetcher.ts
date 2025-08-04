@@ -18,7 +18,7 @@ export class ApiError extends Error {
 
 export const fetcher = async (url: string): Promise<any> => {
   const fullUrl = url.startsWith('http') ? url : `${API_BASE_URL}${url}`;
-  
+
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
   };

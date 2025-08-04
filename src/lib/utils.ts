@@ -32,7 +32,10 @@ export const formatPercentageChange = (change: number): string => {
   return change >= 0 ? `+${formatted}%` : `-${formatted}%`;
 };
 
-export const getPercentageChangeColor = (change: number): string => {
+export const getPercentageChangeColor = (
+  change: number | null | undefined
+): string => {
+  if (change == null || isNaN(change)) return 'text-gray-600';
   if (change > 0) return 'text-success-600';
   if (change < 0) return 'text-danger-600';
   return 'text-gray-600';
@@ -58,5 +61,35 @@ export const cn = (
   ...classes: (string | undefined | null | false)[]
 ): string => {
   return classes.filter(Boolean).join(' ');
-}; // Test change
-// Test
+};
+
+/**
+ * Safely formats a number that might be null or undefined
+ */
+export const safeFormatPrice = (
+  price: number | null | undefined,
+  currency: string = 'USD'
+): string => {
+  if (price == null || isNaN(price)) return 'N/A';
+  return formatPrice(price, currency);
+};
+
+/**
+ * Safely formats market cap that might be null or undefined
+ */
+export const safeFormatMarketCap = (
+  marketCap: number | null | undefined
+): string => {
+  if (marketCap == null || isNaN(marketCap)) return 'N/A';
+  return formatMarketCap(marketCap);
+};
+
+/**
+ * Safely formats percentage change that might be null or undefined
+ */
+export const safeFormatPercentageChange = (
+  change: number | null | undefined
+): string => {
+  if (change == null || isNaN(change)) return '0.00%';
+  return formatPercentageChange(change);
+};

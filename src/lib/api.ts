@@ -3,9 +3,16 @@
  */
 
 import { CoinsMarketsParams } from '@/types/coingecko';
-import { API_ENDPOINTS, DEFAULT_CURRENCY, DEFAULT_PER_PAGE, DEFAULT_ORDER } from './constants';
+import {
+  API_ENDPOINTS,
+  DEFAULT_CURRENCY,
+  DEFAULT_PER_PAGE,
+  DEFAULT_ORDER,
+} from './constants';
 
-export const buildCoinsMarketsUrl = (params: Partial<CoinsMarketsParams> = {}): string => {
+export const buildCoinsMarketsUrl = (
+  params: Partial<CoinsMarketsParams> = {}
+): string => {
   const searchParams = new URLSearchParams({
     vs_currency: params.vs_currency || DEFAULT_CURRENCY,
     order: params.order || DEFAULT_ORDER,

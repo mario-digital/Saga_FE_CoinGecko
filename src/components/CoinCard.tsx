@@ -5,7 +5,13 @@
 import React from 'react';
 import Image from 'next/image';
 import { CoinData } from '@/types/coingecko';
-import { formatPrice, formatMarketCap, formatPercentageChange, getPercentageChangeColor, cn } from '@/lib/utils';
+import {
+  safeFormatPrice,
+  safeFormatMarketCap,
+  safeFormatPercentageChange,
+  getPercentageChangeColor,
+  cn,
+} from '@/lib/utils';
 
 interface CoinCardProps {
   coin: CoinData;
@@ -13,10 +19,10 @@ interface CoinCardProps {
   className?: string;
 }
 
-export const CoinCard: React.FC<CoinCardProps> = ({ 
-  coin, 
-  onClick, 
-  className 
+export const CoinCard: React.FC<CoinCardProps> = ({
+  coin,
+  onClick,
+  className,
 }) => {
   const handleClick = (): void => {
     if (onClick) {
@@ -24,7 +30,9 @@ export const CoinCard: React.FC<CoinCardProps> = ({
     }
   };
 
-  const changeColor = getPercentageChangeColor(coin.price_change_percentage_24h);
+  const changeColor = getPercentageChangeColor(
+    coin.price_change_percentage_24h
+  );
 
   return (
     <div
@@ -35,7 +43,7 @@ export const CoinCard: React.FC<CoinCardProps> = ({
       onClick={handleClick}
       role="button"
       tabIndex={0}
-      onKeyDown={(e) => {
+      onKeyDown={e => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
           handleClick();
@@ -52,22 +60,18 @@ export const CoinCard: React.FC<CoinCardProps> = ({
               fill
               sizes="32px"
               className="rounded-full object-cover"
-              onError={(e) => {
+              onError={e => {
                 const target = e.target as HTMLImageElement;
                 target.src = '/images/placeholder-coin.svg';
               }}
             />
           </div>
           <div>
-            <h3 className="font-semibold text-gray-900 text-sm">
-              {coin.name}
-            </h3>
-            <p className="text-xs text-gray-500 uppercase">
-              {coin.symbol}
-            </p>
+            <h3 className="font-semibold text-gray-900 text-sm">{coin.name}</h3>
+            <p className="text-xs text-gray-500 uppercase">{coin.symbol}</p>
           </div>
         </div>
-        
+
         {coin.market_cap_rank && (
           <span className="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full">
             #{coin.market_cap_rank}
@@ -79,10 +83,10 @@ export const CoinCard: React.FC<CoinCardProps> = ({
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <span className="text-lg font-bold text-gray-900">
-            {formatPrice(coin.current_price)}
+            {safeFormatPrice(coin.current_price)}
           </span>
           <span className={cn('text-sm font-medium', changeColor)}>
-            {formatPercentageChange(coin.price_change_percentage_24h)}
+            {safeFormatPercentageChange(coin.price_change_percentage_24h)}
           </span>
         </div>
 
@@ -90,7 +94,7 @@ export const CoinCard: React.FC<CoinCardProps> = ({
         <div className="flex items-center justify-between text-sm">
           <span className="text-gray-500">Market Cap</span>
           <span className="font-medium text-gray-700">
-            {formatMarketCap(coin.market_cap)}
+            {safeFormatMarketCap(coin.market_cap)}
           </span>
         </div>
 
@@ -98,7 +102,7 @@ export const CoinCard: React.FC<CoinCardProps> = ({
         <div className="flex items-center justify-between text-sm">
           <span className="text-gray-500">Volume (24h)</span>
           <span className="font-medium text-gray-700">
-            {formatMarketCap(coin.total_volume)}
+            {safeFormatMarketCap(coin.total_volume)}
           </span>
         </div>
       </div>

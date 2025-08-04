@@ -45,7 +45,7 @@ export const Pagination: React.FC<PaginationProps> = ({
   const getPageNumbers = (): number[] => {
     const delta = 2; // Number of pages to show on each side of current page
     const pages: number[] = [];
-    
+
     const start = Math.max(1, currentPage - delta);
     const end = Math.min(totalPages, currentPage + delta);
 
@@ -104,7 +104,7 @@ export const Pagination: React.FC<PaginationProps> = ({
       )}
 
       {/* Page Numbers */}
-      {pageNumbers.map((page) => (
+      {pageNumbers.map(page => (
         <button
           key={page}
           onClick={() => handlePageClick(page)}
@@ -114,8 +114,8 @@ export const Pagination: React.FC<PaginationProps> = ({
             page === currentPage
               ? 'text-white bg-primary-600 border border-primary-600'
               : disabled
-              ? 'text-gray-400 bg-gray-100 cursor-not-allowed'
-              : 'text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 hover:text-gray-900'
+                ? 'text-gray-400 bg-gray-100 cursor-not-allowed'
+                : 'text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 hover:text-gray-900'
           )}
           aria-label={`Page ${page}`}
           aria-current={page === currentPage ? 'page' : undefined}

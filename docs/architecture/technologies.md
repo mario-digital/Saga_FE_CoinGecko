@@ -1,4 +1,5 @@
 # 🧩 Technologies
+
 - **Framework**: Next.js 15 (App Router, Static Export)
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS

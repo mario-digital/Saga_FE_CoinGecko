@@ -5,6 +5,7 @@ This document defines the git workflow, commit message standards, and developmen
 ## Commit Message Format
 
 ### Required Format
+
 ```
 (type)[feature-name] Brief summary of changes
 
@@ -15,6 +16,7 @@ Optional detailed description explaining:
 ```
 
 ### Examples
+
 ```bash
 # Good commit messages
 git commit -m "(feat)[coin-list-view] Add CoinCard component with TypeScript interfaces"
@@ -35,16 +37,16 @@ git commit -m "(feat)[coin-list-view] Add Pagination component with state manage
 
 ## Commit Types
 
-| Type | Description | When to Use |
-|------|-------------|-------------|
-| `feat` | New feature implementation | Adding new functionality, components, hooks |
-| `fix` | Bug fixes | Fixing errors, handling edge cases, correcting logic |
-| `test` | Testing related | Adding tests, updating test configuration |
-| `style` | Code styling/formatting | CSS/Tailwind changes, code formatting |
-| `refactor` | Code refactoring | Improving code structure without changing functionality |
-| `docs` | Documentation | README updates, code comments, documentation files |
-| `config` | Configuration changes | Package.json, tsconfig, eslint, prettier setup |
-| `chore` | Maintenance tasks | Dependency updates, build configuration |
+| Type       | Description                | When to Use                                             |
+| ---------- | -------------------------- | ------------------------------------------------------- |
+| `feat`     | New feature implementation | Adding new functionality, components, hooks             |
+| `fix`      | Bug fixes                  | Fixing errors, handling edge cases, correcting logic    |
+| `test`     | Testing related            | Adding tests, updating test configuration               |
+| `style`    | Code styling/formatting    | CSS/Tailwind changes, code formatting                   |
+| `refactor` | Code refactoring           | Improving code structure without changing functionality |
+| `docs`     | Documentation              | README updates, code comments, documentation files      |
+| `config`   | Configuration changes      | Package.json, tsconfig, eslint, prettier setup          |
+| `chore`    | Maintenance tasks          | Dependency updates, build configuration                 |
 
 ## Feature Names Convention
 
@@ -61,12 +63,14 @@ Feature names should match the story/epic being worked on:
 ## Commit Frequency
 
 ### Required Practices
+
 - **Commit early and often**: Don't wait until a feature is complete
 - **Logical units**: Each commit should represent one logical change
 - **Working state**: Each commit should leave the code in a working state
 - **Atomic commits**: One concept per commit (don't mix feature work with bug fixes)
 
 ### Recommended Commit Points
+
 - ✅ After setting up initial configuration (TypeScript, ESLint, Prettier)
 - ✅ After creating each component/hook file structure
 - ✅ After implementing core functionality for a component
@@ -76,6 +80,7 @@ Feature names should match the story/epic being worked on:
 - ✅ After completing integration between components
 
 ### Example Commit Sequence for Story 1.1
+
 ```bash
 git commit -m "(config)[coin-list-view] Set up TypeScript, ESLint, and Prettier configuration"
 git commit -m "(feat)[coin-list-view] Create basic CoinCard component structure with TypeScript interfaces"
@@ -93,13 +98,16 @@ git commit -m "(fix)[coin-list-view] Handle edge cases in pagination for empty d
 ## Quality Requirements
 
 ### Pre-commit Validation
+
 Every commit must pass:
+
 - ✅ ESLint rules (`npm run lint`)
 - ✅ Prettier formatting (`npm run format:check`)
 - ✅ TypeScript compilation (`npm run type-check`)
 - ✅ Unit tests (`npm run test`)
 
 ### Commit Message Validation
+
 - ✅ Must follow the required format: `(type)[feature-name] summary`
 - ✅ Feature name must match current story/epic
 - ✅ Summary must be descriptive and clear
@@ -108,11 +116,13 @@ Every commit must pass:
 ## Branch Strategy
 
 ### Development Flow
+
 - **Main Branch**: `main` - Production-ready code
 - **Feature Branches**: `feature/story-1.1-coin-list-view` - Individual story development
 - **Hot Fixes**: `hotfix/fix-description` - Critical production fixes
 
 ### Branch Naming Convention
+
 ```bash
 # Story branches
 feature/story-1.1-coin-list-view
@@ -131,12 +141,14 @@ fix/api-error-handling
 ## Tools & Automation
 
 ### Required Setup
+
 - **Husky**: Git hooks for pre-commit validation
 - **lint-staged**: Run linters on staged files only
 - **Conventional Commits**: Validate commit message format
 - **Commitizen**: Optional tool for guided commit messages
 
 ### Recommended Package.json Scripts
+
 ```json
 {
   "scripts": {

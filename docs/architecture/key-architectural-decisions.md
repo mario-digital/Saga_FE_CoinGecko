@@ -1,4 +1,5 @@
 # 💡 Key Architectural Decisions
+
 - **Client-side only**: Simplifies deployment, reduces SSR complexity
 - **SWR over React Query**: Lightweight, perfect for read-heavy UIs
 - **Composable hooks**: Encapsulate fetch + state in custom hooks

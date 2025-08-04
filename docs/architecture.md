@@ -28,6 +28,7 @@ Next.js (App Router)
 ```
 
 ## 🧩 Technologies
+
 - **Framework**: Next.js 15 (App Router, Static Export)
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS
@@ -52,12 +53,14 @@ Next.js (App Router)
 ```
 
 ## 🔌 API Integration
+
 - Base URL: `https://api.coingecko.com/api/v3`
 - Headers: `x-cg-demo-api-key` from `.env.local`
 - Rate Limit: ~30 req/min (demo tier)
 - Strategy: Cache coin lists, fetch details per ID on-demand
 
 ## 💡 Key Architectural Decisions
+
 - **Client-side only**: Simplifies deployment, reduces SSR complexity
 - **SWR over React Query**: Lightweight, perfect for read-heavy UIs
 - **Composable hooks**: Encapsulate fetch + state in custom hooks
@@ -66,10 +69,12 @@ Next.js (App Router)
 - **Minimal state management**: Avoid Redux/Jotai unless global state grows
 
 ## 🚧 Scalability Notes
+
 - Can evolve into PWA with service workers
 - If state grows, Jotai is the preferred state manager
 - Dynamic routing and pagination can scale via query params
 - If SEO becomes critical, add hybrid SSR for `/[coinId]`
 
 ## ✅ Summary
+
 This architecture emphasizes simplicity, modularity, and performance. It’s designed to show modern SPA practices using React + Next 15, with scalable paths to grow into more complex use cases.

@@ -1,2 +1,3 @@
 # ✅ Summary
+
 This architecture emphasizes simplicity, modularity, and performance. It's designed to show modern SPA practices using React + Next 15, with scalable paths to grow into more complex use cases.

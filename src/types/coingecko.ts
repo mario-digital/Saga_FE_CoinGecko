@@ -40,7 +40,13 @@ export interface CoinsMarketsParams {
   vs_currency: string;
   ids?: string;
   category?: string;
-  order?: 'market_cap_desc' | 'market_cap_asc' | 'volume_desc' | 'volume_asc' | 'id_asc' | 'id_desc';
+  order?:
+    | 'market_cap_desc'
+    | 'market_cap_asc'
+    | 'volume_desc'
+    | 'volume_asc'
+    | 'id_asc'
+    | 'id_desc';
   per_page?: number;
   page?: number;
   sparkline?: boolean;
