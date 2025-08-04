@@ -1,1 +1,18 @@
 node_modules
+
+# Next.js
+.next/
+out/
+
+# Environment variables
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Testing
+coverage/
+
+# TypeScript
+tsconfig.tsbuildinfo
+*.tsbuildinfo
