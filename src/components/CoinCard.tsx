@@ -37,7 +37,7 @@ export const CoinCard: React.FC<CoinCardProps> = ({
   return (
     <div
       className={cn(
-        'bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-200 cursor-pointer border border-gray-200',
+        'bg-white rounded-2xl shadow-sm hover:shadow-md transition-all duration-200 p-4 cursor-pointer hover:scale-[1.02] active:scale-[0.98]',
         className
       )}
       onClick={handleClick}
