@@ -37,6 +37,7 @@ export const CoinCard: React.FC<CoinCardProps> = ({
       onClick={handleClick}
       role="button"
       tabIndex={0}
+      aria-label={`View details for ${coin.name}`}
       onKeyDown={e => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();

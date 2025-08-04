@@ -49,9 +49,9 @@ describe('CoinCard', () => {
     render(<CoinCard coin={mockCoinData} />);
 
     const priceChange = screen.getByText('2.50%');
-    const container = priceChange.closest('.text-green-500');
+    const container = priceChange.closest('.text-success');
     expect(container).toBeInTheDocument();
-    expect(container).toHaveClass('text-green-500');
+    expect(container).toHaveClass('text-success');
     // Check for TrendingUp icon presence
     const icon = container?.querySelector('svg');
     expect(icon).toBeInTheDocument();
@@ -61,9 +61,9 @@ describe('CoinCard', () => {
     render(<CoinCard coin={mockCoinDataNegativeChange} />);
 
     const priceChange = screen.getByText('3.20%');
-    const container = priceChange.closest('.text-red-500');
+    const container = priceChange.closest('.text-danger');
     expect(container).toBeInTheDocument();
-    expect(container).toHaveClass('text-red-500');
+    expect(container).toHaveClass('text-danger');
     // Check for TrendingDown icon presence
     const icon = container?.querySelector('svg');
     expect(icon).toBeInTheDocument();
@@ -190,8 +190,8 @@ describe('CoinCard', () => {
     render(<CoinCard coin={coinWithZeroChange} />);
 
     const priceChange = screen.getByText('0.00%');
-    const container = priceChange.closest('.text-green-500');
+    const container = priceChange.closest('.text-success');
     expect(container).toBeInTheDocument();
-    expect(container).toHaveClass('text-green-500');
+    expect(container).toHaveClass('text-success');
   });
 });
