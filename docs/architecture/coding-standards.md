@@ -101,17 +101,44 @@ interface ApiResponse<T> {
 
 ## React Component Standards
 
+### React Import Pattern
+
+```typescript
+// ❌ Avoid - Default React import (outdated pattern)
+import React from 'react';
+
+// ✅ Good - Named imports for React functionality
+import { FC, ReactNode, useState, useEffect, MouseEvent } from 'react';
+
+// ✅ Good - Import only what you need
+import { useState, useCallback } from 'react';
+```
+
+**Why?** React 17+ with the new JSX Transform doesn't require React to be in scope for JSX. Using named imports:
+
+- Reduces bundle size through better tree-shaking
+- More explicit about what's being used
+- Follows modern React patterns
+- Compatible with React Server Components
+
 ### Function Components
 
 ```typescript
 // ✅ Good - Function component with explicit props interface
+// ❌ Avoid - Default React import
+import React from 'react';
+
+// ✅ Good - Named imports for React types
+import { FC, ReactNode, MouseEvent } from 'react';
+
 interface CoinCardProps {
   coin: CoinData;
   onClick?: (coinId: string) => void;
   className?: string;
+  children?: ReactNode;
 }
 
-const CoinCard: React.FC<CoinCardProps> = ({ coin, onClick, className }) => {
+const CoinCard: FC<CoinCardProps> = ({ coin, onClick, className }) => {
   return (
     <div className={className} onClick={() => onClick?.(coin.id)}>
       <h3>{coin.name}</h3>
@@ -281,7 +308,7 @@ src/
 ```typescript
 // ✅ Good - Import order
 // 1. React and Next.js imports
-import React from 'react';
+import { FC, useState, useEffect } from 'react'; // Named imports only
 import { NextPage } from 'next';
 import Link from 'next/link';
 
