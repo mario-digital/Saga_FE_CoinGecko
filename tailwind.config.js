@@ -60,6 +60,19 @@ module.exports = {
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
       },
+      spacing: {
+        'safe-top': 'env(safe-area-inset-top)',
+        'safe-bottom': 'env(safe-area-inset-bottom)',
+        'safe-left': 'env(safe-area-inset-left)',
+        'safe-right': 'env(safe-area-inset-right)',
+      },
+      height: {
+        'safe-bottom': 'env(safe-area-inset-bottom)',
+      },
+      minHeight: {
+        touch: '44px',
+        'touch-android': '48px',
+      },
     },
   },
   plugins: [],

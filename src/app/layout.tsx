@@ -18,6 +18,7 @@ export const metadata = {
     'market data',
     'crypto prices',
   ],
+  viewport: 'width=device-width, initial-scale=1, viewport-fit=cover',
 };
 
 export default function RootLayout({
@@ -31,9 +32,11 @@ export default function RootLayout({
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
           <Header />
 
-          <main className="bg-gray-50 dark:bg-gray-900">{children}</main>
+          <main className="bg-gray-50 dark:bg-gray-900 pb-16 sm:pb-0">
+            {children}
+          </main>
 
-          <footer className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-12">
+          <footer className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-12 mb-16 sm:mb-0">
             <div className="container py-6">
               <p className="text-center text-gray-600 dark:text-gray-400 text-sm">
                 Powered by CoinGecko API • Built with Next.js 15 & React 19

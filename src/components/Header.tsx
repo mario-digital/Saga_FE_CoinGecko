@@ -2,14 +2,17 @@
 
 import { useState, type ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
-import { Search } from 'lucide-react';
+import { Search, Menu, X, Home, TrendingUp, Info } from 'lucide-react';
 import { SearchCommand } from '@/components/SearchCommand';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { useSearch } from '@/hooks/useSearch';
+import Link from 'next/link';
+import { cn } from '@/lib/utils';
 
 export function Header(): ReactNode {
   const router = useRouter();
   const [searchOpen, setSearchOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const {
     searchQuery,
@@ -25,21 +28,28 @@ export function Header(): ReactNode {
     clearSearch();
   };
 
+  const closeMobileMenu = () => {
+    setMobileMenuOpen(false);
+  };
+
   return (
     <>
-      <header className="bg-white dark:bg-gray-900 shadow-sm border-b border-gray-200 dark:border-gray-800">
-        <div className="container py-4">
+      <header className="sticky top-0 z-50 bg-white dark:bg-gray-900 shadow-sm border-b border-gray-200 dark:border-gray-800">
+        <div className="container py-2 sm:py-4">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                Cryptocurrency Market
+            {/* Logo/Title - responsive text */}
+            <div className="flex-1">
+              <h1 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white">
+                <span className="hidden sm:inline">Cryptocurrency Market</span>
+                <span className="sm:hidden">Crypto Market</span>
               </h1>
-              <p className="text-gray-600 dark:text-gray-400 mt-1">
+              <p className="hidden sm:block text-gray-600 dark:text-gray-400 mt-1">
                 Real-time cryptocurrency prices and market data
               </p>
             </div>
 
-            <div className="flex items-center space-x-4">
+            {/* Desktop navigation */}
+            <div className="hidden sm:flex items-center space-x-4">
               {/* Search trigger button */}
               <button
                 onClick={() => setSearchOpen(true)}
@@ -47,7 +57,7 @@ export function Header(): ReactNode {
               >
                 <Search className="w-4 h-4 mr-2" />
                 Search coins...
-                <kbd className="ml-2 hidden sm:inline-block px-2 py-1 text-xs font-semibold text-gray-800 dark:text-gray-200 bg-gray-300 dark:bg-gray-700 border border-gray-400 dark:border-gray-600 rounded-lg">
+                <kbd className="ml-2 hidden md:inline-block px-2 py-1 text-xs font-semibold text-gray-800 dark:text-gray-200 bg-gray-300 dark:bg-gray-700 border border-gray-400 dark:border-gray-600 rounded-lg">
                   ⌘K
                 </kbd>
               </button>
@@ -55,7 +65,80 @@ export function Header(): ReactNode {
               {/* Theme toggle */}
               <ThemeToggle />
             </div>
+
+            {/* Mobile menu button and search */}
+            <div className="flex items-center gap-2 sm:hidden">
+              {/* Mobile search button */}
+              <button
+                onClick={() => setSearchOpen(true)}
+                className="p-2 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors"
+                aria-label="Search"
+              >
+                <Search className="w-5 h-5" />
+              </button>
+
+              {/* Mobile theme toggle */}
+              <ThemeToggle />
+
+              {/* Mobile menu button */}
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="p-2 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors"
+                aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+              >
+                {mobileMenuOpen ? (
+                  <X className="w-5 h-5" />
+                ) : (
+                  <Menu className="w-5 h-5" />
+                )}
+              </button>
+            </div>
           </div>
+        </div>
+
+        {/* Mobile menu drawer */}
+        <div
+          className={cn(
+            'sm:hidden border-t border-gray-200 dark:border-gray-700 transition-all duration-200 overflow-hidden',
+            mobileMenuOpen ? 'max-h-64' : 'max-h-0'
+          )}
+        >
+          <nav className="px-4 py-2 space-y-1">
+            <Link
+              href="/"
+              onClick={closeMobileMenu}
+              className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors"
+            >
+              <Home className="w-4 h-4" />
+              Home
+            </Link>
+            <Link
+              href="/?filter=top10"
+              onClick={closeMobileMenu}
+              className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors"
+            >
+              <TrendingUp className="w-4 h-4" />
+              Top 10 Coins
+            </Link>
+            <button
+              onClick={() => {
+                setSearchOpen(true);
+                closeMobileMenu();
+              }}
+              className="flex items-center gap-3 w-full px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors text-left"
+            >
+              <Search className="w-4 h-4" />
+              Search Coins
+            </button>
+            <Link
+              href="/about"
+              onClick={closeMobileMenu}
+              className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors"
+            >
+              <Info className="w-4 h-4" />
+              About
+            </Link>
+          </nav>
         </div>
       </header>
 
