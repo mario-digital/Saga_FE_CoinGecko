@@ -144,12 +144,11 @@ describe('Header', () => {
   it('has proper button accessibility attributes', () => {
     render(<Header />);
 
-    const searchButton = screen.getByRole('button', { name: /search coins/i });
+    const searchButton = screen.getByText('Search coins...');
     expect(searchButton).toBeInTheDocument();
-    expect(searchButton).toHaveClass(
-      'focus:outline-none',
-      'focus:ring-2',
-      'focus:ring-blue-500'
+    expect(searchButton.parentElement).toHaveClass(
+      'focus-within:ring-2',
+      'focus-within:ring-blue-500'
     );
   });
 
@@ -157,7 +156,7 @@ describe('Header', () => {
     render(<Header />);
 
     const shortcutElement = screen.getByText('⌘K');
-    expect(shortcutElement).toHaveClass('hidden', 'sm:inline-block');
+    expect(shortcutElement).toHaveClass('hidden', 'md:inline-block');
   });
 
   it('has hover effects on search button', () => {

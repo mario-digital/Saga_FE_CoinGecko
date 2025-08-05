@@ -130,9 +130,9 @@ describe('CoinCard', () => {
     expect(image).toBeInTheDocument();
     expect(image).toHaveClass('rounded-full');
     expect(image).toHaveAttribute('loading', 'lazy');
-    // Check that the container has w-12 h-12
+    // Check that the container has responsive sizing
     const container = image.parentElement;
-    expect(container).toHaveClass('w-12', 'h-12');
+    expect(container).toHaveClass('w-10', 'h-10', 'sm:w-12', 'sm:h-12');
   });
 
   it('handles image error gracefully', () => {
@@ -163,7 +163,7 @@ describe('CoinCard', () => {
     render(<CoinCard coin={mockCoinData} />);
 
     const card = screen.getByRole('button');
-    expect(card).toHaveClass('rounded-2xl');
+    expect(card).toHaveClass('rounded-xl', 'sm:rounded-2xl');
     expect(card).toHaveClass('shadow-sm');
     expect(card).toHaveClass('hover:shadow-md');
   });

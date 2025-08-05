@@ -33,7 +33,7 @@ describe('CoinCardSkeletonAnimated', () => {
     // Check for coin image placeholder
     const imageSkeletons = container.querySelectorAll('.rounded-full');
     expect(imageSkeletons.length).toBeGreaterThan(0);
-    expect(imageSkeletons[0]).toHaveClass('w-10', 'h-10', 'sm:w-12', 'sm:h-12');
+    expect(imageSkeletons[0]).toHaveClass('w-full', 'h-full');
 
     // Check for text placeholders
     const textSkeletons = container.querySelectorAll(

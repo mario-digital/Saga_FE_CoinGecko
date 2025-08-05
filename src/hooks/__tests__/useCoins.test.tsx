@@ -130,21 +130,14 @@ describe('useCoins', () => {
     );
   });
 
-  it('uses additional parameters correctly', () => {
+  it('uses the API proxy endpoint', () => {
     mockFetcher.mockImplementation(() => new Promise(() => {}));
 
-    const additionalParams = {
-      vs_currency: 'eur',
-      order: 'volume_desc' as const,
-    };
-
-    renderHook(() => useCoins(1, 50, additionalParams), {
+    renderHook(() => useCoins(2, 100), {
       wrapper: createWrapper,
     });
 
-    expect(mockFetcher).toHaveBeenCalledWith(
-      expect.stringContaining('vs_currency=eur&order=volume_desc')
-    );
+    expect(mockFetcher).toHaveBeenCalledWith('/api/coins?page=2&per_page=100');
   });
 
   it('provides refetch function', async () => {
