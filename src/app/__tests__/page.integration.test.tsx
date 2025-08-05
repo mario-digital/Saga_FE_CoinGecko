@@ -92,13 +92,11 @@ describe('HomePage Filter Integration', () => {
   it('renders FilterMarketCap component', () => {
     render(<HomePage />);
 
-    expect(
-      screen.getByLabelText('Filter coins by market cap')
-    ).toBeInTheDocument();
-    expect(screen.getByLabelText('Show all coins')).toBeInTheDocument();
-    expect(screen.getByLabelText('Show top 10 coins')).toBeInTheDocument();
-    expect(screen.getByLabelText('Show top 50 coins')).toBeInTheDocument();
-    expect(screen.getByLabelText('Show top 100 coins')).toBeInTheDocument();
+    // Check that filter radio buttons are rendered
+    expect(screen.getByLabelText('All')).toBeInTheDocument();
+    expect(screen.getByLabelText('Top 10')).toBeInTheDocument();
+    expect(screen.getByLabelText('Top 50')).toBeInTheDocument();
+    expect(screen.getByLabelText('Top 100')).toBeInTheDocument();
   });
 
   it('displays all coins by default', () => {

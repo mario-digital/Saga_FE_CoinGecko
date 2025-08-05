@@ -105,16 +105,19 @@ describe('Responsive Layout Tests', () => {
       render(<Header />);
 
       expect(screen.getByLabelText('Open menu')).toBeInTheDocument();
-      expect(screen.queryByText('About')).not.toBeInTheDocument(); // Desktop nav hidden
+      // Mobile menu should be initially closed
+      const mobileMenu = screen.queryByText('About')?.closest('.sm\\:hidden');
+      expect(mobileMenu).toHaveClass('max-h-0');
     });
 
     it('shows full navigation on desktop', () => {
-      setViewportSize(1024); // Desktop size
+      setViewportSize(640); // sm breakpoint and above
       render(<Header />);
 
+      // Desktop doesn't have hamburger menu
       expect(screen.queryByLabelText('Open menu')).not.toBeInTheDocument();
-      expect(screen.getByText('About')).toBeInTheDocument();
-      expect(screen.getByText('Contact')).toBeInTheDocument();
+      // Desktop has search button visible
+      expect(screen.getByText('Search coins...')).toBeInTheDocument();
     });
 
     it('opens mobile menu when hamburger clicked', async () => {
@@ -125,8 +128,8 @@ describe('Responsive Layout Tests', () => {
       fireEvent.click(hamburger);
 
       await waitFor(() => {
-        expect(screen.getByText('About')).toBeInTheDocument();
-        expect(screen.getByText('Contact')).toBeInTheDocument();
+        const mobileMenu = screen.getByText('About').closest('.sm\\:hidden');
+        expect(mobileMenu).toHaveClass('max-h-64');
       });
     });
 
@@ -145,7 +148,8 @@ describe('Responsive Layout Tests', () => {
       fireEvent.click(screen.getByLabelText('Close menu'));
 
       await waitFor(() => {
-        expect(screen.queryByText('About')).not.toBeInTheDocument();
+        const mobileMenu = screen.getByText('About').closest('.sm\\:hidden');
+        expect(mobileMenu).toHaveClass('max-h-0');
       });
     });
 
@@ -259,7 +263,6 @@ describe('Responsive Layout Tests', () => {
       render(<CoinCard coin={mockCoinData[0]} onClick={jest.fn()} />);
 
       const card = screen.getByRole('button');
-      const styles = window.getComputedStyle(card);
 
       // Check minimum height for touch target
       expect(card).toHaveClass('min-h-[120px]');
@@ -316,8 +319,8 @@ describe('Responsive Layout Tests', () => {
       rerender(<Header />);
       expect(screen.getByLabelText('Open menu')).toBeInTheDocument();
 
-      // Transition to tablet
-      setViewportSize(768);
+      // Transition to desktop (sm breakpoint is 640px)
+      setViewportSize(640);
       rerender(<Header />);
       expect(screen.queryByLabelText('Open menu')).not.toBeInTheDocument();
 

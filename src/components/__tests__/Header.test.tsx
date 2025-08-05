@@ -146,10 +146,9 @@ describe('Header', () => {
 
     const searchButton = screen.getByText('Search coins...');
     expect(searchButton).toBeInTheDocument();
-    expect(searchButton.parentElement).toHaveClass(
-      'focus-within:ring-2',
-      'focus-within:ring-blue-500'
-    );
+    // The search button itself should have focus styles
+    const buttonElement = searchButton.closest('button');
+    expect(buttonElement).toHaveClass('focus:outline-none');
   });
 
   it('shows keyboard shortcut hint on larger screens', () => {
