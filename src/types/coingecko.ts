@@ -111,3 +111,54 @@ export interface SearchResponse {
 export interface SearchParams {
   query: string;
 }
+
+// Coin Detail API types
+export interface CoinDetailData {
+  id: string;
+  symbol: string;
+  name: string;
+  asset_platform_id: string | null;
+  description: {
+    en: string;
+  };
+  links: {
+    homepage: string[];
+    blockchain_site: string[];
+    official_forum_url: string[];
+    chat_url: string[];
+    announcement_url: string[];
+    twitter_screen_name: string;
+    facebook_username: string;
+    bitcointalk_thread_identifier: string | null;
+    telegram_channel_identifier: string;
+    subreddit_url: string | null;
+    repos_url: {
+      github: string[];
+      bitbucket: string[];
+    };
+  };
+  image: {
+    thumb: string;
+    small: string;
+    large: string;
+  };
+  market_cap_rank: number;
+  market_data: {
+    current_price: { [key: string]: number };
+    market_cap: { [key: string]: number };
+    total_volume: { [key: string]: number };
+    price_change_percentage_24h: number;
+    price_change_percentage_7d: number;
+    price_change_percentage_30d: number;
+    price_change_percentage_1y: number;
+    ath: { [key: string]: number };
+    ath_date: { [key: string]: string };
+    atl: { [key: string]: number };
+    atl_date: { [key: string]: string };
+    circulating_supply: number;
+    total_supply: number;
+    max_supply: number | null;
+  };
+  categories: string[];
+  platforms: { [key: string]: string };
+}

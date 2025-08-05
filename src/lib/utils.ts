@@ -95,3 +95,59 @@ export const safeFormatPercentageChange = (
   if (change == null || isNaN(change)) return '0.00%';
   return formatPercentageChange(change);
 };
+
+/**
+ * Formats currency with proper decimal places based on value
+ */
+export const formatCurrency = (value: number, currency = 'usd'): string => {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: currency.toUpperCase(),
+    minimumFractionDigits: value < 1 ? 6 : 2,
+    maximumFractionDigits: value < 1 ? 8 : 2,
+  }).format(value);
+};
+
+/**
+ * Formats percentage with proper sign
+ */
+export const formatPercentage = (value: number): string => {
+  const formatted = value.toFixed(2);
+  return value >= 0 ? `+${formatted}%` : `${formatted}%`;
+};
+
+/**
+ * Formats large numbers with abbreviations
+ */
+export const formatLargeNumber = (value: number): string => {
+  const units = ['', 'K', 'M', 'B', 'T'];
+  let unitIndex = 0;
+  let scaledValue = value;
+
+  while (scaledValue >= 1000 && unitIndex < units.length - 1) {
+    unitIndex++;
+    scaledValue /= 1000;
+  }
+
+  return `${scaledValue.toFixed(2)}${units[unitIndex]}`;
+};
+
+/**
+ * Sanitizes HTML content (basic implementation)
+ */
+export const sanitizeHTML = (html: string): string => {
+  const div = document.createElement('div');
+  div.textContent = html;
+  return div.innerHTML;
+};
+
+/**
+ * Formats date to readable string
+ */
+export const formatDate = (dateString: string): string => {
+  return new Date(dateString).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
+};
