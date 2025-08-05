@@ -8,7 +8,7 @@ import { Header } from '../Header';
 import { CoinCard } from '../CoinCard';
 import { CoinStats } from '../CoinStats';
 import { PriceChanges } from '../PriceChanges';
-import { CoinData, MarketData } from '@/types/coingecko';
+import { CoinData } from '@/types/coingecko';
 
 const mockCoinData: CoinData[] = [
   {
@@ -25,11 +25,14 @@ const mockCoinData: CoinData[] = [
   },
 ];
 
-const mockMarketData: MarketData = {
+const mockMarketData = {
   current_price: { usd: 45000 },
   market_cap: { usd: 900000000000 },
   total_volume: { usd: 25000000000 },
   price_change_percentage_24h: 2.5,
+  price_change_percentage_7d: 5.2,
+  price_change_percentage_30d: -3.8,
+  price_change_percentage_1y: 45.6,
   circulating_supply: 19500000,
   total_supply: 21000000,
   max_supply: 21000000,
@@ -203,10 +206,10 @@ describe('Responsive Layout Tests', () => {
 
   describe('PriceChanges Component', () => {
     const mockPriceChanges = {
-      price_change_percentage_24h: 2.5,
-      price_change_percentage_7d: 5.2,
-      price_change_percentage_30d: -3.8,
-      price_change_percentage_1y: 45.6,
+      '24h': 2.5,
+      '7d': 5.2,
+      '30d': -3.8,
+      '1y': 45.6,
     };
 
     it('displays in 2x2 grid on mobile', () => {

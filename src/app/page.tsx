@@ -2,16 +2,32 @@
 
 import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import { CoinCard } from '@/components/CoinCard';
-import { SwipeableCoinCard } from '@/components/SwipeableCoinCard';
 import { CoinCardSkeleton } from '@/components/CoinCardSkeleton';
 import { CoinCardSkeletonAnimated } from '@/components/CoinCardSkeletonAnimated';
 import { Pagination } from '@/components/Pagination';
-import { PullToRefresh } from '@/components/PullToRefresh';
 import FilterMarketCap from '@/components/FilterMarketCap';
 import { useCoins } from '@/hooks/useCoins';
 import { useFilteredCoins } from '@/hooks/useFilteredCoins';
 import { DEFAULT_PER_PAGE } from '@/lib/constants';
+
+// Dynamic imports for mobile-specific components
+const SwipeableCoinCard = dynamic(
+  () =>
+    import('@/components/SwipeableCoinCard').then(mod => mod.SwipeableCoinCard),
+  {
+    loading: () => <CoinCardSkeleton />,
+    ssr: false,
+  }
+);
+
+const PullToRefresh = dynamic(
+  () => import('@/components/PullToRefresh').then(mod => mod.PullToRefresh),
+  {
+    ssr: false,
+  }
+);
 
 function HomePageContent() {
   const router = useRouter();

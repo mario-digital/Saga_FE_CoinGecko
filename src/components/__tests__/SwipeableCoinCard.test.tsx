@@ -170,7 +170,7 @@ describe('SwipeableCoinCard', () => {
     const coinWithMissingData = {
       ...mockCoinData[0],
       circulating_supply: undefined,
-      max_supply: null,
+      max_supply: undefined,
       ath: undefined,
       ath_change_percentage: undefined,
     };

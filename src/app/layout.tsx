@@ -18,7 +18,19 @@ export const metadata = {
     'market data',
     'crypto prices',
   ],
-  viewport: 'width=device-width, initial-scale=1, viewport-fit=cover',
+  manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'Crypto Market',
+  },
+};
+
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
+  themeColor: '#3b82f6',
 };
 
 export default function RootLayout({
