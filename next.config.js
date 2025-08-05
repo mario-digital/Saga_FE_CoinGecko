@@ -1,15 +1,19 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Commented out for Turbopack compatibility
-  // experimental: {
-  //   typedRoutes: true,
-  // },
+  // Experimental optimizations for better performance
+  experimental: {
+    optimizePackageImports: ['@/components', '@/hooks', 'lucide-react'],
+  },
   // Enable static export for flexible deployment
   // output: 'export', // Temporarily disabled to fix CSS issues
   trailingSlash: true,
   images: {
     unoptimized: true,
+    formats: ['image/avif', 'image/webp'],
   },
+  // Performance optimizations
+  reactStrictMode: true,
+  poweredByHeader: false,
   // Development server configuration
   async rewrites() {
     return {
@@ -21,9 +25,12 @@ const nextConfig = {
   // Webpack optimization for mobile performance
   webpack: (config, { isServer }) => {
     if (!isServer) {
-      // Split vendor chunks for better caching
+      // More aggressive code splitting
       config.optimization.splitChunks = {
         chunks: 'all',
+        minSize: 10000,
+        maxAsyncRequests: 30,
+        maxInitialRequests: 30,
         cacheGroups: {
           default: false,
           vendors: false,

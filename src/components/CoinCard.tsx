@@ -75,9 +75,9 @@ export const CoinCard: React.FC<CoinCardProps> = ({
             />
           </div>
           <div className="min-w-0 flex-1">
-            <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white truncate">
+            <h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white truncate">
               {coin.name}
-            </h3>
+            </h2>
             <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 uppercase">
               {coin.symbol}
             </p>

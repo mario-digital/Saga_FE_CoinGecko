@@ -1,21 +1,29 @@
 'use client';
 
-import React, { useState, useEffect, Suspense } from 'react';
+import React, {
+  useState,
+  useEffect,
+  Suspense,
+  useCallback,
+  useMemo,
+} from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { CoinCard } from '@/components/CoinCard';
 import { CoinCardSkeleton } from '@/components/CoinCardSkeleton';
-import { CoinCardSkeletonAnimated } from '@/components/CoinCardSkeletonAnimated';
 import { Pagination } from '@/components/Pagination';
 import FilterMarketCap from '@/components/FilterMarketCap';
 import { useCoins } from '@/hooks/useCoins';
 import { useFilteredCoins } from '@/hooks/useFilteredCoins';
 import { DEFAULT_PER_PAGE } from '@/lib/constants';
 
-// Dynamic imports for mobile-specific components
+// Lazy load mobile-specific components without prefetch to reduce initial load
 const SwipeableCoinCard = dynamic(
   () =>
-    import('@/components/SwipeableCoinCard').then(mod => mod.SwipeableCoinCard),
+    import(
+      /* webpackChunkName: "swipeable-card" */
+      '@/components/SwipeableCoinCard'
+    ).then(mod => mod.SwipeableCoinCard),
   {
     loading: () => <CoinCardSkeleton />,
     ssr: false,
@@ -23,9 +31,14 @@ const SwipeableCoinCard = dynamic(
 );
 
 const PullToRefresh = dynamic(
-  () => import('@/components/PullToRefresh').then(mod => mod.PullToRefresh),
+  () =>
+    import(
+      /* webpackChunkName: "pull-refresh" */
+      '@/components/PullToRefresh'
+    ).then(mod => mod.PullToRefresh),
   {
     ssr: false,
+    loading: () => <div />, // Empty div to prevent layout shift
   }
 );
 
@@ -34,17 +47,11 @@ function HomePageContent() {
   const searchParams = useSearchParams();
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [filter, setFilter] = useState<string>('all');
-  const [isMobile, setIsMobile] = useState<boolean>(false);
+  const [isMounted, setIsMounted] = useState<boolean>(false);
 
-  // Check if device is mobile
+  // Detect if we're on client side after hydration
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 640); // sm breakpoint
-    };
-
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    setIsMounted(true);
   }, []);
 
   // Initialize filter and page from URL on mount
@@ -74,43 +81,59 @@ function HomePageContent() {
     filter,
   });
 
-  const handleCoinClick = (coinId: string): void => {
-    router.push(`/${coinId}` as any);
-  };
+  const handleCoinClick = useCallback(
+    (coinId: string): void => {
+      router.push(`/${coinId}` as any);
+    },
+    [router]
+  );
 
-  const handlePageChange = (page: number): void => {
-    setCurrentPage(page);
+  const handlePageChange = useCallback(
+    (page: number): void => {
+      setCurrentPage(page);
 
-    // Update URL parameters
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('page', page.toString());
+      // Update URL parameters
+      const params = new URLSearchParams(searchParams.toString());
+      params.set('page', page.toString());
 
-    const newUrl = `/?${params.toString()}`;
-    router.push(newUrl as any);
+      const newUrl = `/?${params.toString()}`;
+      // Use Next.js router with scroll to top
+      router.push(newUrl as any, { scroll: true });
+    },
+    [router, searchParams]
+  );
 
-    // Scroll to top when page changes
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  const handleFilterChange = useCallback(
+    (newFilter: string): void => {
+      setFilter(newFilter);
+      setCurrentPage(1); // Reset to page 1 when filter changes
 
-  const handleFilterChange = (newFilter: string): void => {
-    setFilter(newFilter);
-    setCurrentPage(1); // Reset to page 1 when filter changes
+      // Update URL parameters
+      const params = new URLSearchParams(searchParams.toString());
+      if (newFilter === 'all') {
+        params.delete('filter');
+      } else {
+        params.set('filter', newFilter);
+      }
+      params.set('page', '1');
 
-    // Update URL parameters
-    const params = new URLSearchParams(searchParams.toString());
-    if (newFilter === 'all') {
-      params.delete('filter');
-    } else {
-      params.set('filter', newFilter);
-    }
-    params.set('page', '1');
-
-    const newUrl = params.toString() ? `/?${params.toString()}` : '/';
-    router.push(newUrl as any);
-  };
+      const newUrl = params.toString() ? `/?${params.toString()}` : '/';
+      router.push(newUrl as any);
+    },
+    [router, searchParams]
+  );
 
   // Calculate total pages (approximate - CoinGecko doesn't provide total count)
   const estimatedTotalPages = 100; // Conservative estimate
+
+  // Memoize skeleton loaders to prevent re-renders
+  const skeletonLoaders = useMemo(
+    () =>
+      Array.from({ length: DEFAULT_PER_PAGE }).map((_, index) => (
+        <CoinCardSkeleton key={index} />
+      )),
+    []
+  );
 
   if (error) {
     return (
@@ -131,6 +154,9 @@ function HomePageContent() {
   return (
     <PullToRefresh onRefresh={refetch} disabled={isLoading}>
       <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8 space-y-4 sm:space-y-6 lg:space-y-8">
+        {/* Screen reader only h1 for accessibility */}
+        <h1 className="sr-only">Cryptocurrency Market Data</h1>
+
         {/* Filter Section */}
         <div className="space-y-3 sm:space-y-4">
           <FilterMarketCap value={filter} onChange={handleFilterChange} />
@@ -146,13 +172,7 @@ function HomePageContent() {
         {/* Loading State */}
         {isLoading && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
-            {Array.from({ length: DEFAULT_PER_PAGE }).map((_, index) =>
-              isMobile ? (
-                <CoinCardSkeletonAnimated key={index} />
-              ) : (
-                <CoinCardSkeleton key={index} />
-              )
-            )}
+            {skeletonLoaders}
           </div>
         )}
 
@@ -160,23 +180,34 @@ function HomePageContent() {
         {!isLoading && filteredCoins && filteredCoins.length > 0 && (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
-              {filteredCoins.map(coin =>
-                isMobile ? (
-                  <SwipeableCoinCard
-                    key={coin.id}
-                    coin={coin}
-                    onClick={handleCoinClick}
-                    className=""
-                  />
-                ) : (
-                  <CoinCard
-                    key={coin.id}
-                    coin={coin}
-                    onClick={handleCoinClick}
-                    className=""
-                  />
-                )
-              )}
+              {filteredCoins.map(coin => (
+                <React.Fragment key={coin.id}>
+                  {/* Mobile version - only visible on small screens */}
+                  <div className="block sm:hidden">
+                    {isMounted ? (
+                      <SwipeableCoinCard
+                        coin={coin}
+                        onClick={handleCoinClick}
+                        className=""
+                      />
+                    ) : (
+                      <CoinCard
+                        coin={coin}
+                        onClick={handleCoinClick}
+                        className=""
+                      />
+                    )}
+                  </div>
+                  {/* Desktop version - only visible on larger screens */}
+                  <div className="hidden sm:block">
+                    <CoinCard
+                      coin={coin}
+                      onClick={handleCoinClick}
+                      className=""
+                    />
+                  </div>
+                </React.Fragment>
+              ))}
             </div>
 
             {/* Pagination */}
@@ -226,30 +257,14 @@ function HomePageContent() {
 }
 
 export default function HomePage() {
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 640);
-    };
-
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
   return (
     <Suspense
       fallback={
         <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8 space-y-4 sm:space-y-6 lg:space-y-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
-            {Array.from({ length: DEFAULT_PER_PAGE }).map((_, index) =>
-              isMobile ? (
-                <CoinCardSkeletonAnimated key={index} />
-              ) : (
-                <CoinCardSkeleton key={index} />
-              )
-            )}
+            {Array.from({ length: DEFAULT_PER_PAGE }).map((_, index) => (
+              <CoinCardSkeleton key={index} />
+            ))}
           </div>
         </div>
       }

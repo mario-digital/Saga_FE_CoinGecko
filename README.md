@@ -30,6 +30,13 @@ A modern, feature-rich cryptocurrency market data dashboard built with Next.js 1
 - **📊 Responsive Charts**: Touch-friendly chart interactions
 - **🎯 Touch Targets**: Minimum 44px touch targets for better usability
 
+### Developer Experience
+
+- **🔌 Automatic Port Detection**: Intelligently finds available ports when default is busy
+- **🚀 Zero Configuration**: Works out of the box with no setup required
+- **🛠 Pre-commit Hooks**: Automatic linting and formatting on every commit
+- **📝 TypeScript Strict Mode**: Full type safety and IntelliSense support
+
 ## 🛠 Tech Stack
 
 - **Framework**: Next.js 15 (App Router, Static Export)
@@ -111,7 +118,14 @@ NEXT_PUBLIC_API_BASE_URL=https://api.coingecko.com/api/v3
 pnpm dev
 ```
 
-The application will automatically start on an available port (3000, 3001, etc.) and display the URL in the console.
+The application will automatically start on an available port. If port 3000 is busy, it will find the next available port (3001-3010).
+
+**Port Detection Feature:**
+
+- 🚀 **Automatic**: No more "port already in use" errors
+- 🔍 **Smart Detection**: Checks ports 3000-3010 automatically
+- 📡 **Clear Output**: Shows which port is being used in the console
+- 🎯 **Multiple Instances**: Run multiple development servers simultaneously
 
 ## 📁 Project Structure
 
@@ -183,9 +197,12 @@ All core MVP features have been successfully implemented:
 ### Development Commands
 
 ```bash
-pnpm dev          # Start development server with hot reload
+pnpm dev          # Start dev server with automatic port detection
+pnpm dev:turbo    # Start dev server with Turbo mode and port detection
+pnpm dev:fixed    # Start dev server on port 3000 (no fallback)
 pnpm build        # Build production application
-pnpm start        # Start production server
+pnpm start        # Start production server with port detection
+pnpm start:fixed  # Start production server on port 3000 (no fallback)
 ```
 
 ### Code Quality Commands

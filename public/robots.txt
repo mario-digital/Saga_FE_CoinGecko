@@ -1,0 +1,12 @@
+# Robots.txt for Saga FE Coin Gecko
+# Allow all web crawlers to access all content
+
+User-agent: *
+Allow: /
+Disallow: /api/
+
+# Sitemap location (if you have one)
+# Sitemap: https://yourdomain.com/sitemap.xml
+
+# Crawl-delay for respectful crawling
+Crawl-delay: 1

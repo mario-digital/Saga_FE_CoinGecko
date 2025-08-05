@@ -2,11 +2,20 @@
  * Service Worker for offline capability and performance optimization
  */
 
-const CACHE_NAME = 'crypto-market-v1';
-const API_CACHE_NAME = 'crypto-api-v1';
+const CACHE_NAME = 'crypto-market-v2';
+const API_CACHE_NAME = 'crypto-api-v2';
+const RUNTIME_CACHE = 'runtime-cache-v1';
 
-// Static assets to cache
-const STATIC_ASSETS = ['/', '/images/placeholder-coin.svg'];
+// Static assets to cache immediately
+const STATIC_ASSETS = [
+  '/',
+  '/manifest.json',
+  '/robots.txt',
+  '/images/placeholder-coin.svg',
+];
+
+// Cache API responses for 2 minutes (faster updates)
+const API_CACHE_MAX_AGE = 2 * 60 * 1000;
 
 // Install event - cache static assets
 self.addEventListener('install', event => {
@@ -39,22 +48,42 @@ self.addEventListener('fetch', event => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // Handle API requests
+  // Handle API requests with stale-while-revalidate strategy
   if (url.pathname.startsWith('/api/')) {
     event.respondWith(
-      caches.open(API_CACHE_NAME).then(cache => {
-        return fetch(request)
-          .then(response => {
-            // Cache successful API responses
-            if (response.status === 200) {
-              cache.put(request, response.clone());
-            }
-            return response;
-          })
-          .catch(() => {
-            // Return cached API response if network fails
-            return cache.match(request);
-          });
+      caches.open(API_CACHE_NAME).then(async cache => {
+        const cachedResponse = await cache.match(request);
+
+        // Fetch fresh data in the background
+        const fetchPromise = fetch(request).then(response => {
+          if (response.status === 200) {
+            cache.put(request, response.clone());
+          }
+          return response;
+        });
+
+        // Return cached response immediately if available
+        if (cachedResponse) {
+          const cacheTime = cachedResponse.headers.get('sw-cache-time');
+          const age = cacheTime ? Date.now() - parseInt(cacheTime) : Infinity;
+
+          // If cache is fresh enough, return it
+          if (age < API_CACHE_MAX_AGE) {
+            return cachedResponse;
+          }
+        }
+
+        // Wait for network response
+        return fetchPromise.catch(() => {
+          // If network fails and we have cache, use it
+          return (
+            cachedResponse ||
+            new Response('{"error": "Offline"}', {
+              status: 503,
+              headers: { 'Content-Type': 'application/json' },
+            })
+          );
+        });
       })
     );
     return;
