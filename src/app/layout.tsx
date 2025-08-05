@@ -26,7 +26,6 @@ export const metadata = {
     'market data',
     'crypto prices',
   ],
-  manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
@@ -49,14 +48,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors flex flex-col">
+        <div className="min-h-screen bg-background transition-colors flex flex-col">
           <Header />
 
-          <main className="bg-gray-50 dark:bg-gray-900 flex-1 pb-16 sm:pb-0">
-            {children}
-          </main>
+          <main className="bg-background flex-1 pb-16 sm:pb-0">{children}</main>
 
-          <footer className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-auto mb-16 sm:mb-0">
+          <footer className="bg-white/80 dark:bg-gray-800 backdrop-blur-sm border-t border-gray-200/50 dark:border-gray-700 mt-auto mb-16 sm:mb-0">
             <div className="container py-6">
               <p className="text-center text-gray-600 dark:text-gray-400 text-sm">
                 Powered by CoinGecko API • Built with Next.js 15 & React 19

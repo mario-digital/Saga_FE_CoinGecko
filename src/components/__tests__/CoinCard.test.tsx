@@ -164,8 +164,8 @@ describe('CoinCard', () => {
 
     const card = screen.getByRole('button');
     expect(card).toHaveClass('rounded-xl', 'sm:rounded-2xl');
-    expect(card).toHaveClass('shadow-sm');
-    expect(card).toHaveClass('hover:shadow-md');
+    expect(card).toHaveClass('shadow-md');
+    expect(card).toHaveClass('hover:shadow-xl');
   });
 
   it('formats large numbers correctly', () => {

@@ -163,8 +163,8 @@ describe('Header', () => {
 
     const searchButton = screen.getByText('Search coins...');
     expect(searchButton).toHaveClass(
-      'hover:bg-gray-200',
-      'hover:text-gray-700'
+      'hover:from-gray-100',
+      'hover:text-gray-800'
     );
   });
 

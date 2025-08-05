@@ -31,11 +31,15 @@ export const CoinCard: React.FC<CoinCardProps> = ({
   return (
     <div
       className={cn(
-        'bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl shadow-sm hover:shadow-md dark:shadow-none dark:border dark:border-gray-700',
+        'bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl',
+        'shadow-md shadow-gray-200/60 hover:shadow-xl hover:shadow-gray-300/60',
+        'dark:shadow-none dark:border dark:border-gray-700',
+        'border border-gray-100 dark:border-gray-700',
         'transition-all duration-200 cursor-pointer',
         'p-3 sm:p-4', // Responsive padding
         'min-h-[120px] sm:min-h-[140px]', // Ensure touch target height
         'hover:scale-[1.02] active:scale-[0.98]',
+        'hover:bg-gradient-to-br hover:from-white hover:to-blue-50/30 dark:hover:from-gray-800 dark:hover:to-gray-800',
         'select-none', // Prevent text selection on touch
         '-webkit-tap-highlight-color-transparent', // Remove tap highlight
         'prevent-layout-shift coin-card-container',
@@ -81,7 +85,7 @@ export const CoinCard: React.FC<CoinCardProps> = ({
         </div>
 
         {coin.market_cap_rank && (
-          <span className="text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-2 py-1 rounded-full flex-shrink-0 ml-2">
+          <span className="text-xs bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 text-blue-700 dark:text-blue-300 font-semibold px-2.5 py-1 rounded-full flex-shrink-0 ml-2 border border-blue-100 dark:border-blue-800/50 shadow-sm">
             #{coin.market_cap_rank}
           </span>
         )}

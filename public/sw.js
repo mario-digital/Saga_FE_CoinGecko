@@ -6,7 +6,7 @@ const CACHE_NAME = 'crypto-market-v1';
 const API_CACHE_NAME = 'crypto-api-v1';
 
 // Static assets to cache
-const STATIC_ASSETS = ['/', '/manifest.json', '/images/placeholder-coin.svg'];
+const STATIC_ASSETS = ['/', '/images/placeholder-coin.svg'];
 
 // Install event - cache static assets
 self.addEventListener('install', event => {
