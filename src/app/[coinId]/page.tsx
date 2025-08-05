@@ -9,6 +9,7 @@ import { CoinDetailError } from '@/components/CoinDetailError';
 import { CoinStats } from '@/components/CoinStats';
 import { PriceChanges } from '@/components/PriceChanges';
 import { CoinDescription } from '@/components/CoinDescription';
+import { PriceHistoryChart } from '@/components/PriceHistoryChart';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -93,6 +94,9 @@ export default function CoinDetailPage({ params }: CoinDetailPageProps) {
 
       {/* Market statistics */}
       <CoinStats marketData={coin.market_data} rank={coin.market_cap_rank} />
+
+      {/* Price history chart */}
+      <PriceHistoryChart coinId={coin.id} coinName={coin.name} />
 
       {/* Price changes */}
       <PriceChanges
