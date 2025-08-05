@@ -32,7 +32,7 @@ interface PriceHistoryChartProps {
 const chartConfig = {
   price: {
     label: 'Price',
-    color: 'hsl(var(--chart-1))',
+    color: '#3b82f6', // Direct color instead of CSS variable
   },
 } satisfies ChartConfig;
 
@@ -164,7 +164,7 @@ export const PriceHistoryChart: FC<PriceHistoryChartProps> = memo(
               <Line
                 type="monotone"
                 dataKey="price"
-                stroke="var(--color-price)"
+                stroke="#3b82f6"
                 strokeWidth={2}
                 dot={false}
                 activeDot={{ r: 4 }}
