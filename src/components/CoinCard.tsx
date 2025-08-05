@@ -52,9 +52,9 @@ export const CoinCard: React.FC<CoinCardProps> = ({
       }}
     >
       {/* Header with coin info */}
-      <div className="flex items-center justify-between mb-2 sm:mb-3">
-        <div className="flex items-center space-x-2 sm:space-x-3">
-          <div className="relative w-10 h-10 sm:w-12 sm:h-12">
+      <div className="flex items-center justify-between mb-2 sm:mb-3 gap-2">
+        <div className="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1">
+          <div className="relative w-10 h-10 sm:w-12 sm:h-12 flex-shrink-0">
             <Image
               src={coin.image}
               alt={`${coin.name} logo`}
@@ -68,8 +68,8 @@ export const CoinCard: React.FC<CoinCardProps> = ({
               }}
             />
           </div>
-          <div className="flex-1 min-w-0 overflow-hidden">
-            <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white truncate pr-2">
+          <div className="min-w-0 flex-1">
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white truncate">
               {coin.name}
             </h3>
             <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 uppercase">
@@ -79,7 +79,7 @@ export const CoinCard: React.FC<CoinCardProps> = ({
         </div>
 
         {coin.market_cap_rank && (
-          <span className="text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-2 py-1 rounded-full flex-shrink-0">
+          <span className="text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-2 py-1 rounded-full flex-shrink-0 ml-2">
             #{coin.market_cap_rank}
           </span>
         )}
@@ -87,13 +87,13 @@ export const CoinCard: React.FC<CoinCardProps> = ({
 
       {/* Price and change */}
       <div className="space-y-1 sm:space-y-2">
-        <div className="flex items-center justify-between">
-          <span className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
+        <div className="flex items-center justify-between gap-2">
+          <span className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white truncate">
             {safeFormatPrice(coin.current_price)}
           </span>
           <div
             className={cn(
-              'flex items-center gap-1 text-xs sm:text-sm font-medium',
+              'flex items-center gap-1 text-xs sm:text-sm font-medium flex-shrink-0',
               changeColor
             )}
           >
