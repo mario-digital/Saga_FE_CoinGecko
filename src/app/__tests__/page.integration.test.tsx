@@ -13,6 +13,44 @@ jest.mock('next/navigation', () => ({
 // Mock the useCoins hook
 jest.mock('@/hooks/useCoins');
 
+// Mock PullToRefresh component
+jest.mock('@/components/PullToRefresh', () => ({
+  PullToRefresh: ({ children }: { children: React.ReactNode }) => children,
+}));
+
+// Mock next/dynamic to avoid issues with dynamic imports in tests
+jest.mock('next/dynamic', () => ({
+  __esModule: true,
+  default: (fn: any, options?: any) => {
+    // For PullToRefresh, return a simple component that renders children
+    if (fn.toString().includes('PullToRefresh')) {
+      const Component = ({ children }: { children: React.ReactNode }) =>
+        children;
+      Component.preload = jest.fn();
+      return Component;
+    }
+    // For other components, use the regular mock
+    const Component = fn;
+    Component.preload = jest.fn();
+    return Component;
+  },
+}));
+
+// Mock window.matchMedia
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: jest.fn().mockImplementation(query => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: jest.fn(),
+    removeListener: jest.fn(),
+    addEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
+    dispatchEvent: jest.fn(),
+  })),
+});
+
 const mockPush = jest.fn();
 const mockRouter = {
   push: mockPush,
@@ -89,14 +127,19 @@ describe('HomePage Filter Integration', () => {
     });
   });
 
-  it('renders FilterMarketCap component', () => {
+  it('renders FilterMarketCap component', async () => {
     render(<HomePage />);
 
     // Check that filter radio buttons are rendered
-    expect(screen.getByLabelText('All')).toBeInTheDocument();
-    expect(screen.getByLabelText('Top 10')).toBeInTheDocument();
-    expect(screen.getByLabelText('Top 50')).toBeInTheDocument();
-    expect(screen.getByLabelText('Top 100')).toBeInTheDocument();
+    // The FilterMarketCap component should be present
+    await waitFor(() => {
+      const allRadio = screen.getByLabelText('Show all coins');
+      expect(allRadio).toBeInTheDocument();
+    });
+
+    expect(screen.getByLabelText('Show top 10 coins')).toBeInTheDocument();
+    expect(screen.getByLabelText('Show top 50 coins')).toBeInTheDocument();
+    expect(screen.getByLabelText('Show top 100 coins')).toBeInTheDocument();
   });
 
   it('displays all coins by default', () => {
