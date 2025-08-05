@@ -102,17 +102,21 @@ export default function CoinDetailPage({ params }: CoinDetailPageProps) {
       <CoinStats marketData={coin.market_data} rank={coin.market_cap_rank} />
 
       {/* Price history chart */}
-      <PriceHistoryChart coinId={coin.id} coinName={coin.name} />
+      <div className="mb-6 sm:mb-8">
+        <PriceHistoryChart coinId={coin.id} coinName={coin.name} />
+      </div>
 
       {/* Price changes */}
-      <PriceChanges
-        priceChanges={{
-          '24h': coin.market_data.price_change_percentage_24h,
-          '7d': coin.market_data.price_change_percentage_7d,
-          '30d': coin.market_data.price_change_percentage_30d,
-          '1y': coin.market_data.price_change_percentage_1y,
-        }}
-      />
+      <div className="mb-6 sm:mb-8">
+        <PriceChanges
+          priceChanges={{
+            '24h': coin.market_data.price_change_percentage_24h,
+            '7d': coin.market_data.price_change_percentage_7d,
+            '30d': coin.market_data.price_change_percentage_30d,
+            '1y': coin.market_data.price_change_percentage_1y,
+          }}
+        />
+      </div>
 
       {/* Description and links */}
       <CoinDescription

@@ -68,8 +68,8 @@ export const CoinCard: React.FC<CoinCardProps> = ({
               }}
             />
           </div>
-          <div className="flex-1 min-w-0">
-            <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white truncate">
+          <div className="flex-1 min-w-0 overflow-hidden">
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white truncate pr-2">
               {coin.name}
             </h3>
             <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 uppercase">
@@ -107,17 +107,21 @@ export const CoinCard: React.FC<CoinCardProps> = ({
         </div>
 
         {/* Market Cap */}
-        <div className="flex items-center justify-between text-xs sm:text-sm">
-          <span className="text-gray-600 dark:text-gray-400">Market Cap</span>
-          <span className="font-medium text-gray-700 dark:text-gray-300">
+        <div className="flex items-center justify-between text-xs sm:text-sm gap-2">
+          <span className="text-gray-600 dark:text-gray-400 flex-shrink-0">
+            Market Cap
+          </span>
+          <span className="font-medium text-gray-700 dark:text-gray-300 truncate">
             {safeFormatMarketCap(coin.market_cap)}
           </span>
         </div>
 
         {/* Volume */}
-        <div className="flex items-center justify-between text-xs sm:text-sm">
-          <span className="text-gray-600 dark:text-gray-400">Volume (24h)</span>
-          <span className="font-medium text-gray-700 dark:text-gray-300">
+        <div className="flex items-center justify-between text-xs sm:text-sm gap-2">
+          <span className="text-gray-600 dark:text-gray-400 flex-shrink-0">
+            Volume (24h)
+          </span>
+          <span className="font-medium text-gray-700 dark:text-gray-300 truncate">
             {safeFormatMarketCap(coin.total_volume)}
           </span>
         </div>
