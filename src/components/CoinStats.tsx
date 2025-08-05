@@ -40,15 +40,17 @@ interface StatCardProps {
 }
 
 const StatCard: FC<StatCardProps> = ({ title, value, description, icon }) => (
-  <Card>
+  <Card className="h-full">
     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-      <CardTitle className="text-sm font-medium">{title}</CardTitle>
-      {icon}
+      <CardTitle className="text-xs sm:text-sm font-medium">{title}</CardTitle>
+      <div className="text-muted-foreground">{icon}</div>
     </CardHeader>
     <CardContent>
-      <div className="text-2xl font-bold">{value}</div>
+      <div className="text-lg sm:text-xl lg:text-2xl font-bold truncate">
+        {value}
+      </div>
       {description && (
-        <CardDescription className="text-xs mt-1">
+        <CardDescription className="text-xs mt-1 line-clamp-2">
           {description}
         </CardDescription>
       )}
@@ -73,32 +75,32 @@ export const CoinStats: FC<CoinStatsProps> = ({ marketData, rank }) => {
   const atlChangePercent = ((currentPrice - atlPrice) / atlPrice) * 100;
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-6 sm:mb-8">
       <StatCard
         title="Market Cap"
         value={formatCurrency(marketCap)}
         description={`Rank #${rank}`}
-        icon={<DollarSign className="h-4 w-4 text-muted-foreground" />}
+        icon={<DollarSign className="h-4 w-4" />}
       />
 
       <StatCard
-        title="24h Trading Volume"
+        title="24h Volume"
         value={formatCurrency(volume24h)}
-        description={`${((volume24h / marketCap) * 100).toFixed(2)}% of market cap`}
-        icon={<BarChart3 className="h-4 w-4 text-muted-foreground" />}
+        description={`${((volume24h / marketCap) * 100).toFixed(2)}% of cap`}
+        icon={<BarChart3 className="h-4 w-4" />}
       />
 
       <StatCard
-        title="Circulating Supply"
+        title="Circulating"
         value={formatLargeNumber(circulatingSupply)}
         description={
           maxSupply
-            ? `${((circulatingSupply / maxSupply) * 100).toFixed(1)}% of max supply`
+            ? `${((circulatingSupply / maxSupply) * 100).toFixed(1)}% of max`
             : totalSupply
-              ? `${((circulatingSupply / totalSupply) * 100).toFixed(1)}% of total supply`
+              ? `${((circulatingSupply / totalSupply) * 100).toFixed(1)}% of total`
               : undefined
         }
-        icon={<Coins className="h-4 w-4 text-muted-foreground" />}
+        icon={<Coins className="h-4 w-4" />}
       />
 
       <StatCard
@@ -120,10 +122,10 @@ export const CoinStats: FC<CoinStatsProps> = ({ marketData, rank }) => {
         value={maxSupply ? formatLargeNumber(maxSupply) : 'No Limit'}
         description={
           maxSupply
-            ? `${formatLargeNumber(maxSupply - circulatingSupply)} remaining`
-            : 'Unlimited supply'
+            ? `${formatLargeNumber(maxSupply - circulatingSupply)} left`
+            : 'Unlimited'
         }
-        icon={<Trophy className="h-4 w-4 text-muted-foreground" />}
+        icon={<Trophy className="h-4 w-4" />}
       />
     </div>
   );

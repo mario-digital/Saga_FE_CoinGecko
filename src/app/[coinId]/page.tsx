@@ -64,9 +64,9 @@ export default function CoinDetailPage({ params }: CoinDetailPageProps) {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="max-w-6xl mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8">
       {/* Navigation */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4 sm:mb-6">
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
@@ -81,10 +81,16 @@ export default function CoinDetailPage({ params }: CoinDetailPageProps) {
           </BreadcrumbList>
         </Breadcrumb>
 
-        <Button variant="ghost" size="sm" asChild>
+        <Button
+          variant="ghost"
+          size="sm"
+          asChild
+          className="self-end sm:self-auto"
+        >
           <Link href="/" className="gap-2">
             <ArrowLeft className="w-4 h-4" />
-            Back to List
+            <span className="hidden sm:inline">Back to List</span>
+            <span className="sm:hidden">Back</span>
           </Link>
         </Button>
       </div>

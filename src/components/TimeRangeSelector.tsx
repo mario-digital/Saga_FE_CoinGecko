@@ -34,14 +34,14 @@ export const TimeRangeSelector: FC<TimeRangeSelectorProps> = ({
       type="single"
       value={value}
       onValueChange={handleValueChange}
-      className="justify-start"
+      className="justify-start gap-1 sm:gap-2"
     >
       {timeRangeOptions.map(option => (
         <ToggleGroupItem
           key={option.value}
           value={option.value}
           aria-label={`Select ${option.label} time range`}
-          className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+          className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-1.5"
         >
           {option.label}
         </ToggleGroupItem>

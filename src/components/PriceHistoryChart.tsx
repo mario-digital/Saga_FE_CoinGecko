@@ -110,15 +110,18 @@ export const PriceHistoryChart: FC<PriceHistoryChartProps> = memo(
             <TimeRangeSelector value={timeRange} onChange={setTimeRange} />
           </div>
         </CardHeader>
-        <CardContent>
-          <ChartContainer config={chartConfig} className="h-[350px] w-full">
+        <CardContent className="p-3 sm:p-6">
+          <ChartContainer
+            config={chartConfig}
+            className="h-[250px] sm:h-[350px] w-full"
+          >
             <LineChart
               data={data}
               margin={{
                 top: 5,
-                right: 10,
+                right: 5,
                 bottom: 5,
-                left: 10,
+                left: 5,
               }}
             >
               <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />

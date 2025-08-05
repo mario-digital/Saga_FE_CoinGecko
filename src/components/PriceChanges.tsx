@@ -41,16 +41,18 @@ const PriceChangeItem: FC<PriceChangeItemProps> = ({
   const Icon = isPositive ? TrendingUp : isNeutral ? Minus : TrendingDown;
 
   return (
-    <div className="flex flex-col items-center p-4 rounded-lg bg-gray-50 dark:bg-gray-800/50">
-      <span className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+    <div className="flex flex-col items-center p-3 sm:p-4 rounded-lg bg-gray-50 dark:bg-gray-800/50">
+      <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-1 sm:mb-2">
         {label}
       </span>
-      <div className={`flex items-center gap-2 ${colorClass}`}>
-        <Icon className="w-5 h-5" />
-        <span className="text-2xl font-bold">{formatPercentage(value)}</span>
+      <div className={`flex items-center gap-1 sm:gap-2 ${colorClass}`}>
+        <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
+        <span className="text-lg sm:text-xl lg:text-2xl font-bold">
+          {formatPercentage(value)}
+        </span>
       </div>
       {description && (
-        <span className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+        <span className="text-xs text-gray-500 dark:text-gray-500 mt-1 hidden sm:block">
           {description}
         </span>
       )}
@@ -94,7 +96,7 @@ export const PriceChanges: FC<PriceChangesProps> = ({ priceChanges }) => {
         </div>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
           <PriceChangeItem
             label="24 Hours"
             value={priceChanges['24h']}
