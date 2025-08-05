@@ -3,7 +3,9 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { CoinCard } from '@/components/CoinCard';
+import { SwipeableCoinCard } from '@/components/SwipeableCoinCard';
 import { CoinCardSkeleton } from '@/components/CoinCardSkeleton';
+import { CoinCardSkeletonAnimated } from '@/components/CoinCardSkeletonAnimated';
 import { Pagination } from '@/components/Pagination';
 import { PullToRefresh } from '@/components/PullToRefresh';
 import FilterMarketCap from '@/components/FilterMarketCap';
@@ -16,6 +18,18 @@ function HomePageContent() {
   const searchParams = useSearchParams();
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [filter, setFilter] = useState<string>('all');
+  const [isMobile, setIsMobile] = useState<boolean>(false);
+
+  // Check if device is mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 640); // sm breakpoint
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Initialize filter and page from URL on mount
   useEffect(() => {
@@ -116,9 +130,13 @@ function HomePageContent() {
         {/* Loading State */}
         {isLoading && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
-            {Array.from({ length: DEFAULT_PER_PAGE }).map((_, index) => (
-              <CoinCardSkeleton key={index} />
-            ))}
+            {Array.from({ length: DEFAULT_PER_PAGE }).map((_, index) =>
+              isMobile ? (
+                <CoinCardSkeletonAnimated key={index} />
+              ) : (
+                <CoinCardSkeleton key={index} />
+              )
+            )}
           </div>
         )}
 
@@ -126,14 +144,23 @@ function HomePageContent() {
         {!isLoading && filteredCoins && filteredCoins.length > 0 && (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
-              {filteredCoins.map(coin => (
-                <CoinCard
-                  key={coin.id}
-                  coin={coin}
-                  onClick={handleCoinClick}
-                  className=""
-                />
-              ))}
+              {filteredCoins.map(coin =>
+                isMobile ? (
+                  <SwipeableCoinCard
+                    key={coin.id}
+                    coin={coin}
+                    onClick={handleCoinClick}
+                    className=""
+                  />
+                ) : (
+                  <CoinCard
+                    key={coin.id}
+                    coin={coin}
+                    onClick={handleCoinClick}
+                    className=""
+                  />
+                )
+              )}
             </div>
 
             {/* Pagination */}
@@ -183,14 +210,30 @@ function HomePageContent() {
 }
 
 export default function HomePage() {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   return (
     <Suspense
       fallback={
         <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8 space-y-4 sm:space-y-6 lg:space-y-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
-            {Array.from({ length: DEFAULT_PER_PAGE }).map((_, index) => (
-              <CoinCardSkeleton key={index} />
-            ))}
+            {Array.from({ length: DEFAULT_PER_PAGE }).map((_, index) =>
+              isMobile ? (
+                <CoinCardSkeletonAnimated key={index} />
+              ) : (
+                <CoinCardSkeleton key={index} />
+              )
+            )}
           </div>
         </div>
       }

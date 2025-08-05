@@ -185,6 +185,40 @@
     line-height: var(--line-height-relaxed);
   }
 
+  /* Shimmer animation for loading placeholders */
+  @keyframes shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
+  }
+
+  .animate-shimmer {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.1) 20%,
+      rgba(255, 255, 255, 0.2) 50%,
+      rgba(255, 255, 255, 0.1) 80%,
+      transparent 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
+  }
+
+  .dark .animate-shimmer {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.05) 20%,
+      rgba(255, 255, 255, 0.1) 50%,
+      rgba(255, 255, 255, 0.05) 80%,
+      transparent 100%
+    );
+  }
+
   /* Accessibility - Reduced motion support */
   @media (prefers-reduced-motion: reduce) {
     .hover\:scale-\[1\.02\]:hover {
@@ -200,6 +234,9 @@
       animation: none;
     }
     .animate-spin {
+      animation: none;
+    }
+    .animate-shimmer {
       animation: none;
     }
   }

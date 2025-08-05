@@ -236,7 +236,7 @@ describe('Pagination', () => {
     );
 
     const currentPageButton = screen.getByLabelText('Page 3');
-    expect(currentPageButton).toHaveClass('bg-primary-600');
+    expect(currentPageButton).toHaveClass('bg-primary');
     expect(currentPageButton).toHaveClass('text-white');
   });
 

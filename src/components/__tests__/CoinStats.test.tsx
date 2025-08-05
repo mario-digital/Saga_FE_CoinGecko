@@ -27,8 +27,8 @@ describe('CoinStats', () => {
     render(<CoinStats marketData={mockMarketData} rank={1} />);
 
     expect(screen.getByText('Market Cap')).toBeInTheDocument();
-    expect(screen.getByText('24h Trading Volume')).toBeInTheDocument();
-    expect(screen.getByText('Circulating Supply')).toBeInTheDocument();
+    expect(screen.getByText('24h Volume')).toBeInTheDocument();
+    expect(screen.getByText('Circulating')).toBeInTheDocument();
     expect(screen.getByText('All-Time High')).toBeInTheDocument();
     expect(screen.getByText('All-Time Low')).toBeInTheDocument();
     expect(screen.getByText('Max Supply')).toBeInTheDocument();
@@ -45,14 +45,14 @@ describe('CoinStats', () => {
     render(<CoinStats marketData={mockMarketData} rank={1} />);
 
     expect(screen.getByText('$25,000,000,000.00')).toBeInTheDocument();
-    expect(screen.getByText('2.78% of market cap')).toBeInTheDocument();
+    expect(screen.getByText('2.78% of cap')).toBeInTheDocument();
   });
 
   it('displays circulating supply with percentage', () => {
     render(<CoinStats marketData={mockMarketData} rank={1} />);
 
     expect(screen.getByText('19.50M')).toBeInTheDocument();
-    expect(screen.getByText('92.9% of max supply')).toBeInTheDocument();
+    expect(screen.getByText('92.9% of max')).toBeInTheDocument();
   });
 
   it('handles no max supply', () => {
@@ -64,7 +64,7 @@ describe('CoinStats', () => {
     render(<CoinStats marketData={noMaxSupplyData} rank={1} />);
 
     expect(screen.getByText('No Limit')).toBeInTheDocument();
-    expect(screen.getByText('Unlimited supply')).toBeInTheDocument();
+    expect(screen.getByText('Unlimited')).toBeInTheDocument();
   });
 
   it('displays all-time high with date and change', () => {
@@ -83,7 +83,7 @@ describe('CoinStats', () => {
     // Date might vary due to timezone, so check for year at least
     expect(screen.getByText(/2013/)).toBeInTheDocument();
     // Check for the percentage change pattern
-    expect(screen.getByText(/\+\+66261\.89%/)).toBeInTheDocument();
+    expect(screen.getByText(/\+66261\.89%/)).toBeInTheDocument();
   });
 
   it('formats large numbers correctly', () => {
@@ -110,6 +110,6 @@ describe('CoinStats', () => {
 
     render(<CoinStats marketData={edgeCaseData} rank={1} />);
 
-    expect(screen.getByText('78.0% of total supply')).toBeInTheDocument();
+    expect(screen.getByText('78.0% of total')).toBeInTheDocument();
   });
 });

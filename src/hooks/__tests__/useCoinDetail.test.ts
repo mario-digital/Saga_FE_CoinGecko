@@ -113,7 +113,10 @@ describe('useCoinDetail', () => {
 
     expect(result.current.isLoading).toBe(false);
     expect(result.current.coin).toBeUndefined();
-    expect(result.current.error).toEqual(error404);
+    expect(result.current.error).toBeInstanceOf(CoinNotFoundError);
+    expect(result.current.error?.message).toBe(
+      'Coin with ID "invalid-coin" not found'
+    );
   });
 
   it('returns network error for other errors', () => {
@@ -129,7 +132,27 @@ describe('useCoinDetail', () => {
 
     expect(result.current.isLoading).toBe(false);
     expect(result.current.coin).toBeUndefined();
-    expect(result.current.error).toEqual(networkError);
+    expect(result.current.error).toBeInstanceOf(NetworkError);
+    expect(result.current.error?.message).toBe('Network Error');
+  });
+
+  it('returns rate limit error for 429 response', () => {
+    const rateLimitError = new ApiError('Too Many Requests', 429);
+    mockUseSWR.mockReturnValue({
+      data: undefined,
+      error: rateLimitError,
+      isLoading: false,
+      mutate: jest.fn(),
+    } as any);
+
+    const { result } = renderHook(() => useCoinDetail('bitcoin'));
+
+    expect(result.current.isLoading).toBe(false);
+    expect(result.current.coin).toBeUndefined();
+    expect(result.current.error).toBeInstanceOf(NetworkError);
+    expect(result.current.error?.message).toBe(
+      'Rate limit exceeded. Please try again later.'
+    );
   });
 
   it('calls mutate when retry is called', () => {
