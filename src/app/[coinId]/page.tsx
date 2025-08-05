@@ -6,6 +6,9 @@ import { useCoinDetail } from '@/hooks/useCoinDetail';
 import { CoinDetailHeader } from '@/components/CoinDetailHeader';
 import { CoinDetailSkeleton } from '@/components/CoinDetailSkeleton';
 import { CoinDetailError } from '@/components/CoinDetailError';
+import { CoinStats } from '@/components/CoinStats';
+import { PriceChanges } from '@/components/PriceChanges';
+import { CoinDescription } from '@/components/CoinDescription';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -69,9 +72,25 @@ export default function CoinDetailPage({ params }: CoinDetailPageProps) {
       {/* Header with coin info */}
       <CoinDetailHeader coin={coin} />
 
-      {/* TODO: Add CoinStats component */}
-      {/* TODO: Add PriceChanges component */}
-      {/* TODO: Add CoinDescription component */}
+      {/* Market statistics */}
+      <CoinStats marketData={coin.market_data} rank={coin.market_cap_rank} />
+
+      {/* Price changes */}
+      <PriceChanges
+        priceChanges={{
+          '24h': coin.market_data.price_change_percentage_24h,
+          '7d': coin.market_data.price_change_percentage_7d,
+          '30d': coin.market_data.price_change_percentage_30d,
+          '1y': coin.market_data.price_change_percentage_1y,
+        }}
+      />
+
+      {/* Description and links */}
+      <CoinDescription
+        description={coin.description.en}
+        links={coin.links}
+        categories={coin.categories}
+      />
     </div>
   );
 }
