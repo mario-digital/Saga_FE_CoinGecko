@@ -80,7 +80,13 @@ describe('FilterMarketCap', () => {
       name: 'Filter coins by market cap',
     });
 
-    expect(toggleGroup).toHaveClass('flex-col', 'sm:flex-row');
+    expect(toggleGroup).toHaveClass(
+      'justify-start',
+      'flex-wrap',
+      'sm:flex-nowrap',
+      'gap-2',
+      'sm:gap-3'
+    );
   });
 
   it('does not call onChange when clicking already active filter', async () => {

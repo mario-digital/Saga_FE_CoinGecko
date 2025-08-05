@@ -3,9 +3,8 @@
  */
 
 import useSWR from 'swr';
-import { CoinData, CoinsMarketsParams } from '@/types/coingecko';
+import { CoinData } from '@/types/coingecko';
 import { fetcher } from '@/lib/fetcher';
-import { buildCoinsMarketsUrl } from '@/lib/api';
 import { SWR_CONFIG } from '@/lib/constants';
 
 interface UseCoinsReturn {
@@ -17,14 +16,10 @@ interface UseCoinsReturn {
 
 export const useCoins = (
   page: number = 1,
-  perPage: number = 50,
-  params: Partial<CoinsMarketsParams> = {}
+  perPage: number = 50
 ): UseCoinsReturn => {
-  const url = buildCoinsMarketsUrl({
-    page,
-    per_page: perPage,
-    ...params,
-  });
+  // Use our API route instead of direct CoinGecko API
+  const url = `/api/coins?page=${page}&per_page=${perPage}`;
 
   const { data, error, isLoading, mutate } = useSWR<CoinData[]>(
     url,

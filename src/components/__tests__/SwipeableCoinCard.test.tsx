@@ -46,7 +46,7 @@ describe('SwipeableCoinCard', () => {
     render(<SwipeableCoinCard coin={mockCoinData[0]} onClick={mockOnClick} />);
 
     expect(screen.getByText('Bitcoin')).toBeInTheDocument();
-    expect(screen.getByText('BTC')).toBeInTheDocument();
+    expect(screen.getByText('btc')).toBeInTheDocument();
     expect(screen.getByText('#1')).toBeInTheDocument();
     expect(screen.getByText('$45,000.00')).toBeInTheDocument();
     expect(screen.getByText('2.50%')).toBeInTheDocument();
@@ -70,8 +70,9 @@ describe('SwipeableCoinCard', () => {
   it('handles click events', () => {
     render(<SwipeableCoinCard coin={mockCoinData[0]} onClick={mockOnClick} />);
 
-    const card = screen.getByRole('button');
-    fireEvent.click(card);
+    // Click on the coin name to trigger navigation
+    const coinName = screen.getByText('Bitcoin');
+    fireEvent.click(coinName);
 
     expect(mockOnClick).toHaveBeenCalledWith('bitcoin');
   });
@@ -79,7 +80,7 @@ describe('SwipeableCoinCard', () => {
   it('handles keyboard navigation', () => {
     render(<SwipeableCoinCard coin={mockCoinData[0]} onClick={mockOnClick} />);
 
-    const card = screen.getByRole('button');
+    const card = screen.getByText('Bitcoin').closest('div[role="button"]')!;
 
     // Test Enter key
     fireEvent.keyDown(card, { key: 'Enter', code: 'Enter' });
@@ -95,7 +96,7 @@ describe('SwipeableCoinCard', () => {
   it('handles touch events for swipe gestures', () => {
     render(<SwipeableCoinCard coin={mockCoinData[0]} onClick={mockOnClick} />);
 
-    const card = screen.getByRole('button').parentElement!.parentElement!;
+    const card = screen.getByText('Bitcoin').closest('div')!.parentElement!;
 
     // Simulate swipe left
     fireEvent.touchStart(card, {
@@ -115,7 +116,7 @@ describe('SwipeableCoinCard', () => {
   it('shows additional coin details in swipe view', () => {
     render(<SwipeableCoinCard coin={mockCoinData[0]} onClick={mockOnClick} />);
 
-    const card = screen.getByRole('button').parentElement!.parentElement!;
+    const card = screen.getByText('Bitcoin').closest('div')!.parentElement!;
 
     // Simulate swipe left to reveal details
     fireEvent.touchStart(card, {
@@ -149,7 +150,7 @@ describe('SwipeableCoinCard', () => {
       <SwipeableCoinCard coin={coinWithLargeNumbers} onClick={mockOnClick} />
     );
 
-    const card = screen.getByRole('button').parentElement!.parentElement!;
+    const card = screen.getByText('Bitcoin').closest('div')!.parentElement!;
 
     // Swipe to reveal details
     fireEvent.touchStart(card, {
@@ -179,7 +180,7 @@ describe('SwipeableCoinCard', () => {
       <SwipeableCoinCard coin={coinWithMissingData} onClick={mockOnClick} />
     );
 
-    const card = screen.getByRole('button').parentElement!.parentElement!;
+    const card = screen.getByText('Bitcoin').closest('div')!.parentElement!;
 
     // Swipe to reveal details
     fireEvent.touchStart(card, {
@@ -201,7 +202,7 @@ describe('SwipeableCoinCard', () => {
       <SwipeableCoinCard coin={mockCoinData[0]} onClick={mockOnClick} />
     );
 
-    let changeElement = screen.getByText('2.50%').parentElement;
+    let changeElement = screen.getByText('2.50%').closest('div');
     expect(changeElement).toHaveClass('text-success');
 
     // Negative change
@@ -214,14 +215,14 @@ describe('SwipeableCoinCard', () => {
       <SwipeableCoinCard coin={negativeChangeCoin} onClick={mockOnClick} />
     );
 
-    changeElement = screen.getByText('5.25%').parentElement;
+    changeElement = screen.getByText('5.25%').closest('div');
     expect(changeElement).toHaveClass('text-danger');
   });
 
   it('does not trigger click when swiping', () => {
     render(<SwipeableCoinCard coin={mockCoinData[0]} onClick={mockOnClick} />);
 
-    const card = screen.getByRole('button');
+    const card = screen.getByText('Bitcoin').closest('div[role="button"]')!;
 
     // Start swipe
     fireEvent.touchStart(card.parentElement!.parentElement!, {

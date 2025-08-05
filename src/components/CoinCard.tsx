@@ -38,6 +38,7 @@ export const CoinCard: React.FC<CoinCardProps> = ({
         'hover:scale-[1.02] active:scale-[0.98]',
         'select-none', // Prevent text selection on touch
         '-webkit-tap-highlight-color-transparent', // Remove tap highlight
+        'prevent-layout-shift coin-card-container',
         className
       )}
       onClick={handleClick}
@@ -54,13 +55,14 @@ export const CoinCard: React.FC<CoinCardProps> = ({
       {/* Header with coin info */}
       <div className="flex items-center justify-between mb-2 sm:mb-3 gap-2">
         <div className="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1">
-          <div className="relative w-10 h-10 sm:w-12 sm:h-12 flex-shrink-0">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 flex-shrink-0">
             <Image
               src={coin.image}
               alt={`${coin.name} logo`}
-              fill
+              width={48}
+              height={48}
               sizes="(max-width: 640px) 40px, 48px"
-              className="rounded-full object-cover"
+              className="rounded-full object-cover w-full h-full"
               loading="lazy"
               onError={e => {
                 const target = e.target as HTMLImageElement;

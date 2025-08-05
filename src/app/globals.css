@@ -241,3 +241,22 @@
     }
   }
 }
+
+/* Prevent layout shift */
+@layer utilities {
+  .prevent-layout-shift {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 120px;
+  }
+
+  /* Ensure consistent card heights */
+  .coin-card-container {
+    contain: layout style;
+  }
+
+  /* Optimize rendering */
+  .gpu-accelerated {
+    transform: translateZ(0);
+    will-change: transform;
+  }
+}

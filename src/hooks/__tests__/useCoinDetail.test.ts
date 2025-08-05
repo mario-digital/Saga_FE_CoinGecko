@@ -198,8 +198,7 @@ describe('useCoinDetail', () => {
 
     renderHook(() => useCoinDetail('bitcoin'));
 
-    const expectedUrl =
-      '/coins/bitcoin?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false';
+    const expectedUrl = '/api/coins/bitcoin';
     expect(mockUseSWR).toHaveBeenCalledWith(
       expectedUrl,
       expect.any(Function),

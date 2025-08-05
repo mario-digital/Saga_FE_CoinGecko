@@ -28,17 +28,9 @@ interface UseCoinDetailReturn {
 }
 
 export const useCoinDetail = (coinId: string): UseCoinDetailReturn => {
-  const queryParams = new URLSearchParams({
-    localization: 'false',
-    tickers: 'false',
-    market_data: 'true',
-    community_data: 'false',
-    developer_data: 'false',
-    sparkline: 'false',
-  });
-
+  // Use our API route instead of direct CoinGecko API
   const { data, error, isLoading, mutate } = useSWR<CoinDetailData>(
-    coinId ? `/coins/${coinId}?${queryParams.toString()}` : null,
+    coinId ? `/api/coins/${coinId}` : null,
     fetcher,
     {
       revalidateOnFocus: false,

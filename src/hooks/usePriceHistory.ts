@@ -4,7 +4,7 @@
 
 import useSWR from 'swr';
 import { fetcher, ApiError } from '@/lib/fetcher';
-import { API_BASE_URL, SWR_CONFIG } from '@/lib/constants';
+import { SWR_CONFIG } from '@/lib/constants';
 
 export type TimeRange = '24h' | '7d' | '30d' | '90d' | '1y';
 
@@ -80,13 +80,8 @@ export const usePriceHistory = (
   timeRange: TimeRange
 ): UsePriceHistoryReturn => {
   const days = timeRangeToDays[timeRange];
-  const endpoint = `${API_BASE_URL}/coins/${coinId}/market_chart`;
-  const params = new URLSearchParams({
-    vs_currency: 'usd',
-    days: days.toString(),
-  });
-
-  const url = `${endpoint}?${params.toString()}`;
+  // Use our API route instead of direct CoinGecko API
+  const url = `/api/coins/${coinId}/history?days=${days}`;
 
   const { data, error, isLoading, mutate } = useSWR<MarketChartApiResponse>(
     coinId ? url : null,

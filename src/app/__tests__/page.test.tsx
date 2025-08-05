@@ -1,18 +1,22 @@
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import HomePage from '../page';
 import { useCoins } from '@/hooks/useCoins';
 import { CoinData } from '@/types/coingecko';
 
 jest.mock('next/navigation', () => ({
   useRouter: jest.fn(),
+  useSearchParams: jest.fn(),
 }));
 
 jest.mock('@/hooks/useCoins');
 
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>;
+const mockUseSearchParams = useSearchParams as jest.MockedFunction<
+  typeof useSearchParams
+>;
 const mockUseCoins = useCoins as jest.MockedFunction<typeof useCoins>;
 
 const mockCoinData: CoinData[] = [
@@ -56,6 +60,18 @@ describe('HomePage', () => {
       prefetch: jest.fn(),
     });
 
+    // Mock useSearchParams
+    mockUseSearchParams.mockReturnValue({
+      get: jest.fn(() => null),
+      getAll: jest.fn(() => []),
+      has: jest.fn(() => false),
+      keys: jest.fn(() => []),
+      values: jest.fn(() => []),
+      entries: jest.fn(() => []),
+      forEach: jest.fn(),
+      toString: jest.fn(() => ''),
+    } as any);
+
     // Mock window.scrollTo
     Object.defineProperty(window, 'scrollTo', {
       value: jest.fn(),
@@ -63,7 +79,7 @@ describe('HomePage', () => {
     });
   });
 
-  it('displays loading state initially', () => {
+  it('displays loading state initially', async () => {
     mockUseCoins.mockReturnValue({
       coins: undefined,
       isLoading: true,
@@ -73,11 +89,11 @@ describe('HomePage', () => {
 
     render(<HomePage />);
 
-    expect(
-      screen.getByText('Loading cryptocurrency data...')
-    ).toBeInTheDocument();
-    const spinner = document.querySelector('.animate-spin');
-    expect(spinner).toBeInTheDocument();
+    // Wait for skeleton loaders to appear (due to dynamic imports)
+    await waitFor(() => {
+      const skeletons = document.querySelectorAll('.animate-pulse');
+      expect(skeletons.length).toBeGreaterThan(0);
+    });
   });
 
   it('displays coins when data is loaded', async () => {
@@ -204,10 +220,8 @@ describe('HomePage', () => {
 
   it('handles page change and calls useCoins with new page', async () => {
     const user = userEvent.setup();
-    let currentPage = 1;
 
-    mockUseCoins.mockImplementation(page => {
-      currentPage = page || 1;
+    mockUseCoins.mockImplementation(() => {
       return {
         coins: mockCoinData,
         isLoading: false,
@@ -229,7 +243,7 @@ describe('HomePage', () => {
     });
   });
 
-  it('disables pagination when loading', () => {
+  it('does not show pagination when loading', () => {
     mockUseCoins.mockReturnValue({
       coins: mockCoinData,
       isLoading: true,
@@ -239,11 +253,12 @@ describe('HomePage', () => {
 
     render(<HomePage />);
 
-    const previousButton = screen.getByText('Previous');
-    const nextButton = screen.getByText('Next');
+    // Pagination should not be rendered during loading
+    const previousButton = screen.queryByText('Previous');
+    const nextButton = screen.queryByText('Next');
 
-    expect(previousButton).toBeDisabled();
-    expect(nextButton).toBeDisabled();
+    expect(previousButton).not.toBeInTheDocument();
+    expect(nextButton).not.toBeInTheDocument();
   });
 
   it('renders coins in a grid layout', () => {
@@ -278,10 +293,10 @@ describe('HomePage', () => {
     const bitcoinCard = screen
       .getByText('Bitcoin')
       .closest('div[role="button"]');
-    expect(bitcoinCard).toHaveClass('hover:scale-105', 'transition-transform');
+    expect(bitcoinCard).toHaveClass('hover:scale-[1.02]', 'transition-all');
   });
 
-  it('shows loading spinner with correct styling', () => {
+  it('shows loading skeletons with correct styling', () => {
     mockUseCoins.mockReturnValue({
       coins: undefined,
       isLoading: true,
@@ -291,12 +306,11 @@ describe('HomePage', () => {
 
     render(<HomePage />);
 
-    const spinner = document.querySelector('.animate-spin');
-    expect(spinner).toHaveClass(
-      'animate-spin',
-      'border-primary-600',
-      'border-t-transparent'
-    );
+    const skeletons = document.querySelectorAll('.animate-pulse');
+    expect(skeletons.length).toBeGreaterThan(0);
+    // Check that skeleton cards are rendered in grid
+    const grid = document.querySelector('.grid');
+    expect(grid).toBeInTheDocument();
   });
 
   it('maintains state consistency during loading transitions', async () => {
@@ -312,9 +326,10 @@ describe('HomePage', () => {
 
     const { rerender } = render(<HomePage />);
 
-    expect(
-      screen.getByText('Loading cryptocurrency data...')
-    ).toBeInTheDocument();
+    // Check for loading skeletons
+    expect(document.querySelectorAll('.animate-pulse').length).toBeGreaterThan(
+      0
+    );
 
     isLoading = false;
     rerender(<HomePage />);
@@ -323,9 +338,8 @@ describe('HomePage', () => {
       expect(screen.getByText('Bitcoin')).toBeInTheDocument();
     });
 
-    expect(
-      screen.queryByText('Loading cryptocurrency data...')
-    ).not.toBeInTheDocument();
+    // Check that loading skeletons are gone
+    expect(document.querySelectorAll('.animate-pulse').length).toBe(0);
   });
 
   it('handles undefined coins gracefully', () => {

@@ -17,16 +17,24 @@ export class ApiError extends Error {
 }
 
 export const fetcher = async (url: string): Promise<any> => {
-  const fullUrl = url.startsWith('http') ? url : `${API_BASE_URL}${url}`;
+  // If the URL starts with /api, use it as is (for our Next.js API routes)
+  // Otherwise, prepend the API base URL for external APIs
+  const fullUrl = url.startsWith('/api')
+    ? url
+    : url.startsWith('http')
+      ? url
+      : `${API_BASE_URL}${url}`;
 
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
   };
 
-  // Add API key if available
-  const apiKey = process.env.NEXT_PUBLIC_COINGECKO_API_KEY;
-  if (apiKey) {
-    headers['x-cg-demo-api-key'] = apiKey;
+  // Only add API key for direct CoinGecko calls (not our proxy routes)
+  if (!url.startsWith('/api')) {
+    const apiKey = process.env.NEXT_PUBLIC_COINGECKO_API_KEY;
+    if (apiKey) {
+      headers['x-cg-demo-api-key'] = apiKey;
+    }
   }
 
   const response = await fetch(fullUrl, {

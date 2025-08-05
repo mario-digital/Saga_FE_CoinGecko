@@ -9,7 +9,7 @@ import { CoinDetailError } from '@/components/CoinDetailError';
 import { CoinStats } from '@/components/CoinStats';
 import { PriceChanges } from '@/components/PriceChanges';
 import { CoinDescription } from '@/components/CoinDescription';
-import { PriceHistoryChart } from '@/components/PriceHistoryChart';
+import { PriceHistoryChartDynamic } from '@/components/dynamic/PriceHistoryChartDynamic';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -103,7 +103,7 @@ export default function CoinDetailPage({ params }: CoinDetailPageProps) {
 
       {/* Price history chart */}
       <div className="mb-6 sm:mb-8">
-        <PriceHistoryChart coinId={coin.id} coinName={coin.name} />
+        <PriceHistoryChartDynamic coinId={coin.id} coinName={coin.name} />
       </div>
 
       {/* Price changes */}
