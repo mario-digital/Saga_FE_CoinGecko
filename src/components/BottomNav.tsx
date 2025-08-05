@@ -5,9 +5,10 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Home, TrendingUp, Search, MoreHorizontal } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import type { Route } from 'next';
 
 interface NavItem {
-  href: string;
+  href: Route<string> | '#';
   icon: ReactNode;
   label: string;
   onClick?: () => void;
@@ -26,12 +27,12 @@ export function BottomNav({
 
   const navItems: NavItem[] = [
     {
-      href: '/',
+      href: '/' as Route<string>,
       icon: <Home className="w-5 h-5" />,
       label: 'Home',
     },
     {
-      href: '/?filter=top10',
+      href: '/?filter=top10' as Route<string>,
       icon: <TrendingUp className="w-5 h-5" />,
       label: 'Top 10',
     },
