@@ -94,17 +94,19 @@ describe('Utils', () => {
 
   describe('getPercentageChangeColor', () => {
     it('returns success color for positive changes', () => {
-      expect(getPercentageChangeColor(2.5)).toBe('text-success-600');
-      expect(getPercentageChangeColor(0.01)).toBe('text-success-600');
+      expect(getPercentageChangeColor(2.5)).toBe('text-success');
+      expect(getPercentageChangeColor(0.01)).toBe('text-success');
     });
 
     it('returns danger color for negative changes', () => {
-      expect(getPercentageChangeColor(-3.2)).toBe('text-danger-600');
-      expect(getPercentageChangeColor(-0.01)).toBe('text-danger-600');
+      expect(getPercentageChangeColor(-3.2)).toBe('text-danger');
+      expect(getPercentageChangeColor(-0.01)).toBe('text-danger');
     });
 
     it('returns gray color for zero change', () => {
-      expect(getPercentageChangeColor(0)).toBe('text-gray-600');
+      expect(getPercentageChangeColor(0)).toBe(
+        'text-gray-600 dark:text-gray-400'
+      );
     });
   });
 
