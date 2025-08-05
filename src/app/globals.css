@@ -28,6 +28,24 @@
     --success-foreground: 0 0% 100%;
     --danger: 0 84% 60%; /* #EF4444 - Red 500 */
     --danger-foreground: 0 0% 100%;
+
+    /* Responsive typography scale */
+    --font-size-xs: clamp(0.75rem, 2vw, 0.875rem);
+    --font-size-sm: clamp(0.875rem, 2.5vw, 1rem);
+    --font-size-base: clamp(1rem, 3vw, 1.125rem);
+    --font-size-lg: clamp(1.125rem, 3.5vw, 1.25rem);
+    --font-size-xl: clamp(1.25rem, 4vw, 1.5rem);
+    --font-size-2xl: clamp(1.5rem, 5vw, 2rem);
+    --font-size-3xl: clamp(1.875rem, 6vw, 2.5rem);
+    --font-size-4xl: clamp(2.25rem, 7vw, 3rem);
+    --font-size-5xl: clamp(3rem, 8vw, 4rem);
+
+    /* Responsive line heights */
+    --line-height-tight: 1.25;
+    --line-height-snug: 1.375;
+    --line-height-normal: 1.5;
+    --line-height-relaxed: 1.625;
+    --line-height-loose: 2;
   }
 
   .dark {
@@ -84,6 +102,90 @@
 }
 
 @layer utilities {
+  /* Responsive touch targets */
+  .touch-target {
+    @apply min-h-touch relative;
+  }
+
+  .touch-target::before {
+    content: '';
+    @apply absolute inset-0 -m-2;
+  }
+
+  /* Safe area padding for notched devices */
+  .safe-padding {
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
+  }
+
+  /* Prevent layout shift on scroll */
+  .scrollbar-stable {
+    scrollbar-gutter: stable;
+  }
+
+  /* Smooth momentum scrolling */
+  .momentum-scroll {
+    -webkit-overflow-scrolling: touch;
+    overflow-y: auto;
+  }
+
+  /* Disable tap highlight */
+  .no-tap-highlight {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Responsive spacing utilities */
+  .spacing-responsive {
+    @apply p-3 sm:p-4 lg:p-6;
+  }
+
+  .gap-responsive {
+    @apply gap-3 sm:gap-4 lg:gap-5;
+  }
+
+  /* Responsive text utilities */
+  .text-responsive-xs {
+    font-size: var(--font-size-xs);
+  }
+
+  .text-responsive-sm {
+    font-size: var(--font-size-sm);
+  }
+
+  .text-responsive-base {
+    font-size: var(--font-size-base);
+  }
+
+  .text-responsive-lg {
+    font-size: var(--font-size-lg);
+  }
+
+  .text-responsive-xl {
+    font-size: var(--font-size-xl);
+  }
+
+  .text-responsive-2xl {
+    font-size: var(--font-size-2xl);
+  }
+
+  .text-responsive-3xl {
+    font-size: var(--font-size-3xl);
+  }
+
+  /* Responsive line height utilities */
+  .leading-responsive-tight {
+    line-height: var(--line-height-tight);
+  }
+
+  .leading-responsive-normal {
+    line-height: var(--line-height-normal);
+  }
+
+  .leading-responsive-relaxed {
+    line-height: var(--line-height-relaxed);
+  }
+
+  /* Accessibility - Reduced motion support */
   @media (prefers-reduced-motion: reduce) {
     .hover\:scale-\[1\.02\]:hover {
       transform: none;
@@ -95,6 +197,9 @@
       transition-property: none;
     }
     .animate-pulse {
+      animation: none;
+    }
+    .animate-spin {
       animation: none;
     }
   }
