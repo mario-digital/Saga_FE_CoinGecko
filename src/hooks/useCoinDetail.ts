@@ -3,7 +3,7 @@
  */
 
 import useSWR from 'swr';
-import { fetcher, ApiError } from '@/lib/fetcher';
+import { fetcher } from '@/lib/fetcher';
 import { CoinDetailData } from '@/types/coingecko';
 
 export class CoinNotFoundError extends Error {
@@ -44,18 +44,28 @@ export const useCoinDetail = (coinId: string): UseCoinDetailReturn => {
       revalidateOnFocus: false,
       revalidateOnReconnect: true,
       dedupingInterval: 60000, // 1 minute cache
-      onError: (err: ApiError) => {
-        if (err.status === 404) {
-          throw new CoinNotFoundError(coinId);
-        }
-        throw new NetworkError(err.message);
-      },
     }
   );
 
+  // Transform error into proper error instances
+  let processedError = null;
+  if (error) {
+    if (error.status === 404) {
+      processedError = new CoinNotFoundError(coinId);
+    } else if (error.status === 429) {
+      processedError = new NetworkError(
+        'Rate limit exceeded. Please try again later.'
+      );
+    } else {
+      processedError = new NetworkError(
+        error.message || 'Failed to fetch coin data'
+      );
+    }
+  }
+
   return {
     coin: data,
-    error: error || null,
+    error: processedError,
     isLoading,
     retry: () => mutate(),
   };

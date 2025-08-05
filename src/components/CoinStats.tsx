@@ -111,7 +111,7 @@ export const CoinStats: FC<CoinStatsProps> = ({ marketData, rank }) => {
       <StatCard
         title="All-Time Low"
         value={formatCurrency(atlPrice)}
-        description={`${formatDate(atlDate)} (+${formatPercentage(atlChangePercent)})`}
+        description={`${formatDate(atlDate)} (${formatPercentage(atlChangePercent)})`}
         icon={<TrendingDown className="h-4 w-4 text-danger" />}
       />
 

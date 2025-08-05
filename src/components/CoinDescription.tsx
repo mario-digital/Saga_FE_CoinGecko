@@ -33,8 +33,25 @@ export const CoinDescription: FC<CoinDescriptionProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  // Parse and clean description HTML
-  const cleanDescription = description.replace(/<[^>]*>/g, '');
+  // Parse and clean description HTML safely
+  const cleanDescription = (() => {
+    if (typeof window === 'undefined') {
+      // Server-side: strip HTML tags as fallback
+      return description.replace(/<[^>]*>/g, '');
+    }
+
+    try {
+      // Client-side: use DOMParser for safe HTML text extraction
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(description, 'text/html');
+      // Also decode HTML entities like &amp;, &lt;, etc.
+      return doc.body.textContent || description.replace(/<[^>]*>/g, '');
+    } catch {
+      // Fallback to basic stripping if DOMParser fails
+      return description.replace(/<[^>]*>/g, '');
+    }
+  })();
+
   const isLongDescription = cleanDescription.length > 300;
   const truncatedDescription = isLongDescription
     ? cleanDescription.substring(0, 300) + '...'

@@ -5,34 +5,59 @@
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
-export const formatPrice = (
-  price: number,
-  currency: string = 'USD'
-): string => {
+/**
+ * Formats currency with proper decimal places based on value
+ * Handles both small values (crypto) and large values appropriately
+ */
+export const formatCurrency = (value: number, currency = 'USD'): string => {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
-    currency: currency,
-    minimumFractionDigits: price < 1 ? 6 : 2,
-    maximumFractionDigits: price < 1 ? 6 : 2,
-  }).format(price);
+    currency: currency.toUpperCase(),
+    minimumFractionDigits: value < 1 ? 6 : 2,
+    maximumFractionDigits: value < 1 ? 8 : 2,
+  }).format(value);
 };
 
+/**
+ * Formats large numbers with abbreviations (K, M, B, T)
+ * Can be used for market cap, volume, or any large number
+ */
+export const formatLargeNumber = (
+  value: number,
+  includePrefix = false
+): string => {
+  // For smaller values, use locale formatting
+  if (value < 1000000) {
+    const formatted = value.toLocaleString();
+    return includePrefix ? `$${formatted}` : formatted;
+  }
+
+  const units = ['', 'K', 'M', 'B', 'T'];
+  let unitIndex = 0;
+  let scaledValue = value;
+
+  while (scaledValue >= 1000 && unitIndex < units.length - 1) {
+    unitIndex++;
+    scaledValue /= 1000;
+  }
+
+  const formatted = `${scaledValue.toFixed(2)}${units[unitIndex]}`;
+  return includePrefix ? `$${formatted}` : formatted;
+};
+
+/**
+ * Formats market cap with dollar sign and abbreviations
+ */
 export const formatMarketCap = (marketCap: number): string => {
-  if (marketCap >= 1e12) {
-    return `$${(marketCap / 1e12).toFixed(2)}T`;
-  }
-  if (marketCap >= 1e9) {
-    return `$${(marketCap / 1e9).toFixed(2)}B`;
-  }
-  if (marketCap >= 1e6) {
-    return `$${(marketCap / 1e6).toFixed(2)}M`;
-  }
-  return `$${marketCap.toLocaleString()}`;
+  return formatLargeNumber(marketCap, true);
 };
 
-export const formatPercentageChange = (change: number): string => {
-  const formatted = Math.abs(change).toFixed(2);
-  return change >= 0 ? `+${formatted}%` : `-${formatted}%`;
+/**
+ * Formats percentage change with proper sign and color
+ */
+export const formatPercentage = (value: number): string => {
+  const formatted = value.toFixed(2);
+  return value >= 0 ? `+${formatted}%` : `${formatted}%`;
 };
 
 export const getPercentageChangeColor = (
@@ -66,14 +91,14 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 /**
- * Safely formats a number that might be null or undefined
+ * Safely formats a currency value that might be null or undefined
  */
-export const safeFormatPrice = (
-  price: number | null | undefined,
-  currency: string = 'USD'
+export const safeFormatCurrency = (
+  value: number | null | undefined,
+  currency = 'USD'
 ): string => {
-  if (price == null || isNaN(price)) return 'N/A';
-  return formatPrice(price, currency);
+  if (value == null || isNaN(value)) return 'N/A';
+  return formatCurrency(value, currency);
 };
 
 /**
@@ -89,56 +114,32 @@ export const safeFormatMarketCap = (
 /**
  * Safely formats percentage change that might be null or undefined
  */
-export const safeFormatPercentageChange = (
+export const safeFormatPercentage = (
   change: number | null | undefined
 ): string => {
   if (change == null || isNaN(change)) return '0.00%';
-  return formatPercentageChange(change);
+  return formatPercentage(change);
 };
 
 /**
- * Formats currency with proper decimal places based on value
- */
-export const formatCurrency = (value: number, currency = 'usd'): string => {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: currency.toUpperCase(),
-    minimumFractionDigits: value < 1 ? 6 : 2,
-    maximumFractionDigits: value < 1 ? 8 : 2,
-  }).format(value);
-};
-
-/**
- * Formats percentage with proper sign
- */
-export const formatPercentage = (value: number): string => {
-  const formatted = value.toFixed(2);
-  return value >= 0 ? `+${formatted}%` : `${formatted}%`;
-};
-
-/**
- * Formats large numbers with abbreviations
- */
-export const formatLargeNumber = (value: number): string => {
-  const units = ['', 'K', 'M', 'B', 'T'];
-  let unitIndex = 0;
-  let scaledValue = value;
-
-  while (scaledValue >= 1000 && unitIndex < units.length - 1) {
-    unitIndex++;
-    scaledValue /= 1000;
-  }
-
-  return `${scaledValue.toFixed(2)}${units[unitIndex]}`;
-};
-
-/**
- * Sanitizes HTML content (basic implementation)
+ * Sanitizes HTML content by extracting text content
+ * Note: For production use, consider using a library like DOMPurify
  */
 export const sanitizeHTML = (html: string): string => {
-  const div = document.createElement('div');
-  div.textContent = html;
-  return div.innerHTML;
+  if (typeof window === 'undefined') {
+    // Server-side: strip HTML tags
+    return html.replace(/<[^>]*>/g, '');
+  }
+
+  try {
+    // Client-side: use DOMParser for safe text extraction
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+    return doc.body.textContent || html.replace(/<[^>]*>/g, '');
+  } catch {
+    // Fallback to regex stripping
+    return html.replace(/<[^>]*>/g, '');
+  }
 };
 
 /**
@@ -151,3 +152,10 @@ export const formatDate = (dateString: string): string => {
     day: 'numeric',
   });
 };
+
+// Legacy function aliases for backward compatibility
+// These will be deprecated in future versions
+export const formatPrice = formatCurrency;
+export const formatPercentageChange = formatPercentage;
+export const safeFormatPrice = safeFormatCurrency;
+export const safeFormatPercentageChange = safeFormatPercentage;

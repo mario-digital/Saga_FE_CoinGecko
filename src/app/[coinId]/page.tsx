@@ -27,9 +27,28 @@ interface CoinDetailPageProps {
 
 export default function CoinDetailPage({ params }: CoinDetailPageProps) {
   const resolvedParams = use(params);
+
+  // Validate coinId parameter
+  const coinId = resolvedParams.coinId;
+  const isValidCoinId = /^[a-z0-9-]+$/.test(coinId);
+
   const { coin, isLoading, error, retry } = useCoinDetail(
-    resolvedParams.coinId
+    isValidCoinId ? coinId : ''
   );
+
+  // Show error for invalid coin ID format
+  if (!isValidCoinId) {
+    return (
+      <CoinDetailError
+        error={
+          new Error(
+            'Invalid coin ID format. Coin IDs should only contain lowercase letters, numbers, and hyphens.'
+          )
+        }
+        retry={() => (window.location.href = '/')}
+      />
+    );
+  }
 
   if (isLoading) {
     return <CoinDetailSkeleton />;
