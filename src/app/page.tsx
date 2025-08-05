@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { CoinCard } from '@/components/CoinCard';
 import { CoinCardSkeleton } from '@/components/CoinCardSkeleton';
 import { Pagination } from '@/components/Pagination';
+import { PullToRefresh } from '@/components/PullToRefresh';
 import FilterMarketCap from '@/components/FilterMarketCap';
 import { useCoins } from '@/hooks/useCoins';
 import { useFilteredCoins } from '@/hooks/useFilteredCoins';
@@ -98,82 +99,86 @@ function HomePageContent() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8 space-y-8">
-      {/* Filter Section */}
-      <div className="space-y-4">
-        <FilterMarketCap value={filter} onChange={handleFilterChange} />
+    <PullToRefresh onRefresh={refetch} disabled={isLoading}>
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8 space-y-4 sm:space-y-6 lg:space-y-8">
+        {/* Filter Section */}
+        <div className="space-y-3 sm:space-y-4">
+          <FilterMarketCap value={filter} onChange={handleFilterChange} />
 
-        {/* Filter Count Indicator */}
-        {filter !== 'all' && totalCount > 0 && (
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            Showing {filterCount} of {totalCount.toLocaleString()} coins
-          </p>
-        )}
-      </div>
-
-      {/* Loading State */}
-      {isLoading && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-          {Array.from({ length: DEFAULT_PER_PAGE }).map((_, index) => (
-            <CoinCardSkeleton key={index} />
-          ))}
+          {/* Filter Count Indicator */}
+          {filter !== 'all' && totalCount > 0 && (
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              Showing {filterCount} of {totalCount.toLocaleString()} coins
+            </p>
+          )}
         </div>
-      )}
 
-      {/* Coins Grid */}
-      {!isLoading && filteredCoins && filteredCoins.length > 0 && (
-        <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-            {filteredCoins.map(coin => (
-              <CoinCard
-                key={coin.id}
-                coin={coin}
-                onClick={handleCoinClick}
-                className=""
-              />
+        {/* Loading State */}
+        {isLoading && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
+            {Array.from({ length: DEFAULT_PER_PAGE }).map((_, index) => (
+              <CoinCardSkeleton key={index} />
             ))}
           </div>
+        )}
 
-          {/* Pagination */}
-          <div className="mt-8">
-            <Pagination
-              currentPage={currentPage}
-              totalPages={estimatedTotalPages}
-              onPageChange={handlePageChange}
-              disabled={isLoading}
-            />
-          </div>
-        </>
-      )}
+        {/* Coins Grid */}
+        {!isLoading && filteredCoins && filteredCoins.length > 0 && (
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
+              {filteredCoins.map(coin => (
+                <CoinCard
+                  key={coin.id}
+                  coin={coin}
+                  onClick={handleCoinClick}
+                  className=""
+                />
+              ))}
+            </div>
 
-      {/* Empty State */}
-      {!isLoading && filteredCoins.length === 0 && (
-        <div className="text-center py-12">
-          <div className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6 max-w-md mx-auto">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-              {filter !== 'all' ? 'No Coins Match Filter' : 'No Data Available'}
-            </h2>
-            <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">
-              {filter !== 'all'
-                ? 'Try selecting a different filter or choose "All" to see all coins.'
-                : 'Unable to load cryptocurrency data at this time.'}
-            </p>
-            <button
-              onClick={() => {
-                if (filter !== 'all') {
-                  handleFilterChange('all');
-                } else {
-                  refetch();
-                }
-              }}
-              className="btn-primary"
-            >
-              {filter !== 'all' ? 'Clear Filter' : 'Refresh'}
-            </button>
+            {/* Pagination */}
+            <div className="mt-8">
+              <Pagination
+                currentPage={currentPage}
+                totalPages={estimatedTotalPages}
+                onPageChange={handlePageChange}
+                disabled={isLoading}
+              />
+            </div>
+          </>
+        )}
+
+        {/* Empty State */}
+        {!isLoading && filteredCoins.length === 0 && (
+          <div className="text-center py-12">
+            <div className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6 max-w-md mx-auto">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                {filter !== 'all'
+                  ? 'No Coins Match Filter'
+                  : 'No Data Available'}
+              </h2>
+              <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">
+                {filter !== 'all'
+                  ? 'Try selecting a different filter or choose "All" to see all coins.'
+                  : 'Unable to load cryptocurrency data at this time.'}
+              </p>
+              <button
+                onClick={() => {
+                  if (filter !== 'all') {
+                    handleFilterChange('all');
+                  } else {
+                    refetch();
+                  }
+                }}
+                className="btn-primary"
+              >
+                {filter !== 'all' ? 'Clear Filter' : 'Refresh'}
+              </button>
+            </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </PullToRefresh>
   );
 }
 
@@ -181,8 +186,8 @@ export default function HomePage() {
   return (
     <Suspense
       fallback={
-        <div className="max-w-7xl mx-auto px-4 py-8 space-y-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8 space-y-4 sm:space-y-6 lg:space-y-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
             {Array.from({ length: DEFAULT_PER_PAGE }).map((_, index) => (
               <CoinCardSkeleton key={index} />
             ))}
