@@ -15,19 +15,36 @@ const FilterMarketCap: FC<FilterMarketCapProps> = ({ value, onChange }) => {
         type="single"
         value={value}
         onValueChange={onChange}
-        className="justify-start flex-col sm:flex-row"
+        className="justify-start flex-wrap sm:flex-nowrap gap-2 sm:gap-3"
         aria-label="Filter coins by market cap"
       >
-        <ToggleGroupItem value="all" aria-label="Show all coins">
-          All
+        <ToggleGroupItem
+          value="all"
+          aria-label="Show all coins"
+          className="min-w-[80px] sm:min-w-[100px] px-3 sm:px-4 py-2 sm:py-2.5"
+        >
+          <span className="sm:hidden">All</span>
+          <span className="hidden sm:inline">All Coins</span>
         </ToggleGroupItem>
-        <ToggleGroupItem value="top10" aria-label="Show top 10 coins">
+        <ToggleGroupItem
+          value="top10"
+          aria-label="Show top 10 coins"
+          className="min-w-[80px] sm:min-w-[100px] px-3 sm:px-4 py-2 sm:py-2.5"
+        >
           Top 10
         </ToggleGroupItem>
-        <ToggleGroupItem value="top50" aria-label="Show top 50 coins">
+        <ToggleGroupItem
+          value="top50"
+          aria-label="Show top 50 coins"
+          className="min-w-[80px] sm:min-w-[100px] px-3 sm:px-4 py-2 sm:py-2.5"
+        >
           Top 50
         </ToggleGroupItem>
-        <ToggleGroupItem value="top100" aria-label="Show top 100 coins">
+        <ToggleGroupItem
+          value="top100"
+          aria-label="Show top 100 coins"
+          className="min-w-[80px] sm:min-w-[100px] px-3 sm:px-4 py-2 sm:py-2.5"
+        >
           Top 100
         </ToggleGroupItem>
       </ToggleGroup>
