@@ -45,8 +45,13 @@ export const usePriceHistory = (
   timeRange: TimeRange
 ): UsePriceHistoryReturn => {
   const days = timeRangeToDays[timeRange] || 7;
-  
-  const { data: rawData, error, isLoading, mutate } = useSWR(
+
+  const {
+    data: rawData,
+    error,
+    isLoading,
+    mutate,
+  } = useSWR(
     coinId ? `/api/coins/${coinId}/history?days=${days}` : null,
     fetcher,
     {
@@ -58,18 +63,21 @@ export const usePriceHistory = (
       onErrorRetry: (error, _key, _config, revalidate, { retryCount }) => {
         // Never retry on 404 - coin doesn't have history
         if (error.status === 404) return;
-        
+
         // Only retry other errors up to 2 times
         if (retryCount >= 2) return;
-        
+
         // Retry other errors after delay
-        setTimeout(() => revalidate({ retryCount }), 3000 * Math.pow(2, retryCount));
+        setTimeout(
+          () => revalidate({ retryCount }),
+          3000 * Math.pow(2, retryCount)
+        );
       },
     }
   );
 
   // Transform data
-  const transformedData = rawData?.prices 
+  const transformedData = rawData?.prices
     ? rawData.prices.map(([timestamp, price]: [number, number]) => ({
         date: formatDate(timestamp),
         formattedDate: formatDateForChart(timestamp),
@@ -81,7 +89,8 @@ export const usePriceHistory = (
   let processedError = null;
   if (error) {
     if (error.status === 429) {
-      processedError = 'Rate limit exceeded. Please try again later.';
+      processedError =
+        'Rate limit exceeded. Please wait a minute before refreshing the page.';
     } else if (error.status === 404) {
       processedError = 'Price history not found for this coin.';
     } else {

@@ -59,6 +59,8 @@ export const PriceHistoryChart: FC<PriceHistoryChartProps> = memo(
     }
 
     if (error) {
+      const isRateLimited = error.includes('Rate limit exceeded');
+
       return (
         <Card>
           <CardHeader>
@@ -71,10 +73,12 @@ export const PriceHistoryChart: FC<PriceHistoryChartProps> = memo(
               <p className="text-sm text-muted-foreground mb-4">
                 {error || 'Failed to load price history'}
               </p>
-              <Button onClick={retry} variant="outline" size="sm">
-                <RefreshCw className="mr-2 h-4 w-4" />
-                Try Again
-              </Button>
+              {!isRateLimited && (
+                <Button onClick={retry} variant="outline" size="sm">
+                  <RefreshCw className="mr-2 h-4 w-4" />
+                  Try Again
+                </Button>
+              )}
             </div>
           </CardContent>
         </Card>
