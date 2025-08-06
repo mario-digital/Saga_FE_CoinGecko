@@ -1,4 +1,5 @@
 {
+  "name": "saga-fe-coin-geko",
   "buildCommand": "pnpm build",
   "outputDirectory": ".next",
   "devCommand": "pnpm dev",
@@ -15,10 +16,6 @@
     "src/app/api/coins/[coinId]/history/route.ts": {
       "maxDuration": 10
     }
-  },
-  "env": {
-    "NEXT_PUBLIC_COINGECKO_API_KEY": "@coingecko-api-key",
-    "NEXT_PUBLIC_API_BASE_URL": "@api-base-url"
   },
   "headers": [
     {

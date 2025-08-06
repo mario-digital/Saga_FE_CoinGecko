@@ -20,6 +20,15 @@ export class NetworkError extends Error {
   }
 }
 
+export class RateLimitError extends Error {
+  retryAfter?: number;
+  constructor(message: string, retryAfter?: number) {
+    super(message);
+    this.name = 'RateLimitError';
+    this.retryAfter = retryAfter;
+  }
+}
+
 interface UseCoinDetailReturn {
   coin: CoinDetailData | undefined;
   isLoading: boolean;
@@ -41,12 +50,15 @@ export const useCoinDetail = (coinId: string): UseCoinDetailReturn => {
       onErrorRetry: (error, _key, _config, revalidate, { retryCount }) => {
         // Never retry on 404 - coin doesn't exist
         if (error.status === 404) return;
-        
+
         // Only retry other errors up to 3 times with exponential backoff
         if (retryCount >= 3) return;
-        
+
         // Retry other errors after delay
-        setTimeout(() => revalidate({ retryCount }), 5000 * Math.pow(2, retryCount));
+        setTimeout(
+          () => revalidate({ retryCount }),
+          5000 * Math.pow(2, retryCount)
+        );
       },
     }
   );
@@ -57,8 +69,9 @@ export const useCoinDetail = (coinId: string): UseCoinDetailReturn => {
     if (error.status === 404) {
       processedError = new CoinNotFoundError(coinId);
     } else if (error.status === 429) {
-      processedError = new NetworkError(
-        'Rate limit exceeded. Please try again later.'
+      processedError = new RateLimitError(
+        'API rate limit exceeded. The free tier allows 10-30 requests per minute. Please wait a moment before trying again.',
+        60 // Suggest waiting 60 seconds
       );
     } else {
       processedError = new NetworkError(

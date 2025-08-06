@@ -11,6 +11,7 @@ interface UseCoinsReturn {
   coins: CoinData[] | undefined;
   isLoading: boolean;
   error: string | null;
+  isRateLimited: boolean;
   refetch: () => void;
 }
 
@@ -27,10 +28,16 @@ export const useCoins = (
     SWR_CONFIG
   );
 
+  const isRateLimited = error?.status === 429;
+  const errorMessage = isRateLimited
+    ? 'API rate limit exceeded. Please wait a minute before refreshing.'
+    : error?.message || null;
+
   return {
     coins: data,
     isLoading,
-    error: error?.message || null,
+    error: errorMessage,
+    isRateLimited,
     refetch: mutate,
   };
 };

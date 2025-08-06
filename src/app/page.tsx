@@ -78,7 +78,7 @@ function HomePageContent() {
     setIsMounted(true);
   }, []);
 
-  const { coins, isLoading, error, refetch } = useCoins(
+  const { coins, isLoading, error, isRateLimited, refetch } = useCoins(
     currentPage,
     DEFAULT_PER_PAGE
   );
@@ -148,14 +148,29 @@ function HomePageContent() {
   if (error) {
     return (
       <div className="text-center py-12">
-        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-6 max-w-md mx-auto">
-          <h2 className="text-lg font-semibold text-red-900 dark:text-red-400 mb-2">
-            Error Loading Data
+        <div
+          className={`${isRateLimited ? 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800' : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'} border rounded-lg p-6 max-w-md mx-auto`}
+        >
+          <h2
+            className={`text-lg font-semibold ${isRateLimited ? 'text-yellow-900 dark:text-yellow-400' : 'text-red-900 dark:text-red-400'} mb-2`}
+          >
+            {isRateLimited ? 'Rate Limit Reached' : 'Error Loading Data'}
           </h2>
-          <p className="text-red-700 dark:text-red-300 text-sm mb-4">{error}</p>
-          <button onClick={() => refetch()} className="btn-primary">
-            Try Again
-          </button>
+          <p
+            className={`${isRateLimited ? 'text-yellow-700 dark:text-yellow-300' : 'text-red-700 dark:text-red-300'} text-sm mb-4`}
+          >
+            {error}
+          </p>
+          {isRateLimited ? (
+            <p className="text-xs text-gray-600 dark:text-gray-400 mt-2">
+              The free API tier has a limit of 10-30 requests per minute. Please
+              wait a moment before refreshing.
+            </p>
+          ) : (
+            <button onClick={() => refetch()} className="btn-primary">
+              Try Again
+            </button>
+          )}
         </div>
       </div>
     );
