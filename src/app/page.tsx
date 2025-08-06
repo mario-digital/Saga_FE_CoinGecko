@@ -35,7 +35,7 @@ const PullToRefresh = dynamic(
     import(
       /* webpackChunkName: "pull-refresh" */
       '@/components/PullToRefresh'
-    ),
+    ).then(mod => mod.default),
   {
     ssr: false,
     loading: () => <div />, // Empty div to prevent layout shift

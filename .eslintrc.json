@@ -4,11 +4,21 @@
     "prefer-const": "error",
     "no-var": "error",
     "react-hooks/exhaustive-deps": "warn",
-    "no-unused-vars": ["error", {
-      "argsIgnorePattern": "^_",
-      "varsIgnorePattern": "^_",
-      "ignoreRestSiblings": true
-    }]
+    "no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_",
+        "ignoreRestSiblings": true
+      }
+    ]
   },
-  "ignorePatterns": ["node_modules/", ".next/", "out/"]
+  "ignorePatterns": [
+    "node_modules/",
+    ".next/",
+    "out/",
+    "**/__tests__/**",
+    "**/*.test.*",
+    "**/*.spec.*"
+  ]
 }
