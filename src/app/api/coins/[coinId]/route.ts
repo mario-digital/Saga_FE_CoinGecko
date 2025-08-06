@@ -23,6 +23,14 @@ export async function GET(
       if (response.status === 404) {
         return NextResponse.json({ error: 'Coin not found' }, { status: 404 });
       }
+      if (response.status === 429) {
+        console.warn('CoinGecko API rate limit exceeded');
+        return NextResponse.json(
+          { error: 'API rate limit exceeded. Please try again later.' },
+          { status: 429 }
+        );
+      }
+      console.error(`CoinGecko API error: ${response.status} ${response.statusText}`);
       throw new Error(`API responded with status: ${response.status}`);
     }
 
@@ -34,7 +42,8 @@ export async function GET(
       },
     });
   } catch (error) {
-    console.error(`Error fetching coin:`, error);
+    const { coinId } = await params;
+    console.error(`Error fetching coin ${coinId}:`, error);
 
     return NextResponse.json(
       { error: 'Failed to fetch coin data' },

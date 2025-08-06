@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { ServiceWorkerProvider } from '../ServiceWorkerProvider';
 
 // Mock the useServiceWorker hook
@@ -24,7 +24,7 @@ describe('ServiceWorkerProvider', () => {
       updateServiceWorker: mockUpdateServiceWorker,
     });
 
-    render(
+    const { container } = render(
       <ServiceWorkerProvider>
         <div>Test Child Component</div>
       </ServiceWorkerProvider>
@@ -39,7 +39,7 @@ describe('ServiceWorkerProvider', () => {
       updateServiceWorker: mockUpdateServiceWorker,
     });
 
-    render(
+    const { container } = render(
       <ServiceWorkerProvider>
         <div>Content</div>
       </ServiceWorkerProvider>
@@ -57,7 +57,7 @@ describe('ServiceWorkerProvider', () => {
 
     (window.confirm as jest.Mock).mockReturnValue(true);
 
-    render(
+    const { container } = render(
       <ServiceWorkerProvider>
         <div>Content</div>
       </ServiceWorkerProvider>
@@ -79,7 +79,7 @@ describe('ServiceWorkerProvider', () => {
 
     (window.confirm as jest.Mock).mockReturnValue(false);
 
-    render(
+    const { container } = render(
       <ServiceWorkerProvider>
         <div>Content</div>
       </ServiceWorkerProvider>
@@ -99,7 +99,7 @@ describe('ServiceWorkerProvider', () => {
       updateServiceWorker: mockUpdateServiceWorker,
     });
 
-    render(
+    const { container } = render(
       <ServiceWorkerProvider>
         <div>First Child</div>
         <div>Second Child</div>
@@ -195,7 +195,7 @@ describe('ServiceWorkerProvider', () => {
       updateServiceWorker: mockUpdateServiceWorker,
     });
 
-    render(
+    const { container } = render(
       <ServiceWorkerProvider>
         <>
           <div>Fragment Child 1</div>

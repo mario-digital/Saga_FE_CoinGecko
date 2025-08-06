@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import Loading from '../loading';
 
 describe('Loading', () => {
@@ -60,7 +60,7 @@ describe('Loading', () => {
     const { container } = render(<Loading />);
 
     const cards = container.querySelectorAll('.animate-pulse');
-    cards.forEach(card => {
+    cards.forEach((card: Element) => {
       expect(card).toHaveClass('dark:bg-gray-800');
     });
 
@@ -81,7 +81,7 @@ describe('Loading', () => {
     const { container } = render(<Loading />);
 
     const cards = container.querySelectorAll('.animate-pulse');
-    cards.forEach(card => {
+    cards.forEach((card: Element) => {
       expect(card).toHaveClass(
         'bg-white',
         'rounded-xl',
@@ -100,7 +100,7 @@ describe('Loading', () => {
 
     const cards = container.querySelectorAll('.animate-pulse');
 
-    cards.forEach(card => {
+    cards.forEach((card: Element) => {
       // Each card should have a header section with avatar
       const headerSection = card.querySelector('.flex.items-center.space-x-3');
       expect(headerSection).toBeInTheDocument();
@@ -161,7 +161,7 @@ describe('Loading', () => {
     expect(cards).toHaveLength(12);
 
     // Verify each has a unique key (implicitly tested by React not warning)
-    cards.forEach((card, index) => {
+    cards.forEach((card: Element) => {
       expect(card).toBeInTheDocument();
     });
   });

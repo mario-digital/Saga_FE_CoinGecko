@@ -5,7 +5,7 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 
 export interface FilterMarketCapProps {
   value: string;
-  onChange: (value: string) => void;
+  onChange: (_value: string) => void;
 }
 
 const FilterMarketCap: FC<FilterMarketCapProps> = ({ value, onChange }) => {

@@ -1,10 +1,10 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { Skeleton } from '../skeleton';
 
 describe('Skeleton', () => {
   it('renders skeleton component', () => {
-    render(<Skeleton />);
+    const { container } = render(<Skeleton />);
     const skeleton = document.querySelector('.animate-pulse');
     expect(skeleton).toBeInTheDocument();
   });
@@ -50,7 +50,7 @@ describe('Skeleton', () => {
   });
 
   it('forwards additional props', () => {
-    render(
+    const { container } = render(
       <Skeleton
         data-testid="skeleton-test"
         id="skeleton-id"
@@ -85,14 +85,14 @@ describe('Skeleton', () => {
   });
 
   it('accepts role attribute', () => {
-    render(<Skeleton role="status" />);
+    const { container } = render(<Skeleton role="status" />);
     const skeleton = screen.getByRole('status');
 
     expect(skeleton).toBeInTheDocument();
   });
 
   it('can be used with aria-busy for accessibility', () => {
-    render(<Skeleton aria-busy="true" aria-live="polite" />);
+    const { container } = render(<Skeleton aria-busy="true" aria-live="polite" />);
     const skeleton = document.querySelector('[aria-busy="true"]');
 
     expect(skeleton).toBeInTheDocument();
@@ -100,7 +100,7 @@ describe('Skeleton', () => {
   });
 
   it('renders children when provided', () => {
-    render(
+    const { container } = render(
       <Skeleton>
         <span>Loading...</span>
       </Skeleton>
@@ -175,7 +175,7 @@ describe('Skeleton', () => {
   });
 
   it('supports data attributes for testing', () => {
-    render(<Skeleton data-test="skeleton" data-loading="true" />);
+    const { container } = render(<Skeleton data-test="skeleton" data-loading="true" />);
 
     const skeleton = document.querySelector('[data-test="skeleton"]');
     expect(skeleton).toHaveAttribute('data-loading', 'true');

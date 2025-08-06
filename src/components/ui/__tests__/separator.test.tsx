@@ -71,7 +71,7 @@ describe('Separator', () => {
 
   it('forwards ref correctly', () => {
     const ref = React.createRef<HTMLDivElement>();
-    render(<Separator ref={ref} />);
+    const { container } = render(<Separator ref={ref} />);
 
     expect(ref.current).toBeInstanceOf(HTMLElement);
   });

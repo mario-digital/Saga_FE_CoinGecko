@@ -17,22 +17,26 @@ jest.mock('next/server', () => ({
 }));
 
 import { GET } from '../route';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 
 // Mock the global fetch
 global.fetch = jest.fn();
 
 describe('GET /api/coins/[coinId]', () => {
   let consoleErrorSpy: jest.SpyInstance;
+  let consoleWarnSpy: jest.SpyInstance;
 
   beforeEach(() => {
     jest.clearAllMocks();
     // Suppress console.error for expected errors
     consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    // Suppress console.warn for rate limit warnings
+    consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
   });
 
   afterEach(() => {
     consoleErrorSpy.mockRestore();
+    consoleWarnSpy.mockRestore();
   });
 
   it('should fetch coin detail data successfully', async () => {
@@ -102,8 +106,8 @@ describe('GET /api/coins/[coinId]', () => {
     const response = await GET(request, { params });
     const data = await response.json();
 
-    expect(data).toEqual({ error: 'Failed to fetch coin data' });
-    expect(response.status).toBe(500);
+    expect(data).toEqual({ error: 'API rate limit exceeded. Please try again later.' });
+    expect(response.status).toBe(429);
   });
 
   it('should handle network errors', async () => {

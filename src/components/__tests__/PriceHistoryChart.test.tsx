@@ -121,7 +121,7 @@ describe('PriceHistoryChart', () => {
   });
 
   it('renders chart with data', () => {
-    render(<PriceHistoryChart coinId="bitcoin" coinName="Bitcoin" />);
+    const { container } = render(<PriceHistoryChart coinId="bitcoin" coinName="Bitcoin" />);
 
     expect(screen.getByTestId('line-chart')).toBeInTheDocument();
     expect(screen.getByText('Price History')).toBeInTheDocument();
@@ -136,7 +136,7 @@ describe('PriceHistoryChart', () => {
       retry: mockRetry,
     });
 
-    render(<PriceHistoryChart coinId="bitcoin" />);
+    const { container } = render(<PriceHistoryChart coinId="bitcoin" />);
 
     // Should show skeleton loader
     expect(screen.getByText('Price History')).toBeInTheDocument();
@@ -152,7 +152,7 @@ describe('PriceHistoryChart', () => {
       retry: mockRetry,
     });
 
-    render(<PriceHistoryChart coinId="bitcoin" />);
+    const { container } = render(<PriceHistoryChart coinId="bitcoin" />);
 
     expect(screen.getByText('Unable to load price data')).toBeInTheDocument();
     expect(screen.getByText('Failed to fetch data')).toBeInTheDocument();
@@ -169,7 +169,7 @@ describe('PriceHistoryChart', () => {
       retry: mockRetry,
     });
 
-    render(<PriceHistoryChart coinId="bitcoin" />);
+    const { container } = render(<PriceHistoryChart coinId="bitcoin" />);
 
     const retryButton = screen.getByRole('button', { name: /try again/i });
     fireEvent.click(retryButton);
@@ -178,7 +178,7 @@ describe('PriceHistoryChart', () => {
   });
 
   it('handles time range changes', () => {
-    render(<PriceHistoryChart coinId="bitcoin" />);
+    const { container } = render(<PriceHistoryChart coinId="bitcoin" />);
 
     // Initially shows 7d
     expect(screen.getByText('Current: 7d')).toBeInTheDocument();
@@ -199,7 +199,7 @@ describe('PriceHistoryChart', () => {
       retry: mockRetry,
     });
 
-    render(<PriceHistoryChart coinId="bitcoin" />);
+    const { container } = render(<PriceHistoryChart coinId="bitcoin" />);
 
     expect(screen.getByText('No price data available')).toBeInTheDocument();
     expect(
@@ -208,7 +208,7 @@ describe('PriceHistoryChart', () => {
   });
 
   it('formats chart data correctly', () => {
-    render(<PriceHistoryChart coinId="bitcoin" />);
+    const { container } = render(<PriceHistoryChart coinId="bitcoin" />);
 
     const chart = screen.getByTestId('line-chart');
     const data = JSON.parse(chart.getAttribute('data-data') || '[]');
@@ -217,7 +217,7 @@ describe('PriceHistoryChart', () => {
   });
 
   it('uses coin ID when coin name is not provided', () => {
-    render(<PriceHistoryChart coinId="ethereum" />);
+    const { container } = render(<PriceHistoryChart coinId="ethereum" />);
 
     expect(screen.getByText('Price History')).toBeInTheDocument();
     expect(screen.getByText('Price over time')).toBeInTheDocument();
@@ -235,7 +235,7 @@ describe('PriceHistoryChart', () => {
   });
 
   it('displays time range selector', () => {
-    render(<PriceHistoryChart coinId="bitcoin" />);
+    const { container } = render(<PriceHistoryChart coinId="bitcoin" />);
 
     // Check for radio group instead of test-id
     expect(screen.getByRole('radiogroup')).toBeInTheDocument();
@@ -270,7 +270,7 @@ describe('PriceHistoryChart', () => {
   });
 
   it('shows formatted price in tooltip', () => {
-    render(<PriceHistoryChart coinId="bitcoin" />);
+    const { container } = render(<PriceHistoryChart coinId="bitcoin" />);
 
     // Chart tooltip is mocked so just check it exists
     expect(screen.getByTestId('chart-tooltip')).toBeInTheDocument();
@@ -284,7 +284,7 @@ describe('PriceHistoryChart', () => {
       retry: mockRetry,
     });
 
-    render(<PriceHistoryChart coinId="bitcoin" />);
+    const { container } = render(<PriceHistoryChart coinId="bitcoin" />);
 
     // Check for skeleton loader using data-testid
     const skeletons = screen.getAllByTestId('skeleton');
@@ -292,14 +292,14 @@ describe('PriceHistoryChart', () => {
   });
 
   it('displays correct chart config', () => {
-    render(<PriceHistoryChart coinId="bitcoin" />);
+    const { container } = render(<PriceHistoryChart coinId="bitcoin" />);
 
     // The chart should be rendered with correct configuration
     expect(screen.getByTestId('chart-container')).toBeInTheDocument();
   });
 
   it('handles all time range options', () => {
-    render(<PriceHistoryChart coinId="bitcoin" />);
+    const { container } = render(<PriceHistoryChart coinId="bitcoin" />);
 
     const timeRanges = ['24h', '7d', '30d', '90d', '1y'];
 
@@ -334,7 +334,7 @@ describe('PriceHistoryChart', () => {
   });
 
   it('formats Y-axis tick values correctly', () => {
-    render(<PriceHistoryChart coinId="bitcoin" />);
+    const { container } = render(<PriceHistoryChart coinId="bitcoin" />);
 
     const yAxis = screen.getByTestId('yaxis');
     const formattedValues = JSON.parse(
@@ -350,7 +350,7 @@ describe('PriceHistoryChart', () => {
   });
 
   it('formats tooltip values correctly', () => {
-    render(<PriceHistoryChart coinId="bitcoin" />);
+    const { container } = render(<PriceHistoryChart coinId="bitcoin" />);
 
     const tooltipContent = screen.getByTestId('chart-tooltip-content');
     const formattedValues = JSON.parse(
@@ -371,7 +371,7 @@ describe('PriceHistoryChart', () => {
   });
 
   it('formats tooltip label correctly', () => {
-    render(<PriceHistoryChart coinId="bitcoin" />);
+    const { container } = render(<PriceHistoryChart coinId="bitcoin" />);
 
     const tooltipContent = screen.getByTestId('chart-tooltip-content');
     const formattedLabel = tooltipContent.getAttribute('data-formatted-label');
@@ -388,25 +388,25 @@ describe('PriceHistoryChart', () => {
       retry: mockRetry,
     });
 
-    render(<PriceHistoryChart coinId="bitcoin" />);
+    const { container } = render(<PriceHistoryChart coinId="bitcoin" />);
 
     expect(screen.getByText('No price data available')).toBeInTheDocument();
   });
 
   it('displays correct description with coin name', () => {
-    render(<PriceHistoryChart coinId="bitcoin" coinName="Bitcoin" />);
+    const { container } = render(<PriceHistoryChart coinId="bitcoin" coinName="Bitcoin" />);
 
     expect(screen.getByText('Bitcoin price over time')).toBeInTheDocument();
   });
 
   it('displays generic description without coin name', () => {
-    render(<PriceHistoryChart coinId="bitcoin" />);
+    const { container } = render(<PriceHistoryChart coinId="bitcoin" />);
 
     expect(screen.getByText('Price over time')).toBeInTheDocument();
   });
 
   it('renders chart tooltip with content', () => {
-    render(<PriceHistoryChart coinId="bitcoin" />);
+    const { container } = render(<PriceHistoryChart coinId="bitcoin" />);
 
     const tooltip = screen.getByTestId('chart-tooltip');
     expect(tooltip).toHaveAttribute('data-has-content', 'true');
@@ -420,7 +420,7 @@ describe('PriceHistoryChart', () => {
       retry: mockRetry,
     });
 
-    render(<PriceHistoryChart coinId="bitcoin" />);
+    const { container } = render(<PriceHistoryChart coinId="bitcoin" />);
 
     // Should show no data message when error is null but data is also null
     expect(screen.getByText('No price data available')).toBeInTheDocument();
@@ -440,7 +440,7 @@ describe('PriceHistoryChart', () => {
       retry: mockRetry,
     });
 
-    render(<PriceHistoryChart coinId="bitcoin" />);
+    const { container } = render(<PriceHistoryChart coinId="bitcoin" />);
 
     const chart = screen.getByTestId('line-chart');
     const data = JSON.parse(chart.getAttribute('data-data') || '[]');
@@ -457,7 +457,7 @@ describe('PriceHistoryChart', () => {
       retry: mockRetry,
     });
 
-    render(<PriceHistoryChart coinId="bitcoin" />);
+    const { container } = render(<PriceHistoryChart coinId="bitcoin" />);
 
     // Empty string error is falsy, so shows no data state
     expect(screen.getByText('No price data available')).toBeInTheDocument();
@@ -474,7 +474,7 @@ describe('PriceHistoryChart', () => {
       retry: mockRetry,
     });
 
-    render(<PriceHistoryChart coinId="bitcoin" />);
+    const { container } = render(<PriceHistoryChart coinId="bitcoin" />);
 
     expect(screen.getByText('Unable to load price data')).toBeInTheDocument();
     expect(screen.getByText('Network timeout occurred')).toBeInTheDocument();

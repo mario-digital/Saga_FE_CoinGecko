@@ -2,7 +2,7 @@
  * Tests for Coin Detail Page
  */
 
-import { render, screen, waitFor, act } from '@testing-library/react';
+import { render, screen, act, waitFor } from '@testing-library/react';
 import CoinDetailPage from '../page';
 import { useCoinDetail, CoinNotFoundError } from '@/hooks/useCoinDetail';
 
@@ -121,7 +121,7 @@ describe('CoinDetailPage', () => {
     });
 
     await act(async () => {
-      render(<CoinDetailPage params={mockParams} />);
+    const { container } = render(<CoinDetailPage params={mockParams} />);
     });
 
     // The skeleton should be rendered
@@ -138,7 +138,7 @@ describe('CoinDetailPage', () => {
       retry: jest.fn(),
     });
 
-    render(<CoinDetailPage params={mockParams} />);
+    const { container } = render(<CoinDetailPage params={mockParams} />);
 
     // Check for 404 error message
     await waitFor(() => {
@@ -162,7 +162,7 @@ describe('CoinDetailPage', () => {
       retry: retryMock,
     });
 
-    render(<CoinDetailPage params={mockParams} />);
+    const { container } = render(<CoinDetailPage params={mockParams} />);
 
     expect(screen.getByText('Error Loading Coin Data')).toBeInTheDocument();
     expect(screen.getByText(/Failed to load coin data/)).toBeInTheDocument();
@@ -177,7 +177,7 @@ describe('CoinDetailPage', () => {
       retry: jest.fn(),
     });
 
-    render(<CoinDetailPage params={mockParams} />);
+    const { container } = render(<CoinDetailPage params={mockParams} />);
 
     // Wait for content to load - use heading to be more specific
     await waitFor(() => {
@@ -216,7 +216,7 @@ describe('CoinDetailPage', () => {
       retry: jest.fn(),
     });
 
-    render(<CoinDetailPage params={mockParams} />);
+    const { container } = render(<CoinDetailPage params={mockParams} />);
 
     const websiteLink = screen.getByRole('link', { name: /Website/i });
     expect(websiteLink).toHaveAttribute('href', 'https://bitcoin.org');

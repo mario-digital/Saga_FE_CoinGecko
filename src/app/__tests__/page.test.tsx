@@ -1,5 +1,5 @@
-import React, { Suspense } from 'react';
-import { render, screen, waitFor, cleanup, act } from '@testing-library/react';
+import React from 'react';
+import { render, screen, cleanup, act, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useRouter, useSearchParams } from 'next/navigation';
 import HomePage from '../page';
@@ -13,7 +13,7 @@ jest.mock('next/navigation', () => ({
 
 jest.mock('@/hooks/useCoins');
 jest.mock('@/hooks/useFilteredCoins', () => ({
-  useFilteredCoins: ({ coins, filter }: any) => {
+  useFilteredCoins: ({ coins, _filter }: any) => {
     const filtered = coins || [];
     return {
       filteredCoins: filtered,
@@ -46,7 +46,7 @@ jest.mock('@/components/CoinCard', () => ({
 // Mock FilterMarketCap
 jest.mock('@/components/FilterMarketCap', () => ({
   __esModule: true,
-  default: ({ filter, onFilterChange }: any) => (
+  default: ({ _filter, onFilterChange }: any) => (
     <div role="radiogroup">
       <button
         role="radio"
@@ -107,7 +107,7 @@ jest.mock('@/components/Pagination', () => ({
 // Mock dynamic imports properly
 jest.mock('next/dynamic', () => ({
   __esModule: true,
-  default: (loader: any, options?: any) => {
+  default: (loader: any, _options?: any) => {
     // For SwipeableCoinCard
     if (loader.toString().includes('SwipeableCoinCard')) {
       const SwipeableCard = ({ coin, onClick }: any) => (
@@ -122,7 +122,7 @@ jest.mock('next/dynamic', () => ({
     }
     // For PullToRefresh
     if (loader.toString().includes('PullToRefresh')) {
-      const PullToRefresh = ({ children, onRefresh }: any) => (
+      const PullToRefresh = ({ children, _onRefresh }: any) => (
         <div>{children}</div>
       );
       return PullToRefresh;
@@ -220,7 +220,7 @@ describe('HomePage', () => {
     });
 
     await act(async () => {
-      render(<HomePage />);
+    const { container } = render(<HomePage />);
     });
 
     await waitFor(() => {
@@ -245,7 +245,7 @@ describe('HomePage', () => {
       refetch: mockRefetch,
     });
 
-    render(<HomePage />);
+    const { container } = render(<HomePage />);
 
     expect(screen.getByText('Error Loading Data')).toBeInTheDocument();
     expect(screen.getByText('Failed to fetch data')).toBeInTheDocument();
@@ -262,7 +262,7 @@ describe('HomePage', () => {
       refetch: mockRefetch,
     });
 
-    render(<HomePage />);
+    const { container } = render(<HomePage />);
 
     const tryAgainButton = screen.getByText('Try Again');
     await user.click(tryAgainButton);
@@ -280,7 +280,7 @@ describe('HomePage', () => {
     });
 
     await act(async () => {
-      render(<HomePage />);
+    const { container } = render(<HomePage />);
     });
 
     await waitFor(() => {
@@ -304,7 +304,7 @@ describe('HomePage', () => {
     });
 
     await act(async () => {
-      render(<HomePage />);
+    const { container } = render(<HomePage />);
     });
 
     await waitFor(() => {
@@ -326,7 +326,7 @@ describe('HomePage', () => {
     });
 
     await act(async () => {
-      render(<HomePage />);
+    const { container } = render(<HomePage />);
     });
 
     await waitFor(() => {
@@ -350,7 +350,7 @@ describe('HomePage', () => {
     });
 
     await act(async () => {
-      render(<HomePage />);
+    const { container } = render(<HomePage />);
     });
 
     await waitFor(() => {
@@ -374,7 +374,7 @@ describe('HomePage', () => {
     });
 
     await act(async () => {
-      render(<HomePage />);
+    const { container } = render(<HomePage />);
     });
 
     await waitFor(() => {
@@ -396,7 +396,7 @@ describe('HomePage', () => {
     });
 
     await act(async () => {
-      render(<HomePage />);
+    const { container } = render(<HomePage />);
     });
 
     // During loading, Suspense shows fallback (skeletons)
@@ -417,7 +417,7 @@ describe('HomePage', () => {
     });
 
     await act(async () => {
-      render(<HomePage />);
+    const { container } = render(<HomePage />);
     });
 
     await waitFor(() => {
@@ -440,7 +440,7 @@ describe('HomePage', () => {
     });
 
     await act(async () => {
-      render(<HomePage />);
+    const { container } = render(<HomePage />);
     });
 
     await waitFor(() => {
@@ -518,7 +518,7 @@ describe('HomePage', () => {
     });
 
     await act(async () => {
-      render(<HomePage />);
+    const { container } = render(<HomePage />);
     });
 
     await waitFor(() => {

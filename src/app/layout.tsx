@@ -4,6 +4,7 @@ import './globals.css';
 
 const inter = Inter({
   subsets: ['latin'],
+  weight: ['400', '500', '600', '700'], // Only load the weights we actually use
   display: 'swap',
   preload: true,
   adjustFontFallback: true,

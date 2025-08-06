@@ -23,7 +23,7 @@ describe('Pagination', () => {
   });
 
   it('renders pagination with correct page numbers', () => {
-    render(
+    const { container } = render(
       <Pagination
         currentPage={3}
         totalPages={10}
@@ -42,7 +42,7 @@ describe('Pagination', () => {
 
   it('handles previous page click', async () => {
     const user = userEvent.setup();
-    render(
+    const { container } = render(
       <Pagination
         currentPage={3}
         totalPages={10}
@@ -59,7 +59,7 @@ describe('Pagination', () => {
 
   it('handles next page click', async () => {
     const user = userEvent.setup();
-    render(
+    const { container } = render(
       <Pagination
         currentPage={3}
         totalPages={10}
@@ -76,7 +76,7 @@ describe('Pagination', () => {
 
   it('handles specific page click', async () => {
     const user = userEvent.setup();
-    render(
+    const { container } = render(
       <Pagination
         currentPage={3}
         totalPages={10}
@@ -92,7 +92,7 @@ describe('Pagination', () => {
   });
 
   it('disables previous button on first page', () => {
-    render(
+    const { container } = render(
       <Pagination
         currentPage={1}
         totalPages={10}
@@ -106,7 +106,7 @@ describe('Pagination', () => {
   });
 
   it('disables next button on last page', () => {
-    render(
+    const { container } = render(
       <Pagination
         currentPage={10}
         totalPages={10}
@@ -121,7 +121,7 @@ describe('Pagination', () => {
 
   it('does not call onPageChange when disabled', async () => {
     const user = userEvent.setup();
-    render(
+    const { container } = render(
       <Pagination
         currentPage={1}
         totalPages={10}
@@ -138,7 +138,7 @@ describe('Pagination', () => {
 
   it('does not call onPageChange when clicking current page', async () => {
     const user = userEvent.setup();
-    render(
+    const { container } = render(
       <Pagination
         currentPage={3}
         totalPages={10}
@@ -153,7 +153,7 @@ describe('Pagination', () => {
   });
 
   it('shows ellipsis and first page when current page is far from start', () => {
-    render(
+    const { container } = render(
       <Pagination
         currentPage={8}
         totalPages={15}
@@ -172,7 +172,7 @@ describe('Pagination', () => {
   });
 
   it('shows ellipsis and last page when current page is far from end', () => {
-    render(
+    const { container } = render(
       <Pagination
         currentPage={3}
         totalPages={15}
@@ -191,7 +191,7 @@ describe('Pagination', () => {
 
   it('applies custom className', () => {
     const customClass = 'custom-pagination';
-    render(
+    const { container } = render(
       <Pagination
         currentPage={1}
         totalPages={5}
@@ -205,7 +205,7 @@ describe('Pagination', () => {
   });
 
   it('has proper ARIA attributes', () => {
-    render(
+    const { container } = render(
       <Pagination
         currentPage={3}
         totalPages={10}
@@ -227,7 +227,7 @@ describe('Pagination', () => {
   });
 
   it('highlights current page correctly', () => {
-    render(
+    const { container } = render(
       <Pagination
         currentPage={3}
         totalPages={10}
@@ -241,7 +241,7 @@ describe('Pagination', () => {
   });
 
   it('handles edge case with very few pages', () => {
-    render(
+    const { container } = render(
       <Pagination
         currentPage={1}
         totalPages={3}
@@ -256,7 +256,7 @@ describe('Pagination', () => {
   });
 
   it('does not show first page button when already in range', () => {
-    render(
+    const { container } = render(
       <Pagination
         currentPage={2}
         totalPages={10}
@@ -269,7 +269,7 @@ describe('Pagination', () => {
   });
 
   it('does not show last page button when already in range', () => {
-    render(
+    const { container } = render(
       <Pagination
         currentPage={9}
         totalPages={10}
@@ -283,7 +283,7 @@ describe('Pagination', () => {
 
   it('handles clicking first page when showing ellipsis', async () => {
     const user = userEvent.setup();
-    render(
+    const { container } = render(
       <Pagination
         currentPage={8}
         totalPages={15}
@@ -299,7 +299,7 @@ describe('Pagination', () => {
 
   it('handles clicking last page when showing ellipsis', async () => {
     const user = userEvent.setup();
-    render(
+    const { container } = render(
       <Pagination
         currentPage={3}
         totalPages={15}

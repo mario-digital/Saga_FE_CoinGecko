@@ -4,7 +4,6 @@
  */
 
 import dynamic from 'next/dynamic';
-import { Skeleton } from '@/components/ui/skeleton';
 
 const ChartSkeleton = () => (
   <div className="w-full h-[400px] bg-gray-100 dark:bg-gray-800 rounded-lg animate-pulse flex items-center justify-center">

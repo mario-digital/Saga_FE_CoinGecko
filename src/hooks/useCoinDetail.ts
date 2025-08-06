@@ -36,6 +36,18 @@ export const useCoinDetail = (coinId: string): UseCoinDetailReturn => {
       revalidateOnFocus: false,
       revalidateOnReconnect: true,
       dedupingInterval: 60000, // 1 minute cache
+      shouldRetryOnError: false, // Don't retry on errors (especially 404s)
+      errorRetryCount: 0, // No automatic retries
+      onErrorRetry: (error, _key, _config, revalidate, { retryCount }) => {
+        // Never retry on 404 - coin doesn't exist
+        if (error.status === 404) return;
+        
+        // Only retry other errors up to 3 times with exponential backoff
+        if (retryCount >= 3) return;
+        
+        // Retry other errors after delay
+        setTimeout(() => revalidate({ retryCount }), 5000 * Math.pow(2, retryCount));
+      },
     }
   );
 

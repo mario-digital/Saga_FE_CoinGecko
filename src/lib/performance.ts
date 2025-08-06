@@ -5,16 +5,16 @@
 /**
  * Debounce function to limit execution frequency
  */
-export function debounce<T extends (...args: any[]) => any>(
+export function debounce<T extends (..._args: any[]) => any>(
   func: T,
   wait: number
-): (...args: Parameters<T>) => void {
+): (..._args: Parameters<T>) => void {
   let timeout: NodeJS.Timeout;
 
-  return function executedFunction(...args: Parameters<T>) {
+  return function executedFunction(..._args: Parameters<T>) {
     const later = () => {
       clearTimeout(timeout);
-      func(...args);
+      func(..._args);
     };
 
     clearTimeout(timeout);
@@ -25,15 +25,15 @@ export function debounce<T extends (...args: any[]) => any>(
 /**
  * Throttle function to limit execution frequency
  */
-export function throttle<T extends (...args: any[]) => any>(
+export function throttle<T extends (..._args: any[]) => any>(
   func: T,
   limit: number
-): (...args: Parameters<T>) => void {
+): (..._args: Parameters<T>) => void {
   let inThrottle: boolean;
 
-  return function executedFunction(this: any, ...args: Parameters<T>) {
+  return function executedFunction(this: any, ..._args: Parameters<T>) {
     if (!inThrottle) {
-      func.apply(this, args);
+      func.apply(this, _args);
       inThrottle = true;
       setTimeout(() => (inThrottle = false), limit);
     }

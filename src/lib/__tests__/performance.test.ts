@@ -91,6 +91,7 @@ describe('throttle', () => {
   });
 
   it('maintains correct this context', () => {
+    // eslint-disable-next-line no-unused-vars
     const mockMethod = jest.fn(function (this: any) {
       return this.value;
     });

@@ -16,7 +16,7 @@ import {
 
 describe('Dialog', () => {
   it('renders all dialog components', () => {
-    render(
+    const { container } = render(
       <Dialog>
         <DialogTrigger>Open Dialog</DialogTrigger>
         <DialogContent>
@@ -50,7 +50,7 @@ describe('Dialog', () => {
   });
 
   it('opens dialog when trigger is clicked', async () => {
-    render(
+    const { container } = render(
       <Dialog>
         <DialogTrigger>Open</DialogTrigger>
         <DialogContent>
@@ -70,7 +70,7 @@ describe('Dialog', () => {
   });
 
   it('closes dialog when close button is clicked', async () => {
-    render(
+    const { container } = render(
       <Dialog defaultOpen>
         <DialogContent>
           <DialogTitle>Closeable Dialog</DialogTitle>
@@ -103,7 +103,7 @@ describe('Dialog', () => {
   });
 
   it('renders DialogOverlay with custom className', () => {
-    render(
+    const { container } = render(
       <Dialog defaultOpen>
         <DialogPortal>
           <DialogOverlay className="custom-overlay" />
@@ -119,7 +119,7 @@ describe('Dialog', () => {
   });
 
   it('applies custom className to DialogContent', () => {
-    render(
+    const { container } = render(
       <Dialog defaultOpen>
         <DialogContent className="custom-content">
           <DialogTitle>Custom Content</DialogTitle>
@@ -133,7 +133,7 @@ describe('Dialog', () => {
   });
 
   it('renders DialogHeader with custom className', () => {
-    render(
+    const { container } = render(
       <Dialog defaultOpen>
         <DialogContent>
           <DialogHeader className="custom-header">
@@ -150,7 +150,7 @@ describe('Dialog', () => {
   });
 
   it('renders DialogFooter with custom className', () => {
-    render(
+    const { container } = render(
       <Dialog defaultOpen>
         <DialogContent>
           <DialogTitle>Dialog with Footer</DialogTitle>
@@ -168,7 +168,7 @@ describe('Dialog', () => {
   });
 
   it('renders DialogTitle with custom className', () => {
-    render(
+    const { container } = render(
       <Dialog defaultOpen>
         <DialogContent>
           <DialogTitle className="custom-title">Custom Title</DialogTitle>
@@ -182,7 +182,7 @@ describe('Dialog', () => {
   });
 
   it('renders DialogDescription with custom className', () => {
-    render(
+    const { container } = render(
       <Dialog defaultOpen>
         <DialogContent>
           <DialogTitle>Dialog Title</DialogTitle>
@@ -233,7 +233,7 @@ describe('Dialog', () => {
   });
 
   it('renders DialogClose component', () => {
-    render(
+    const { container } = render(
       <Dialog defaultOpen>
         <DialogContent>
           <DialogTitle>Dialog with Custom Close</DialogTitle>
@@ -249,7 +249,7 @@ describe('Dialog', () => {
   it('supports keyboard navigation', async () => {
     const user = userEvent.setup();
 
-    render(
+    const { container } = render(
       <Dialog>
         <DialogTrigger>Open</DialogTrigger>
         <DialogContent>
@@ -279,7 +279,7 @@ describe('Dialog', () => {
   });
 
   it('traps focus within dialog', async () => {
-    render(
+    const { container } = render(
       <Dialog defaultOpen>
         <DialogContent>
           <DialogTitle>Focus Trap Dialog</DialogTitle>
@@ -322,7 +322,7 @@ describe('Dialog', () => {
   });
 
   it('supports custom props on all components', () => {
-    render(
+    const { container } = render(
       <Dialog defaultOpen>
         <DialogContent data-testid="dialog-content">
           <DialogHeader data-testid="dialog-header">
@@ -346,7 +346,7 @@ describe('Dialog', () => {
   });
 
   it('handles nested dialogs', () => {
-    render(
+    const { container } = render(
       <Dialog defaultOpen>
         <DialogContent>
           <DialogTitle>Parent Dialog</DialogTitle>
@@ -378,7 +378,7 @@ describe('Dialog', () => {
   });
 
   it('renders close button with Cross2Icon', () => {
-    render(
+    const { container } = render(
       <Dialog defaultOpen>
         <DialogContent>
           <DialogTitle>Icon Dialog</DialogTitle>
@@ -396,7 +396,7 @@ describe('Dialog', () => {
   });
 
   it('applies responsive styles to DialogHeader', () => {
-    render(
+    const { container } = render(
       <Dialog defaultOpen>
         <DialogContent>
           <DialogHeader>
@@ -412,7 +412,7 @@ describe('Dialog', () => {
   });
 
   it('applies responsive styles to DialogFooter', () => {
-    render(
+    const { container } = render(
       <Dialog defaultOpen>
         <DialogContent>
           <DialogTitle>Dialog with Footer</DialogTitle>
@@ -434,7 +434,7 @@ describe('Dialog', () => {
     const titleRef = React.createRef<HTMLHeadingElement>();
     const descriptionRef = React.createRef<HTMLParagraphElement>();
 
-    render(
+    const { container } = render(
       <Dialog defaultOpen>
         <DialogPortal>
           <DialogOverlay ref={overlayRef} />
@@ -455,7 +455,7 @@ describe('Dialog', () => {
   });
 
   it('handles dialog without any content', () => {
-    render(
+    const { container } = render(
       <Dialog>
         <DialogTrigger>Empty Dialog</DialogTrigger>
         <DialogContent aria-describedby={undefined}>
@@ -469,7 +469,7 @@ describe('Dialog', () => {
   });
 
   it('allows custom trigger element with asChild', () => {
-    render(
+    const { container } = render(
       <Dialog>
         <DialogTrigger asChild>
           <div role="button" tabIndex={0}>

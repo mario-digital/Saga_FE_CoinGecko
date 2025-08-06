@@ -70,7 +70,7 @@ describe('Header', () => {
   });
 
   it('renders header with title and description', () => {
-    render(<Header />);
+    const { container } = render(<Header />);
 
     expect(screen.getByText('Cryptocurrency Market')).toBeInTheDocument();
     expect(
@@ -79,7 +79,7 @@ describe('Header', () => {
   });
 
   it('renders search trigger button', () => {
-    render(<Header />);
+    const { container } = render(<Header />);
 
     const searchButton = screen.getByText('Search coins...');
     expect(searchButton).toBeInTheDocument();
@@ -88,7 +88,7 @@ describe('Header', () => {
 
   it('opens search dialog when clicking search button', async () => {
     const user = userEvent.setup();
-    render(<Header />);
+    const { container } = render(<Header />);
 
     const searchButton = screen.getByText('Search coins...');
     await user.click(searchButton);
@@ -99,7 +99,7 @@ describe('Header', () => {
 
   it('navigates to coin page when selecting a coin', async () => {
     const user = userEvent.setup();
-    render(<Header />);
+    const { container } = render(<Header />);
 
     // Open search dialog
     const searchButton = screen.getByText('Search coins...');
@@ -115,7 +115,7 @@ describe('Header', () => {
 
   it('clears search when selecting a coin', async () => {
     const user = userEvent.setup();
-    render(<Header />);
+    const { container } = render(<Header />);
 
     // Open search dialog
     const searchButton = screen.getByText('Search coins...');
@@ -146,7 +146,7 @@ describe('Header', () => {
       searchError: 'Test error',
     });
 
-    render(<Header />);
+    const { container } = render(<Header />);
 
     // Open search to trigger SearchCommand rendering
     const searchButton = screen.getByText('Search coins...');
@@ -157,7 +157,7 @@ describe('Header', () => {
   });
 
   it('has proper button accessibility attributes', () => {
-    render(<Header />);
+    const { container } = render(<Header />);
 
     const searchButton = screen.getByText('Search coins...');
     expect(searchButton).toBeInTheDocument();
@@ -167,14 +167,14 @@ describe('Header', () => {
   });
 
   it('shows keyboard shortcut hint on larger screens', () => {
-    render(<Header />);
+    const { container } = render(<Header />);
 
     const shortcutElement = screen.getByText('⌘K');
     expect(shortcutElement).toHaveClass('hidden', 'md:inline-block');
   });
 
   it('has hover effects on search button', () => {
-    render(<Header />);
+    const { container } = render(<Header />);
 
     const searchButton = screen.getByText('Search coins...');
     expect(searchButton).toHaveClass(
@@ -185,7 +185,7 @@ describe('Header', () => {
 
   it('maintains search dialog state correctly', async () => {
     const user = userEvent.setup();
-    render(<Header />);
+    const { container } = render(<Header />);
 
     // Initially closed
     expect(screen.queryByText('Select Bitcoin')).not.toBeInTheDocument();
@@ -205,7 +205,7 @@ describe('Header', () => {
 
   describe('Mobile menu', () => {
     it('toggles mobile menu when clicking menu button', () => {
-      render(<Header />);
+    const { container } = render(<Header />);
 
       // Menu should be closed initially
       const menuButton = screen.getByLabelText('Open menu');
@@ -222,7 +222,6 @@ describe('Header', () => {
       expect(screen.getByText('Home')).toBeInTheDocument();
       expect(screen.getByText('Top 10 Coins')).toBeInTheDocument();
       expect(screen.getByText('Search Coins')).toBeInTheDocument();
-      expect(screen.getByText('About')).toBeInTheDocument();
 
       // Close menu
       fireEvent.click(closeButton);
@@ -232,7 +231,7 @@ describe('Header', () => {
     });
 
     it('closes mobile menu when clicking a navigation link', () => {
-      render(<Header />);
+    const { container } = render(<Header />);
 
       // Open menu
       const menuButton = screen.getByLabelText('Open menu');
@@ -247,7 +246,7 @@ describe('Header', () => {
     });
 
     it('opens search and closes menu when clicking search in mobile menu', () => {
-      render(<Header />);
+    const { container } = render(<Header />);
 
       // Open menu
       const menuButton = screen.getByLabelText('Open menu');
@@ -263,7 +262,7 @@ describe('Header', () => {
     });
 
     it('has correct mobile menu link hrefs', () => {
-      render(<Header />);
+    const { container } = render(<Header />);
 
       // Open menu
       const menuButton = screen.getByLabelText('Open menu');
@@ -274,9 +273,6 @@ describe('Header', () => {
 
       const top10Link = screen.getByText('Top 10 Coins').closest('a');
       expect(top10Link).toHaveAttribute('href', '/?filter=top10');
-
-      const aboutLink = screen.getByText('About').closest('a');
-      expect(aboutLink).toHaveAttribute('href', '/about');
     });
 
     it('applies correct mobile menu styling classes', () => {
@@ -300,7 +296,7 @@ describe('Header', () => {
 
   describe('Mobile search', () => {
     it('opens search dialog when clicking mobile search button', () => {
-      render(<Header />);
+    const { container } = render(<Header />);
 
       // Find mobile search button by aria-label
       const searchButton = screen.getByLabelText('Search');
@@ -311,7 +307,7 @@ describe('Header', () => {
     });
 
     it('renders mobile search button with correct classes', () => {
-      render(<Header />);
+    const { container } = render(<Header />);
 
       const searchButton = screen.getByLabelText('Search');
       expect(searchButton).toHaveClass(
@@ -328,7 +324,7 @@ describe('Header', () => {
 
   describe('Responsive text', () => {
     it('renders responsive title text', () => {
-      render(<Header />);
+    const { container } = render(<Header />);
 
       // Desktop title
       const desktopTitle = screen.getByText('Cryptocurrency Market');
@@ -340,7 +336,7 @@ describe('Header', () => {
     });
 
     it('hides description on mobile', () => {
-      render(<Header />);
+    const { container } = render(<Header />);
 
       const description = screen.getByText(
         'Real-time cryptocurrency prices and market data'
@@ -351,7 +347,7 @@ describe('Header', () => {
 
   describe('Theme toggle', () => {
     it('renders theme toggle buttons', () => {
-      render(<Header />);
+    const { container } = render(<Header />);
 
       // Should have two theme toggles (desktop and mobile)
       const themeToggles = screen.getAllByTestId('theme-toggle');
@@ -382,7 +378,7 @@ describe('Header', () => {
     });
 
     it('applies mobile menu icon classes', () => {
-      render(<Header />);
+    const { container } = render(<Header />);
 
       const menuButton = screen.getByLabelText('Open menu');
       const menuIcon = menuButton.querySelector('.w-5.h-5');
@@ -392,7 +388,7 @@ describe('Header', () => {
 
   describe('Navigation interactions', () => {
     it('navigates correctly from mobile menu links', () => {
-      render(<Header />);
+    const { container } = render(<Header />);
 
       // Open menu
       const menuButton = screen.getByLabelText('Open menu');
@@ -407,7 +403,7 @@ describe('Header', () => {
     });
 
     it('applies hover styles to mobile menu items', () => {
-      render(<Header />);
+    const { container } = render(<Header />);
 
       // Open menu
       const menuButton = screen.getByLabelText('Open menu');

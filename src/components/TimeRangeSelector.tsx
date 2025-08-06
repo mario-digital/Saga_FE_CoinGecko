@@ -8,7 +8,7 @@ import { TimeRange } from '@/hooks/usePriceHistory';
 
 interface TimeRangeSelectorProps {
   value: TimeRange;
-  onChange: (value: TimeRange) => void;
+  onChange: (_value: TimeRange) => void;
 }
 
 const timeRangeOptions: { value: TimeRange; label: string }[] = [

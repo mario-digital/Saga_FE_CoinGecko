@@ -2,7 +2,7 @@
 
 import { useState, type ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
-import { Search, Menu, X, Home, TrendingUp, Info } from 'lucide-react';
+import { Search, Menu, X, Home, TrendingUp } from 'lucide-react';
 import { SearchCommand } from '@/components/SearchCommand';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { useSearch } from '@/hooks/useSearch';
@@ -15,7 +15,7 @@ export function Header(): ReactNode {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const {
-    searchQuery,
+    searchQuery: _searchQuery,
     searchResults,
     isSearching,
     searchError,
@@ -130,14 +130,6 @@ export function Header(): ReactNode {
               <Search className="w-4 h-4" />
               Search Coins
             </button>
-            <Link
-              href="/about"
-              onClick={closeMobileMenu}
-              className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors"
-            >
-              <Info className="w-4 h-4" />
-              About
-            </Link>
           </nav>
         </div>
       </header>

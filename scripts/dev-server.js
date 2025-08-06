@@ -11,7 +11,6 @@ const net = require('net');
 // Configuration
 const DEFAULT_PORT = 3000;
 const MAX_PORT = 3010; // Will try ports 3000-3010
-const HOST = 'localhost';
 
 /**
  * Check if a port is available

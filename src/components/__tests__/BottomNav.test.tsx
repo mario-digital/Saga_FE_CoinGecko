@@ -52,7 +52,7 @@ describe('BottomNav', () => {
   });
 
   it('renders all navigation items', () => {
-    render(
+    const { container } = render(
       <BottomNav onSearchOpen={mockOnSearchOpen} onMenuOpen={mockOnMenuOpen} />
     );
 
@@ -63,7 +63,7 @@ describe('BottomNav', () => {
   });
 
   it('renders all icons', () => {
-    render(
+    const { container } = render(
       <BottomNav onSearchOpen={mockOnSearchOpen} onMenuOpen={mockOnMenuOpen} />
     );
 
@@ -75,7 +75,7 @@ describe('BottomNav', () => {
 
   it('highlights active navigation item for home', () => {
     (usePathname as jest.Mock).mockReturnValue('/');
-    render(
+    const { container } = render(
       <BottomNav onSearchOpen={mockOnSearchOpen} onMenuOpen={mockOnMenuOpen} />
     );
 
@@ -85,7 +85,7 @@ describe('BottomNav', () => {
 
   it('highlights active navigation item for top 10', () => {
     (usePathname as jest.Mock).mockReturnValue('/?filter=top10');
-    render(
+    const { container } = render(
       <BottomNav onSearchOpen={mockOnSearchOpen} onMenuOpen={mockOnMenuOpen} />
     );
 
@@ -95,7 +95,7 @@ describe('BottomNav', () => {
 
   it('applies inactive styles to non-active items', () => {
     (usePathname as jest.Mock).mockReturnValue('/');
-    render(
+    const { container } = render(
       <BottomNav onSearchOpen={mockOnSearchOpen} onMenuOpen={mockOnMenuOpen} />
     );
 
@@ -104,7 +104,7 @@ describe('BottomNav', () => {
   });
 
   it('calls onSearchOpen when search button is clicked', () => {
-    render(
+    const { container } = render(
       <BottomNav onSearchOpen={mockOnSearchOpen} onMenuOpen={mockOnMenuOpen} />
     );
 
@@ -115,7 +115,7 @@ describe('BottomNav', () => {
   });
 
   it('calls onMenuOpen when more button is clicked', () => {
-    render(
+    const { container } = render(
       <BottomNav onSearchOpen={mockOnSearchOpen} onMenuOpen={mockOnMenuOpen} />
     );
 
@@ -126,7 +126,7 @@ describe('BottomNav', () => {
   });
 
   it('renders links with correct href attributes', () => {
-    render(
+    const { container } = render(
       <BottomNav onSearchOpen={mockOnSearchOpen} onMenuOpen={mockOnMenuOpen} />
     );
 
@@ -168,7 +168,7 @@ describe('BottomNav', () => {
   });
 
   it('applies hover styles to navigation items', () => {
-    render(
+    const { container } = render(
       <BottomNav onSearchOpen={mockOnSearchOpen} onMenuOpen={mockOnMenuOpen} />
     );
 
@@ -193,7 +193,7 @@ describe('BottomNav', () => {
   });
 
   it('handles keyboard navigation for buttons', () => {
-    render(
+    const { container } = render(
       <BottomNav onSearchOpen={mockOnSearchOpen} onMenuOpen={mockOnMenuOpen} />
     );
 
@@ -212,7 +212,7 @@ describe('BottomNav', () => {
   });
 
   it('renders buttons as buttons and links as links', () => {
-    render(
+    const { container } = render(
       <BottomNav onSearchOpen={mockOnSearchOpen} onMenuOpen={mockOnMenuOpen} />
     );
 
@@ -232,7 +232,7 @@ describe('BottomNav', () => {
   });
 
   it('applies flex layout to each nav item', () => {
-    render(
+    const { container } = render(
       <BottomNav onSearchOpen={mockOnSearchOpen} onMenuOpen={mockOnMenuOpen} />
     );
 
@@ -257,7 +257,7 @@ describe('BottomNav', () => {
   });
 
   it('does not call callbacks on link clicks', () => {
-    render(
+    const { container } = render(
       <BottomNav onSearchOpen={mockOnSearchOpen} onMenuOpen={mockOnMenuOpen} />
     );
 

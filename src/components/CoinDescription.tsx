@@ -14,7 +14,6 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
   Collapsible,
-  CollapsibleContent,
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 import { CoinDetailData } from '@/types/coingecko';

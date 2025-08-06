@@ -16,12 +16,12 @@ import { SearchCoin } from '@/types/coingecko';
 
 interface SearchCommandProps {
   open: boolean;
-  onOpenChange: (open: boolean) => void;
+  onOpenChange: (_open: boolean) => void;
   searchResults: SearchCoin[] | undefined;
   isSearching: boolean;
   searchError: string | null;
-  onSearch: (query: string) => void;
-  onSelectCoin: (coinId: string) => void;
+  onSearch: (_query: string) => void;
+  onSelectCoin: (_coinId: string) => void;
 }
 
 export function SearchCommand({

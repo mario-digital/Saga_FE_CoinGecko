@@ -81,14 +81,14 @@ export interface PaginationInfo {
 // Utility types for component props
 export type CoinCardProps = {
   coin: CoinData;
-  onClick?: (coinId: string) => void;
+  onClick?: (_coinId: string) => void;
   className?: string;
 };
 
 export type PaginationProps = {
   currentPage: number;
   totalPages: number;
-  onPageChange: (page: number) => void;
+  onPageChange: (_page: number) => void;
   disabled?: boolean;
   className?: string;
 };

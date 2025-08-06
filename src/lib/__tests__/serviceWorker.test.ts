@@ -13,14 +13,14 @@ describe('Service Worker Functions', () => {
   let consoleErrorSpy: jest.SpyInstance;
   let mockRegistration: any;
   let mockServiceWorker: any;
-  let originalSetInterval: typeof setInterval;
+  let _originalSetInterval: typeof setInterval;
 
   beforeEach(() => {
     jest.clearAllMocks();
     jest.useFakeTimers();
 
     // Store original setInterval
-    originalSetInterval = global.setInterval;
+    _originalSetInterval = global.setInterval;
 
     consoleLogSpy = jest.spyOn(console, 'log').mockImplementation();
     consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();

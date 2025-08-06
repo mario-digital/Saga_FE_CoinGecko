@@ -1,4 +1,4 @@
-import { render, screen, waitFor, cleanup, act } from '@testing-library/react';
+import { render, screen, cleanup, act, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useRouter, useSearchParams } from 'next/navigation';
 import HomePage from '@/app/page';
@@ -22,7 +22,7 @@ jest.mock('@/components/PullToRefresh', () => ({
 // Mock next/dynamic to avoid issues with dynamic imports in tests
 jest.mock('next/dynamic', () => ({
   __esModule: true,
-  default: (fn: any, options?: any) => {
+  default: (fn: any, _options?: any) => {
     // For PullToRefresh, return a simple component that renders children
     if (fn.toString().includes('PullToRefresh')) {
       const Component = ({ children }: { children: React.ReactNode }) =>

@@ -4,7 +4,7 @@ import { StickyListHeader } from '../StickyListHeader';
 
 describe('StickyListHeader', () => {
   it('renders children content', () => {
-    render(
+    const { container } = render(
       <StickyListHeader>
         <div>Header Content</div>
       </StickyListHeader>
@@ -36,7 +36,7 @@ describe('StickyListHeader', () => {
   });
 
   it('renders multiple children', () => {
-    render(
+    const { container } = render(
       <StickyListHeader>
         <div>First Child</div>
         <div>Second Child</div>

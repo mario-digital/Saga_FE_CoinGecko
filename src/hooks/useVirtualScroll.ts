@@ -46,7 +46,7 @@ export function useVirtualScroll<T>(
   const totalHeight = items.length * itemHeight;
 
   // Debounced scroll handler
-  const handleScroll = useCallback(
+  const _handleScroll = useCallback(
     (scrollPosition: number) => {
       if (scrollTimeoutRef.current) {
         clearTimeout(scrollTimeoutRef.current);

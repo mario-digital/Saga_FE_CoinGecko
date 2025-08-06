@@ -6,7 +6,7 @@ const nextConfig = {
   },
   // Enable static export for flexible deployment
   // output: 'export', // Temporarily disabled to fix CSS issues
-  trailingSlash: true,
+  trailingSlash: false,
   images: {
     unoptimized: true,
     formats: ['image/avif', 'image/webp'],

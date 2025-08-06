@@ -1,4 +1,4 @@
-import { renderHook } from '@testing-library/react';
+import { renderHook, act, waitFor } from '@testing-library/react';
 import { useFilteredCoins } from '@/hooks/useFilteredCoins';
 import { CoinData } from '@/types/coingecko';
 

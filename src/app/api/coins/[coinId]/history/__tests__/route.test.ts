@@ -17,22 +17,26 @@ jest.mock('next/server', () => ({
 }));
 
 import { GET } from '../route';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 
 // Mock the global fetch
 global.fetch = jest.fn();
 
 describe('GET /api/coins/[coinId]/history', () => {
   let consoleErrorSpy: jest.SpyInstance;
+  let consoleWarnSpy: jest.SpyInstance;
 
   beforeEach(() => {
     jest.clearAllMocks();
     // Suppress console.error for expected errors
     consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    // Suppress console.warn for rate limit warnings
+    consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
   });
 
   afterEach(() => {
     consoleErrorSpy.mockRestore();
+    consoleWarnSpy.mockRestore();
   });
 
   it('should fetch price history data successfully with default days', async () => {
@@ -121,8 +125,8 @@ describe('GET /api/coins/[coinId]/history', () => {
     const response = await GET(request, { params });
     const data = await response.json();
 
-    expect(data).toEqual({ error: 'Failed to fetch price history' });
-    expect(response.status).toBe(500);
+    expect(data).toEqual({ error: 'API rate limit exceeded. Please try again later.' });
+    expect(response.status).toBe(429);
   });
 
   it('should handle network errors', async () => {
@@ -172,7 +176,7 @@ describe('GET /api/coins/[coinId]/history', () => {
       'http://localhost:3000/api/coins/ethereum/history'
     );
     const params = Promise.resolve({ coinId: 'ethereum' });
-    const response = await GET(request, { params });
+    const _response = await GET(request, { params });
 
     expect(global.fetch).toHaveBeenCalledWith(
       expect.stringContaining('coins/ethereum/market_chart'),

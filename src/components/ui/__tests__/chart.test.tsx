@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import {
   ChartContainer,
   ChartTooltip,
@@ -26,7 +26,7 @@ describe('Chart Components', () => {
 
   describe('ChartContainer', () => {
     it('renders children with ResponsiveContainer', () => {
-      render(
+    const { container } = render(
         <ChartContainer config={mockConfig}>
           <div>Chart Content</div>
         </ChartContainer>
@@ -37,7 +37,7 @@ describe('Chart Components', () => {
     });
 
     it('applies custom className', () => {
-      const { container } = render(
+    const { container } = render(
         <ChartContainer config={mockConfig} className="custom-class">
           <div>Content</div>
         </ChartContainer>
@@ -48,7 +48,7 @@ describe('Chart Components', () => {
     });
 
     it('sets config in context', () => {
-      render(
+    const { container } = render(
         <ChartContainer config={mockConfig}>
           <ChartTooltipContent />
         </ChartContainer>
@@ -59,7 +59,7 @@ describe('Chart Components', () => {
     });
 
     it('applies default aspect ratio', () => {
-      const { container } = render(
+    const { container } = render(
         <ChartContainer config={mockConfig}>
           <div>Content</div>
         </ChartContainer>
@@ -70,7 +70,7 @@ describe('Chart Components', () => {
     });
 
     it('renders with custom id', () => {
-      const { container } = render(
+    const { container } = render(
         <ChartContainer config={mockConfig} id="test-chart">
           <div>Content</div>
         </ChartContainer>
@@ -85,7 +85,7 @@ describe('Chart Components', () => {
 
   describe('ChartTooltip', () => {
     it('renders Tooltip component from recharts', () => {
-      render(
+    const { container } = render(
         <ChartContainer config={mockConfig}>
           <ChartTooltip />
         </ChartContainer>
@@ -95,7 +95,7 @@ describe('Chart Components', () => {
     });
 
     it('uses ChartTooltipContent as default content', () => {
-      render(
+    const { container } = render(
         <ChartContainer config={mockConfig}>
           <ChartTooltip />
         </ChartContainer>
@@ -107,7 +107,7 @@ describe('Chart Components', () => {
     it('accepts custom content', () => {
       const CustomContent = () => <div>Custom Tooltip</div>;
 
-      render(
+    const { container } = render(
         <ChartContainer config={mockConfig}>
           <ChartTooltip content={<CustomContent />} />
         </ChartContainer>
@@ -117,7 +117,7 @@ describe('Chart Components', () => {
     });
 
     it('hides arrow by default', () => {
-      render(
+    const { container } = render(
         <ChartContainer config={mockConfig}>
           <ChartTooltip cursor={false} />
         </ChartContainer>
@@ -134,7 +134,7 @@ describe('Chart Components', () => {
         { dataKey: 'bar', value: 200, payload: { fill: 'blue' } },
       ];
 
-      render(
+    const { container } = render(
         <ChartContainer config={mockConfig}>
           <ChartTooltipContent
             active={true}
@@ -148,7 +148,7 @@ describe('Chart Components', () => {
     });
 
     it('returns null when not active', () => {
-      const { container } = render(
+    const { container } = render(
         <ChartContainer config={mockConfig}>
           <ChartTooltipContent active={false} />
         </ChartContainer>
@@ -168,7 +168,7 @@ describe('Chart Components', () => {
         },
       ];
 
-      render(
+    const { container } = render(
         <ChartContainer config={mockConfig}>
           <ChartTooltipContent
             active={true}
@@ -187,7 +187,7 @@ describe('Chart Components', () => {
         { dataKey: 'line', value: 100, name: 'line', payload: { fill: 'red' } },
       ];
 
-      render(
+    const { container } = render(
         <ChartContainer config={mockConfig}>
           <ChartTooltipContent
             active={true}
@@ -212,7 +212,7 @@ describe('Chart Components', () => {
       ];
       const formatter = (value: any) => `$${value}`;
 
-      render(
+    const { container } = render(
         <ChartContainer config={mockConfig}>
           <ChartTooltipContent
             active={true}
@@ -230,7 +230,7 @@ describe('Chart Components', () => {
         { dataKey: 'line', value: 100, name: 'line', payload: { fill: 'red' } },
       ];
 
-      const { container } = render(
+    const { container } = render(
         <ChartContainer config={mockConfig}>
           <ChartTooltipContent
             active={true}
@@ -258,7 +258,7 @@ describe('Chart Components', () => {
         'nested.value': { label: 'Nested Value', color: 'green' },
       };
 
-      render(
+    const { container } = render(
         <ChartContainer config={nestedConfig}>
           <ChartTooltipContent active={true} payload={payload} />
         </ChartContainer>
@@ -271,7 +271,7 @@ describe('Chart Components', () => {
 
   describe('ChartLegend', () => {
     it('renders Legend component from recharts', () => {
-      render(
+    const { container } = render(
         <ChartContainer config={mockConfig}>
           <ChartLegend />
         </ChartContainer>
@@ -281,7 +281,7 @@ describe('Chart Components', () => {
     });
 
     it('uses ChartLegendContent as default content', () => {
-      render(
+    const { container } = render(
         <ChartContainer config={mockConfig}>
           <ChartLegend />
         </ChartContainer>
@@ -293,7 +293,7 @@ describe('Chart Components', () => {
     it('accepts custom content', () => {
       const CustomLegend = () => <div>Custom Legend</div>;
 
-      render(
+    const { container } = render(
         <ChartContainer config={mockConfig}>
           <ChartLegend content={<CustomLegend />} />
         </ChartContainer>
@@ -310,7 +310,7 @@ describe('Chart Components', () => {
         { value: 'bar', dataKey: 'bar' },
       ];
 
-      render(
+    const { container } = render(
         <ChartContainer config={mockConfig}>
           <ChartLegendContent payload={payload} />
         </ChartContainer>
@@ -323,7 +323,7 @@ describe('Chart Components', () => {
     it('handles vertical align', () => {
       const payload = [{ value: 'line', dataKey: 'line' }];
 
-      const { container } = render(
+    const { container } = render(
         <ChartContainer config={mockConfig}>
           <ChartLegendContent payload={payload} verticalAlign="top" />
         </ChartContainer>
@@ -336,7 +336,7 @@ describe('Chart Components', () => {
     it('applies custom className', () => {
       const payload = [{ value: 'line', dataKey: 'line' }];
 
-      const { container } = render(
+    const { container } = render(
         <ChartContainer config={mockConfig}>
           <ChartLegendContent payload={payload} className="custom-legend" />
         </ChartContainer>
@@ -349,7 +349,7 @@ describe('Chart Components', () => {
     it('hides icon when specified', () => {
       const payload = [{ value: 'line', dataKey: 'line' }];
 
-      const { container } = render(
+    const { container } = render(
         <ChartContainer config={mockConfig}>
           <ChartLegendContent payload={payload} hideIcon />
         </ChartContainer>
@@ -360,7 +360,7 @@ describe('Chart Components', () => {
     });
 
     it('returns null when no payload', () => {
-      const { container } = render(
+    const { container } = render(
         <ChartContainer config={mockConfig}>
           <ChartLegendContent />
         </ChartContainer>
@@ -373,7 +373,7 @@ describe('Chart Components', () => {
 
   describe('ChartStyle', () => {
     it('renders style element with CSS variables', () => {
-      const { container } = render(
+    const { container } = render(
         <ChartStyle id="test" config={mockConfig} />
       );
 
@@ -383,7 +383,7 @@ describe('Chart Components', () => {
     });
 
     it('generates CSS variables for each config item', () => {
-      const { container } = render(
+    const { container } = render(
         <ChartStyle id="chart-1" config={mockConfig} />
       );
 
@@ -399,7 +399,7 @@ describe('Chart Components', () => {
         tertiary: { label: 'Tertiary', color: 'rgb(0, 255, 0)' },
       };
 
-      const { container } = render(
+    const { container } = render(
         <ChartStyle id="multi-color" config={config} />
       );
 

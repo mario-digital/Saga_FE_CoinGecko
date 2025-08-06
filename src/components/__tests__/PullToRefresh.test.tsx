@@ -25,7 +25,7 @@ describe('PullToRefresh', () => {
   });
 
   it('renders children correctly', () => {
-    render(
+    const { container } = render(
       <PullToRefresh onRefresh={mockOnRefresh}>
         <div>Test Content</div>
       </PullToRefresh>
@@ -94,7 +94,7 @@ describe('PullToRefresh', () => {
   it.skip('triggers refresh when released after threshold', async () => {
     mockOnRefresh.mockResolvedValue(undefined);
 
-    render(
+    const { container } = render(
       <PullToRefresh onRefresh={mockOnRefresh}>
         <div>Test Content</div>
       </PullToRefresh>
@@ -118,7 +118,7 @@ describe('PullToRefresh', () => {
   });
 
   it('does not trigger refresh when released before threshold', async () => {
-    render(
+    const { container } = render(
       <PullToRefresh onRefresh={mockOnRefresh}>
         <div>Test Content</div>
       </PullToRefresh>

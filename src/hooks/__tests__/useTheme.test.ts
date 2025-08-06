@@ -1,4 +1,4 @@
-import { renderHook, act } from '@testing-library/react';
+import { renderHook, act, waitFor } from '@testing-library/react';
 import { useTheme } from '../useTheme';
 
 describe('useTheme', () => {
@@ -110,7 +110,7 @@ describe('useTheme', () => {
   });
 
   it.skip('responds to system theme changes', () => {
-    let changeListener: ((e: any) => void) | null = null;
+    let changeListener: ((_e: any) => void) | null = null;
 
     window.matchMedia = jest.fn().mockImplementation(query => ({
       matches: false,

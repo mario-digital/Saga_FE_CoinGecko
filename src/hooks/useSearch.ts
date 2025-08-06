@@ -15,7 +15,7 @@ interface UseSearchReturn {
   searchResults: SearchCoin[] | undefined;
   isSearching: boolean;
   searchError: string | null;
-  setSearchQuery: (query: string) => void;
+  setSearchQuery: (_query: string) => void;
   clearSearch: () => void;
 }
 

@@ -1,21 +1,32 @@
-import { renderHook, waitFor, act } from '@testing-library/react';
+import React from 'react';
+import { renderHook, act, waitFor } from '@testing-library/react';
+import { SWRConfig } from 'swr';
 import { usePriceHistory, TimeRange } from '../usePriceHistory';
-import { api } from '@/lib/api';
+import { fetcher } from '@/lib/fetcher';
 
-// Mock the API
-jest.mock('@/lib/api');
+// Mock the fetcher
+jest.mock('@/lib/fetcher');
+
+const createWrapper = ({ children }: { children: React.ReactNode }) => (
+  <SWRConfig
+    value={{
+      dedupingInterval: 0,
+      provider: () => new Map(),
+    }}
+  >
+    {children}
+  </SWRConfig>
+);
 
 describe('usePriceHistory', () => {
-  const mockApi = api as jest.Mocked<typeof api>;
+  const mockFetcher = fetcher as jest.MockedFunction<typeof fetcher>;
 
   beforeEach(() => {
     jest.clearAllMocks();
-    jest.useFakeTimers();
   });
 
   afterEach(() => {
-    jest.clearAllTimers();
-    jest.useRealTimers();
+    jest.clearAllMocks();
   });
 
   it('fetches price history data successfully', async () => {
@@ -26,23 +37,24 @@ describe('usePriceHistory', () => {
       ],
     };
 
-    mockApi.getPriceHistory = jest.fn().mockResolvedValue(mockData);
+    mockFetcher.mockResolvedValue(mockData);
 
-    const { result } = renderHook(() => usePriceHistory('bitcoin', '7d'));
+    const { result } = renderHook(() => usePriceHistory('bitcoin', '7d'), {
+      wrapper: createWrapper,
+    });
 
     // Initial state
     expect(result.current.isLoading).toBe(true);
     expect(result.current.data).toBeNull();
 
     // Use real timers for async operations
-    jest.useRealTimers();
 
     // Wait for all state updates to complete
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
       expect(result.current.data).toEqual([
-        { date: '1/1/2021', price: 29000 },
-        { date: '1/2/2021', price: 32000 },
+        { date: '1/1/2021', formattedDate: expect.any(String), price: 29000 },
+        { date: '1/2/2021', formattedDate: expect.any(String), price: 32000 },
       ]);
     });
 
@@ -50,30 +62,30 @@ describe('usePriceHistory', () => {
   });
 
   it('handles API errors', async () => {
-    mockApi.getPriceHistory = jest
-      .fn()
-      .mockRejectedValue(new Error('API Error'));
+    mockFetcher.mockRejectedValue(new Error('API Error'));
 
-    const { result } = renderHook(() => usePriceHistory('bitcoin', '7d'));
+    const { result } = renderHook(() => usePriceHistory('bitcoin', '7d'), {
+      wrapper: createWrapper,
+    });
 
-    jest.useRealTimers();
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
-      expect(result.current.error).toBe('Failed to fetch price history');
+      expect(result.current.error).toBe('API Error');
     });
 
     expect(result.current.data).toBeNull();
   });
 
   it('handles empty price data', async () => {
-    mockApi.getPriceHistory = jest.fn().mockResolvedValue({
+    mockFetcher.mockResolvedValue({
       prices: [],
     });
 
-    const { result } = renderHook(() => usePriceHistory('bitcoin', '7d'));
+    const { result } = renderHook(() => usePriceHistory('bitcoin', '7d'), {
+      wrapper: createWrapper,
+    });
 
-    jest.useRealTimers();
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
@@ -91,17 +103,18 @@ describe('usePriceHistory', () => {
       ],
     };
 
-    mockApi.getPriceHistory = jest.fn().mockResolvedValue(mockData);
+    mockFetcher.mockResolvedValue(mockData);
 
-    const { result } = renderHook(() => usePriceHistory('bitcoin', '30d'));
+    const { result } = renderHook(() => usePriceHistory('bitcoin', '30d'), {
+      wrapper: createWrapper,
+    });
 
-    jest.useRealTimers();
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
       expect(result.current.data).toEqual([
-        { date: '1/1/2022', price: 50000 },
-        { date: '1/2/2022', price: 51000 },
+        { date: '1/1/2022', formattedDate: expect.any(String), price: 50000 },
+        { date: '1/2/2022', formattedDate: expect.any(String), price: 51000 },
       ]);
     });
   });
@@ -114,8 +127,7 @@ describe('usePriceHistory', () => {
       prices: [[1609459200000, 3000]],
     };
 
-    mockApi.getPriceHistory = jest
-      .fn()
+    mockFetcher
       .mockResolvedValueOnce(mockData1)
       .mockResolvedValueOnce(mockData2);
 
@@ -123,23 +135,23 @@ describe('usePriceHistory', () => {
       ({ coinId, timeRange }) => usePriceHistory(coinId, timeRange),
       {
         initialProps: { coinId: 'bitcoin', timeRange: '7d' as const },
+        wrapper: createWrapper,
       }
     );
 
-    jest.useRealTimers();
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
     });
 
-    expect(mockApi.getPriceHistory).toHaveBeenCalledWith('bitcoin', '7d');
+    expect(mockFetcher).toHaveBeenCalledWith('/api/coins/bitcoin/history?days=7');
 
     await act(async () => {
       rerender({ coinId: 'ethereum', timeRange: '7d' });
     });
 
     await waitFor(() => {
-      expect(mockApi.getPriceHistory).toHaveBeenCalledWith('ethereum', '7d');
+      expect(mockFetcher).toHaveBeenCalledWith('/api/coins/ethereum/history?days=7');
     });
   });
 
@@ -151,8 +163,7 @@ describe('usePriceHistory', () => {
       prices: [[1609459200000, 30000]],
     };
 
-    mockApi.getPriceHistory = jest
-      .fn()
+    mockFetcher
       .mockResolvedValueOnce(mockData1)
       .mockResolvedValueOnce(mockData2);
 
@@ -161,10 +172,10 @@ describe('usePriceHistory', () => {
         usePriceHistory(coinId, timeRange),
       {
         initialProps: { coinId: 'bitcoin', timeRange: '7d' as TimeRange },
+        wrapper: createWrapper,
       }
     );
 
-    jest.useRealTimers();
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
@@ -175,23 +186,23 @@ describe('usePriceHistory', () => {
     });
 
     await waitFor(() => {
-      expect(mockApi.getPriceHistory).toHaveBeenCalledWith('bitcoin', '30d');
+      expect(mockFetcher).toHaveBeenCalledWith('/api/coins/bitcoin/history?days=30');
     });
   });
 
   it('provides retry function', async () => {
-    mockApi.getPriceHistory = jest
-      .fn()
+    mockFetcher
       .mockRejectedValueOnce(new Error('First error'))
       .mockResolvedValueOnce({ prices: [[1609459200000, 29000]] });
 
-    const { result } = renderHook(() => usePriceHistory('bitcoin', '7d'));
+    const { result } = renderHook(() => usePriceHistory('bitcoin', '7d'), {
+      wrapper: createWrapper,
+    });
 
-    jest.useRealTimers();
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
-      expect(result.current.error).toBe('Failed to fetch price history');
+      expect(result.current.error).toBe('First error');
     });
 
     // Call retry
@@ -201,35 +212,37 @@ describe('usePriceHistory', () => {
 
     await waitFor(() => {
       expect(result.current.error).toBeNull();
-      expect(result.current.data).toEqual([{ date: '1/1/2021', price: 29000 }]);
+      expect(result.current.data).toEqual([{ date: '1/1/2021', formattedDate: expect.any(String), price: 29000 }]);
     });
   });
 
   it('handles missing prices property', async () => {
-    mockApi.getPriceHistory = jest.fn().mockResolvedValue({});
+    mockFetcher.mockResolvedValue({});
 
-    const { result } = renderHook(() => usePriceHistory('bitcoin', '7d'));
+    const { result } = renderHook(() => usePriceHistory('bitcoin', '7d'), {
+      wrapper: createWrapper,
+    });
 
-    jest.useRealTimers();
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
-      expect(result.current.data).toEqual([]);
+      expect(result.current.data).toBeNull();
     });
 
     expect(result.current.error).toBeNull();
   });
 
   it('handles null response', async () => {
-    mockApi.getPriceHistory = jest.fn().mockResolvedValue(null);
+    mockFetcher.mockResolvedValue(null);
 
-    const { result } = renderHook(() => usePriceHistory('bitcoin', '7d'));
+    const { result } = renderHook(() => usePriceHistory('bitcoin', '7d'), {
+      wrapper: createWrapper,
+    });
 
-    jest.useRealTimers();
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
-      expect(result.current.data).toEqual([]);
+      expect(result.current.data).toBeNull();
     });
 
     expect(result.current.error).toBeNull();
@@ -239,21 +252,19 @@ describe('usePriceHistory', () => {
     const timeRanges = ['24h', '7d', '30d', '90d', '1y'] as const;
 
     for (const timeRange of timeRanges) {
-      mockApi.getPriceHistory = jest.fn().mockResolvedValue({ prices: [] });
+      mockFetcher.mockResolvedValue({ prices: [] });
 
-      const { result } = renderHook(() =>
-        usePriceHistory('bitcoin', timeRange)
+      const { result } = renderHook(
+        () => usePriceHistory('bitcoin', timeRange),
+        { wrapper: createWrapper }
       );
 
       expect(result.current.isLoading).toBe(true);
 
-      jest.useRealTimers();
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
       });
-
-      jest.useFakeTimers();
     }
   });
 });

@@ -17,7 +17,7 @@ jest.mock('next/server', () => ({
 }));
 
 import { GET } from '../route';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 
 // Mock the global fetch
 global.fetch = jest.fn();
@@ -159,7 +159,7 @@ describe('GET /api/coins', () => {
     const request = new NextRequest(
       'http://localhost:3000/api/coins?page=&per_page='
     );
-    const response = await GET(request);
+    const _response = await GET(request);
 
     expect(global.fetch).toHaveBeenCalledWith(
       expect.stringContaining('per_page=20&page=1'),

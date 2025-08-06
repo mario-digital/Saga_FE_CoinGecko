@@ -9,7 +9,7 @@ import {
 
 describe('Collapsible', () => {
   it('renders collapsible components', () => {
-    render(
+    const { container } = render(
       <Collapsible>
         <CollapsibleTrigger>Toggle</CollapsibleTrigger>
         <CollapsibleContent>Content</CollapsibleContent>
@@ -84,7 +84,7 @@ describe('Collapsible', () => {
   it('calls onOpenChange when state changes', () => {
     const handleOpenChange = jest.fn();
 
-    render(
+    const { container } = render(
       <Collapsible onOpenChange={handleOpenChange}>
         <CollapsibleTrigger>Toggle</CollapsibleTrigger>
         <CollapsibleContent>Content</CollapsibleContent>
@@ -101,7 +101,7 @@ describe('Collapsible', () => {
   });
 
   it('renders trigger as button by default', () => {
-    render(
+    const { container } = render(
       <Collapsible>
         <CollapsibleTrigger>Button trigger</CollapsibleTrigger>
         <CollapsibleContent>Content</CollapsibleContent>
@@ -113,7 +113,7 @@ describe('Collapsible', () => {
   });
 
   it('allows custom trigger element with asChild', () => {
-    render(
+    const { container } = render(
       <Collapsible>
         <CollapsibleTrigger asChild>
           <div role="button" tabIndex={0}>
@@ -131,7 +131,7 @@ describe('Collapsible', () => {
   it('supports disabled state', () => {
     const handleOpenChange = jest.fn();
 
-    render(
+    const { container } = render(
       <Collapsible disabled onOpenChange={handleOpenChange}>
         <CollapsibleTrigger>Disabled trigger</CollapsibleTrigger>
         <CollapsibleContent>Content</CollapsibleContent>
@@ -146,7 +146,7 @@ describe('Collapsible', () => {
   });
 
   it('renders multiple content sections', () => {
-    render(
+    const { container } = render(
       <Collapsible defaultOpen>
         <CollapsibleTrigger>Toggle</CollapsibleTrigger>
         <CollapsibleContent>
@@ -165,7 +165,7 @@ describe('Collapsible', () => {
   it('works with keyboard navigation', async () => {
     const user = userEvent.setup();
 
-    render(
+    const { container } = render(
       <Collapsible>
         <CollapsibleTrigger>Keyboard trigger</CollapsibleTrigger>
         <CollapsibleContent>
@@ -194,7 +194,7 @@ describe('Collapsible', () => {
   });
 
   it('maintains focus on trigger after toggle', async () => {
-    render(
+    const { container } = render(
       <Collapsible>
         <CollapsibleTrigger>Focus trigger</CollapsibleTrigger>
         <CollapsibleContent>Content</CollapsibleContent>
@@ -259,7 +259,7 @@ describe('Collapsible', () => {
   it('handles rapid toggle clicks', async () => {
     const handleOpenChange = jest.fn();
 
-    render(
+    const { container } = render(
       <Collapsible onOpenChange={handleOpenChange}>
         <CollapsibleTrigger>Rapid toggle</CollapsibleTrigger>
         <CollapsibleContent>Content</CollapsibleContent>
@@ -279,7 +279,7 @@ describe('Collapsible', () => {
   });
 
   it('works without content', () => {
-    render(
+    const { container } = render(
       <Collapsible>
         <CollapsibleTrigger>No content trigger</CollapsibleTrigger>
       </Collapsible>
@@ -290,7 +290,7 @@ describe('Collapsible', () => {
   });
 
   it('works without trigger', () => {
-    render(
+    const { container } = render(
       <Collapsible defaultOpen>
         <CollapsibleContent>Content only</CollapsibleContent>
       </Collapsible>
@@ -300,7 +300,7 @@ describe('Collapsible', () => {
   });
 
   it('supports nested collapsibles', () => {
-    render(
+    const { container } = render(
       <Collapsible defaultOpen>
         <CollapsibleTrigger>Outer trigger</CollapsibleTrigger>
         <CollapsibleContent>

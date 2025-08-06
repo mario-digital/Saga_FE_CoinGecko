@@ -35,7 +35,7 @@ describe('OptimizedImage', () => {
   };
 
   it('renders image with correct props', () => {
-    render(<OptimizedImage {...defaultProps} />);
+    const { container } = render(<OptimizedImage {...defaultProps} />);
 
     const image = screen.getByAltText('Test image');
     expect(image).toBeInTheDocument();
@@ -68,7 +68,7 @@ describe('OptimizedImage', () => {
 
   it('shows error placeholder when image fails to load', () => {
     const onError = jest.fn();
-    render(<OptimizedImage {...defaultProps} onError={onError} />);
+    const { container } = render(<OptimizedImage {...defaultProps} onError={onError} />);
 
     const image = screen.getByAltText('Test image');
     fireEvent.error(image);
@@ -87,7 +87,7 @@ describe('OptimizedImage', () => {
   });
 
   it('sets priority loading when priority prop is true', () => {
-    render(<OptimizedImage {...defaultProps} priority={true} />);
+    const { container } = render(<OptimizedImage {...defaultProps} priority={true} />);
 
     const image = screen.getByAltText('Test image');
     expect(image).toHaveAttribute('loading', 'eager');
@@ -95,7 +95,7 @@ describe('OptimizedImage', () => {
   });
 
   it('sets lazy loading when priority prop is false', () => {
-    render(<OptimizedImage {...defaultProps} priority={false} />);
+    const { container } = render(<OptimizedImage {...defaultProps} priority={false} />);
 
     const image = screen.getByAltText('Test image');
     expect(image).toHaveAttribute('loading', 'lazy');
@@ -103,7 +103,7 @@ describe('OptimizedImage', () => {
 
   it('passes sizes prop to Image component', () => {
     const sizes = '(max-width: 768px) 100vw, 50vw';
-    render(<OptimizedImage {...defaultProps} sizes={sizes} />);
+    const { container } = render(<OptimizedImage {...defaultProps} sizes={sizes} />);
 
     const image = screen.getByAltText('Test image');
     expect(image).toHaveAttribute('sizes', sizes);
@@ -119,7 +119,7 @@ describe('OptimizedImage', () => {
   });
 
   it('shows error placeholder with correct dimensions', () => {
-    render(<OptimizedImage {...defaultProps} width={200} height={150} />);
+    const { container } = render(<OptimizedImage {...defaultProps} width={200} height={150} />);
 
     const image = screen.getByAltText('Test image');
     fireEvent.error(image);
@@ -129,7 +129,7 @@ describe('OptimizedImage', () => {
   });
 
   it('handles missing onError callback gracefully', () => {
-    render(<OptimizedImage {...defaultProps} />);
+    const { container } = render(<OptimizedImage {...defaultProps} />);
 
     const image = screen.getByAltText('Test image');
 
@@ -139,7 +139,7 @@ describe('OptimizedImage', () => {
   });
 
   it('applies opacity transition classes', () => {
-    render(<OptimizedImage {...defaultProps} />);
+    const { container } = render(<OptimizedImage {...defaultProps} />);
 
     const image = screen.getByAltText('Test image');
     expect(image).toHaveClass('transition-opacity', 'duration-300');
@@ -176,7 +176,7 @@ describe('OptimizedImage', () => {
   });
 
   it('applies dark mode classes to error state', () => {
-    render(<OptimizedImage {...defaultProps} />);
+    const { container } = render(<OptimizedImage {...defaultProps} />);
 
     const image = screen.getByAltText('Test image');
     fireEvent.error(image);

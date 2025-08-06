@@ -17,7 +17,7 @@ import { useSwipeGesture } from '@/hooks/useSwipeGesture';
 
 interface SwipeableCoinCardProps {
   coin: CoinData;
-  onClick?: (coinId: string) => void;
+  onClick?: (_coinId: string) => void;
   className?: string;
 }
 

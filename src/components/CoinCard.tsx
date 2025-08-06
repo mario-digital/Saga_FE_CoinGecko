@@ -10,7 +10,7 @@ import { safeFormatPrice, safeFormatMarketCap, cn } from '@/lib/utils';
 
 interface CoinCardProps {
   coin: CoinData;
-  onClick?: (coinId: string) => void;
+  onClick?: (_coinId: string) => void;
   className?: string;
 }
 
