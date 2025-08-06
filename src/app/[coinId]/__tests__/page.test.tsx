@@ -4,11 +4,15 @@
 
 import { render, screen, act, waitFor } from '@testing-library/react';
 import CoinDetailPage from '../page';
-import { useCoinDetail, CoinNotFoundError } from '@/hooks/useCoinDetail';
+import {
+  useCoinDetail,
+  CoinNotFoundError,
+  RateLimitError,
+} from '@/hooks/useCoinDetail';
 
 // Mock hooks and components
 jest.mock('@/hooks/useCoinDetail', () => {
-  // Define the mock error class inside the factory function
+  // Define the mock error classes inside the factory function
   class CoinNotFoundError extends Error {
     constructor(coinId: string) {
       super(`Coin with ID "${coinId}" not found`);
@@ -16,9 +20,19 @@ jest.mock('@/hooks/useCoinDetail', () => {
     }
   }
 
+  class RateLimitError extends Error {
+    retryAfter?: number;
+    constructor(message: string, retryAfter?: number) {
+      super(message);
+      this.name = 'RateLimitError';
+      this.retryAfter = retryAfter;
+    }
+  }
+
   return {
     useCoinDetail: jest.fn(),
     CoinNotFoundError,
+    RateLimitError,
   };
 });
 
@@ -121,7 +135,7 @@ describe('CoinDetailPage', () => {
     });
 
     await act(async () => {
-    const { container } = render(<CoinDetailPage params={mockParams} />);
+      const { container } = render(<CoinDetailPage params={mockParams} />);
     });
 
     // The skeleton should be rendered

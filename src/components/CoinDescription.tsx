@@ -12,10 +12,7 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import {
-  Collapsible,
-  CollapsibleTrigger,
-} from '@/components/ui/collapsible';
+import { Collapsible, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { CoinDetailData } from '@/types/coingecko';
 import { ExternalLink, ChevronDown, ChevronUp } from 'lucide-react';
 

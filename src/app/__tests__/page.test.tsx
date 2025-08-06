@@ -196,11 +196,66 @@ describe('HomePage', () => {
     jest.clearAllMocks();
   });
 
+  it('syncs filter state with URL parameters on mount', async () => {
+    // Mock useSearchParams to return filter=top10
+    const searchParams = new URLSearchParams('filter=top10') as any;
+    mockUseSearchParams.mockReturnValue(searchParams);
+
+    mockUseCoins.mockReturnValue({
+      coins: mockCoinData,
+      isLoading: false,
+      error: null,
+      isRateLimited: false,
+      refetch: jest.fn(),
+    });
+
+    await act(async () => {
+      render(<HomePage />);
+    });
+
+    // The filter component should receive top10 as the initial value
+    await waitFor(() => {
+      const filterButtons = screen.getAllByRole('radio');
+      expect(filterButtons).toHaveLength(4);
+    });
+  });
+
+  it('updates filter state when URL parameters change', async () => {
+    let searchParams = new URLSearchParams() as any;
+    mockUseSearchParams.mockReturnValue(searchParams);
+
+    mockUseCoins.mockReturnValue({
+      coins: mockCoinData,
+      isLoading: false,
+      error: null,
+      isRateLimited: false,
+      refetch: jest.fn(),
+    });
+
+    const { rerender } = render(<HomePage />);
+
+    // Simulate URL parameter change (like from mobile menu navigation)
+    searchParams = new URLSearchParams('filter=top10') as any;
+    mockUseSearchParams.mockReturnValue(searchParams);
+
+    // Force re-render to simulate the effect of URL change
+    await act(async () => {
+      rerender(<HomePage />);
+    });
+
+    // Verify the filter is applied
+    await waitFor(() => {
+      const filterButtons = screen.getAllByRole('radio');
+      expect(filterButtons).toHaveLength(4);
+    });
+  });
+
   it('displays loading state initially', async () => {
     mockUseCoins.mockReturnValue({
       coins: undefined,
       isLoading: true,
       error: null,
+      isRateLimited: false,
       refetch: jest.fn(),
     });
 
@@ -216,11 +271,12 @@ describe('HomePage', () => {
       coins: mockCoinData,
       isLoading: false,
       error: null,
+      isRateLimited: false,
       refetch: jest.fn(),
     });
 
     await act(async () => {
-    const { container } = render(<HomePage />);
+      const { container } = render(<HomePage />);
     });
 
     await waitFor(() => {
@@ -242,6 +298,7 @@ describe('HomePage', () => {
       coins: undefined,
       isLoading: false,
       error: 'Failed to fetch data',
+      isRateLimited: false,
       refetch: mockRefetch,
     });
 
@@ -259,6 +316,7 @@ describe('HomePage', () => {
       coins: undefined,
       isLoading: false,
       error: 'Failed to fetch data',
+      isRateLimited: false,
       refetch: mockRefetch,
     });
 
@@ -276,11 +334,12 @@ describe('HomePage', () => {
       coins: [],
       isLoading: false,
       error: null,
+      isRateLimited: false,
       refetch: mockRefetch,
     });
 
     await act(async () => {
-    const { container } = render(<HomePage />);
+      const { container } = render(<HomePage />);
     });
 
     await waitFor(() => {
@@ -300,11 +359,12 @@ describe('HomePage', () => {
       coins: [],
       isLoading: false,
       error: null,
+      isRateLimited: false,
       refetch: mockRefetch,
     });
 
     await act(async () => {
-    const { container } = render(<HomePage />);
+      const { container } = render(<HomePage />);
     });
 
     await waitFor(() => {
@@ -322,11 +382,12 @@ describe('HomePage', () => {
       coins: mockCoinData,
       isLoading: false,
       error: null,
+      isRateLimited: false,
       refetch: jest.fn(),
     });
 
     await act(async () => {
-    const { container } = render(<HomePage />);
+      const { container } = render(<HomePage />);
     });
 
     await waitFor(() => {
@@ -346,11 +407,12 @@ describe('HomePage', () => {
       coins: mockCoinData,
       isLoading: false,
       error: null,
+      isRateLimited: false,
       refetch: jest.fn(),
     });
 
     await act(async () => {
-    const { container } = render(<HomePage />);
+      const { container } = render(<HomePage />);
     });
 
     await waitFor(() => {
@@ -369,12 +431,13 @@ describe('HomePage', () => {
         coins: mockCoinData,
         isLoading: false,
         error: null,
+        isRateLimited: false,
         refetch: jest.fn(),
       };
     });
 
     await act(async () => {
-    const { container } = render(<HomePage />);
+      const { container } = render(<HomePage />);
     });
 
     await waitFor(() => {
@@ -392,11 +455,12 @@ describe('HomePage', () => {
       coins: mockCoinData,
       isLoading: true,
       error: null,
+      isRateLimited: false,
       refetch: jest.fn(),
     });
 
     await act(async () => {
-    const { container } = render(<HomePage />);
+      const { container } = render(<HomePage />);
     });
 
     // During loading, Suspense shows fallback (skeletons)
@@ -413,11 +477,12 @@ describe('HomePage', () => {
       coins: mockCoinData,
       isLoading: false,
       error: null,
+      isRateLimited: false,
       refetch: jest.fn(),
     });
 
     await act(async () => {
-    const { container } = render(<HomePage />);
+      const { container } = render(<HomePage />);
     });
 
     await waitFor(() => {
@@ -436,11 +501,12 @@ describe('HomePage', () => {
       coins: mockCoinData,
       isLoading: false,
       error: null,
+      isRateLimited: false,
       refetch: jest.fn(),
     });
 
     await act(async () => {
-    const { container } = render(<HomePage />);
+      const { container } = render(<HomePage />);
     });
 
     await waitFor(() => {
@@ -459,6 +525,7 @@ describe('HomePage', () => {
       coins: undefined,
       isLoading: true,
       error: null,
+      isRateLimited: false,
       refetch: jest.fn(),
     });
 
@@ -481,6 +548,7 @@ describe('HomePage', () => {
       coins: isLoading ? undefined : mockCoinData,
       isLoading,
       error: null,
+      isRateLimited: false,
       refetch: mockRefetch,
     }));
 
@@ -514,11 +582,12 @@ describe('HomePage', () => {
       coins: undefined,
       isLoading: false,
       error: null,
+      isRateLimited: false,
       refetch: jest.fn(),
     });
 
     await act(async () => {
-    const { container } = render(<HomePage />);
+      const { container } = render(<HomePage />);
     });
 
     await waitFor(() => {

@@ -22,6 +22,14 @@ console.error = (...args) => {
   ) {
     return;
   }
+  // Suppress jsdom navigation errors (happens with anchor tags in tests)
+  if (
+    args[0] &&
+    typeof args[0] === 'object' &&
+    args[0].message === 'Not implemented: navigation (except hash changes)'
+  ) {
+    return;
+  }
   originalError.call(console, ...args);
 };
 

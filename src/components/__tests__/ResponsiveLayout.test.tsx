@@ -119,7 +119,7 @@ describe('Responsive Layout Tests', () => {
   describe('Header Component', () => {
     it('shows hamburger menu on mobile', () => {
       setViewportSize(375); // iPhone size
-    const { container } = render(<Header />);
+      const { container } = render(<Header />);
 
       expect(screen.getByLabelText('Open menu')).toBeInTheDocument();
       // Mobile menu should be initially closed
@@ -131,7 +131,7 @@ describe('Responsive Layout Tests', () => {
 
       // The Header component uses sm:hidden and sm:flex classes
       // Since we can't test CSS media queries in JSDOM, we'll test what's actually rendered
-    const { container } = render(<Header />);
+      const { container } = render(<Header />);
 
       // Both mobile and desktop elements are rendered, but CSS would hide one
       expect(screen.getByLabelText('Open menu')).toBeInTheDocument();
@@ -141,7 +141,7 @@ describe('Responsive Layout Tests', () => {
 
     it('opens mobile menu when hamburger clicked', async () => {
       setViewportSize(375);
-    const { container } = render(<Header />);
+      const { container } = render(<Header />);
 
       const hamburger = screen.getByLabelText('Open menu');
       fireEvent.click(hamburger);
@@ -155,7 +155,7 @@ describe('Responsive Layout Tests', () => {
 
     it('closes mobile menu when close button clicked', async () => {
       setViewportSize(375);
-    const { container } = render(<Header />);
+      const { container } = render(<Header />);
 
       // Open menu
       fireEvent.click(screen.getByLabelText('Open menu'));
@@ -174,7 +174,7 @@ describe('Responsive Layout Tests', () => {
     });
 
     it('applies sticky positioning on scroll', () => {
-    const { container } = render(<Header />);
+      const { container } = render(<Header />);
       const header = screen.getByRole('banner');
 
       expect(header).toHaveClass('sticky', 'top-0', 'z-50');
@@ -184,7 +184,7 @@ describe('Responsive Layout Tests', () => {
   describe('CoinCard Component', () => {
     it('has appropriate touch target size on mobile', () => {
       setViewportSize(375);
-    const { container } = render(<CoinCard coin={mockCoinData[0]} />);
+      const { container } = render(<CoinCard coin={mockCoinData[0]} />);
 
       const card = screen.getByRole('button');
       expect(card).toHaveClass('min-h-[120px]');
@@ -192,21 +192,21 @@ describe('Responsive Layout Tests', () => {
 
     it('has larger size on tablet/desktop', () => {
       setViewportSize(768);
-    const { container } = render(<CoinCard coin={mockCoinData[0]} />);
+      const { container } = render(<CoinCard coin={mockCoinData[0]} />);
 
       const card = screen.getByRole('button');
       expect(card).toHaveClass('sm:min-h-[140px]');
     });
 
     it('uses responsive padding', () => {
-    const { container } = render(<CoinCard coin={mockCoinData[0]} />);
+      const { container } = render(<CoinCard coin={mockCoinData[0]} />);
 
       const card = screen.getByRole('button');
       expect(card).toHaveClass('p-3', 'sm:p-4');
     });
 
     it('uses responsive font sizes', () => {
-    const { container } = render(<CoinCard coin={mockCoinData[0]} />);
+      const { container } = render(<CoinCard coin={mockCoinData[0]} />);
 
       const title = screen.getByText('Bitcoin');
       expect(title).toHaveClass('text-base', 'sm:text-lg');
@@ -219,7 +219,9 @@ describe('Responsive Layout Tests', () => {
   describe('CoinStats Component', () => {
     it('displays in 2-column grid on mobile', () => {
       setViewportSize(375);
-    const { container } = render(<CoinStats marketData={mockMarketData} rank={1} />);
+      const { container } = render(
+        <CoinStats marketData={mockMarketData} rank={1} />
+      );
 
       const grid = screen.getByText('Market Cap').closest('.grid');
       expect(grid).toHaveClass(
@@ -231,14 +233,18 @@ describe('Responsive Layout Tests', () => {
 
     it('displays in 3-column grid on desktop', () => {
       setViewportSize(1024);
-    const { container } = render(<CoinStats marketData={mockMarketData} rank={1} />);
+      const { container } = render(
+        <CoinStats marketData={mockMarketData} rank={1} />
+      );
 
       const grid = screen.getByText('Market Cap').closest('.grid');
       expect(grid).toHaveClass('lg:grid-cols-3');
     });
 
     it('uses responsive text sizes', () => {
-    const { container } = render(<CoinStats marketData={mockMarketData} rank={1} />);
+      const { container } = render(
+        <CoinStats marketData={mockMarketData} rank={1} />
+      );
 
       const label = screen.getByText('Market Cap');
       expect(label).toHaveClass('text-xs', 'sm:text-sm');
@@ -255,7 +261,9 @@ describe('Responsive Layout Tests', () => {
 
     it('displays in 2x2 grid on mobile', () => {
       setViewportSize(375);
-    const { container } = render(<PriceChanges priceChanges={mockPriceChanges} />);
+      const { container } = render(
+        <PriceChanges priceChanges={mockPriceChanges} />
+      );
 
       const grid = document.querySelector('.grid');
       expect(grid).toHaveClass('grid-cols-2', 'sm:grid-cols-4');
@@ -263,14 +271,18 @@ describe('Responsive Layout Tests', () => {
 
     it('displays in 4-column grid on desktop', () => {
       setViewportSize(1024);
-    const { container } = render(<PriceChanges priceChanges={mockPriceChanges} />);
+      const { container } = render(
+        <PriceChanges priceChanges={mockPriceChanges} />
+      );
 
       const grid = document.querySelector('.grid');
       expect(grid).toHaveClass('grid-cols-2', 'sm:grid-cols-4');
     });
 
     it('uses responsive spacing', () => {
-    const { container } = render(<PriceChanges priceChanges={mockPriceChanges} />);
+      const { container } = render(
+        <PriceChanges priceChanges={mockPriceChanges} />
+      );
 
       const grid = document.querySelector('.grid');
       expect(grid).toHaveClass('gap-3', 'sm:gap-4');
@@ -280,7 +292,9 @@ describe('Responsive Layout Tests', () => {
   describe('Touch Interactions', () => {
     it('provides adequate touch targets', () => {
       setViewportSize(375);
-    const { container } = render(<CoinCard coin={mockCoinData[0]} onClick={jest.fn()} />);
+      const { container } = render(
+        <CoinCard coin={mockCoinData[0]} onClick={jest.fn()} />
+      );
 
       const card = screen.getByRole('button');
 
@@ -291,7 +305,9 @@ describe('Responsive Layout Tests', () => {
     it('handles tap without triggering accidental clicks', () => {
       const onClick = jest.fn();
       setViewportSize(375);
-    const { container } = render(<CoinCard coin={mockCoinData[0]} onClick={onClick} />);
+      const { container } = render(
+        <CoinCard coin={mockCoinData[0]} onClick={onClick} />
+      );
 
       const card = screen.getByRole('button');
 
@@ -306,7 +322,7 @@ describe('Responsive Layout Tests', () => {
 
   describe('Responsive Typography', () => {
     it('uses responsive text sizes', () => {
-    const { container } = render(
+      const { container } = render(
         <h1 className="text-2xl sm:text-3xl lg:text-4xl">Test Text</h1>
       );
 
@@ -319,7 +335,7 @@ describe('Responsive Layout Tests', () => {
 
   describe('Safe Area Support', () => {
     it('applies responsive padding', () => {
-    const { container } = render(
+      const { container } = render(
         <div className="p-3 sm:p-4 lg:p-6">Content</div>
       );
 

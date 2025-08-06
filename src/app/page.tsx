@@ -78,6 +78,14 @@ function HomePageContent() {
     setIsMounted(true);
   }, []);
 
+  // Sync filter state with URL params when they change
+  useEffect(() => {
+    const urlFilter = searchParams.get('filter');
+    if (urlFilter && ['all', 'top10', 'top50', 'top100'].includes(urlFilter)) {
+      setFilter(urlFilter);
+    }
+  }, [searchParams]);
+
   const { coins, isLoading, error, isRateLimited, refetch } = useCoins(
     currentPage,
     DEFAULT_PER_PAGE

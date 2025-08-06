@@ -68,7 +68,6 @@ describe('usePriceHistory', () => {
       wrapper: createWrapper,
     });
 
-
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
       expect(result.current.error).toBe('API Error');
@@ -85,7 +84,6 @@ describe('usePriceHistory', () => {
     const { result } = renderHook(() => usePriceHistory('bitcoin', '7d'), {
       wrapper: createWrapper,
     });
-
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
@@ -108,7 +106,6 @@ describe('usePriceHistory', () => {
     const { result } = renderHook(() => usePriceHistory('bitcoin', '30d'), {
       wrapper: createWrapper,
     });
-
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
@@ -139,19 +136,22 @@ describe('usePriceHistory', () => {
       }
     );
 
-
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
     });
 
-    expect(mockFetcher).toHaveBeenCalledWith('/api/coins/bitcoin/history?days=7');
+    expect(mockFetcher).toHaveBeenCalledWith(
+      '/api/coins/bitcoin/history?days=7'
+    );
 
     await act(async () => {
       rerender({ coinId: 'ethereum', timeRange: '7d' });
     });
 
     await waitFor(() => {
-      expect(mockFetcher).toHaveBeenCalledWith('/api/coins/ethereum/history?days=7');
+      expect(mockFetcher).toHaveBeenCalledWith(
+        '/api/coins/ethereum/history?days=7'
+      );
     });
   });
 
@@ -176,7 +176,6 @@ describe('usePriceHistory', () => {
       }
     );
 
-
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
     });
@@ -186,7 +185,9 @@ describe('usePriceHistory', () => {
     });
 
     await waitFor(() => {
-      expect(mockFetcher).toHaveBeenCalledWith('/api/coins/bitcoin/history?days=30');
+      expect(mockFetcher).toHaveBeenCalledWith(
+        '/api/coins/bitcoin/history?days=30'
+      );
     });
   });
 
@@ -198,7 +199,6 @@ describe('usePriceHistory', () => {
     const { result } = renderHook(() => usePriceHistory('bitcoin', '7d'), {
       wrapper: createWrapper,
     });
-
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
@@ -212,7 +212,9 @@ describe('usePriceHistory', () => {
 
     await waitFor(() => {
       expect(result.current.error).toBeNull();
-      expect(result.current.data).toEqual([{ date: '1/1/2021', formattedDate: expect.any(String), price: 29000 }]);
+      expect(result.current.data).toEqual([
+        { date: '1/1/2021', formattedDate: expect.any(String), price: 29000 },
+      ]);
     });
   });
 
@@ -222,7 +224,6 @@ describe('usePriceHistory', () => {
     const { result } = renderHook(() => usePriceHistory('bitcoin', '7d'), {
       wrapper: createWrapper,
     });
-
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
@@ -238,7 +239,6 @@ describe('usePriceHistory', () => {
     const { result } = renderHook(() => usePriceHistory('bitcoin', '7d'), {
       wrapper: createWrapper,
     });
-
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
@@ -260,7 +260,6 @@ describe('usePriceHistory', () => {
       );
 
       expect(result.current.isLoading).toBe(true);
-
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);

@@ -42,7 +42,9 @@ describe('TimeRangeSelector', () => {
   });
 
   it('renders all time range options', () => {
-    const { container } = render(<TimeRangeSelector value="7d" onChange={mockOnChange} />);
+    const { container } = render(
+      <TimeRangeSelector value="7d" onChange={mockOnChange} />
+    );
 
     expect(screen.getByText('24H')).toBeInTheDocument();
     expect(screen.getByText('7D')).toBeInTheDocument();
@@ -52,7 +54,9 @@ describe('TimeRangeSelector', () => {
   });
 
   it('calls onChange when a time range is selected', () => {
-    const { container } = render(<TimeRangeSelector value="7d" onChange={mockOnChange} />);
+    const { container } = render(
+      <TimeRangeSelector value="7d" onChange={mockOnChange} />
+    );
 
     const button24h = screen.getByText('24H');
     fireEvent.click(button24h);
@@ -61,7 +65,9 @@ describe('TimeRangeSelector', () => {
   });
 
   it('applies correct aria-labels to buttons', () => {
-    const { container } = render(<TimeRangeSelector value="7d" onChange={mockOnChange} />);
+    const { container } = render(
+      <TimeRangeSelector value="7d" onChange={mockOnChange} />
+    );
 
     expect(screen.getByLabelText('Select 24H time range')).toBeInTheDocument();
     expect(screen.getByLabelText('Select 7D time range')).toBeInTheDocument();
@@ -83,13 +89,17 @@ describe('TimeRangeSelector', () => {
     const timeRanges: TimeRange[] = ['24h', '7d', '30d', '90d', '1y'];
 
     timeRanges.forEach(range => {
-    const { container } = render(<TimeRangeSelector value={range} onChange={mockOnChange} />);
+      const { container } = render(
+        <TimeRangeSelector value={range} onChange={mockOnChange} />
+      );
       // Component should render without errors for each valid time range
     });
   });
 
   it('calls onChange with correct values for each button', () => {
-    const { container } = render(<TimeRangeSelector value="7d" onChange={mockOnChange} />);
+    const { container } = render(
+      <TimeRangeSelector value="7d" onChange={mockOnChange} />
+    );
 
     const buttons = [
       { text: '24H', value: '24h' },
@@ -130,7 +140,9 @@ describe('TimeRangeSelector', () => {
   });
 
   it('applies state-based styling classes', () => {
-    const { container } = render(<TimeRangeSelector value="7d" onChange={mockOnChange} />);
+    const { container } = render(
+      <TimeRangeSelector value="7d" onChange={mockOnChange} />
+    );
 
     const buttons = screen.getAllByRole('button');
     buttons.forEach(button => {
@@ -142,7 +154,9 @@ describe('TimeRangeSelector', () => {
   });
 
   it('maintains order of time range options', () => {
-    const { container } = render(<TimeRangeSelector value="7d" onChange={mockOnChange} />);
+    const { container } = render(
+      <TimeRangeSelector value="7d" onChange={mockOnChange} />
+    );
 
     const buttons = screen.getAllByRole('button');
     const expectedOrder = ['24H', '7D', '30D', '90D', '1Y'];
@@ -176,7 +190,9 @@ describe('TimeRangeSelector', () => {
   });
 
   it('handles rapid clicks on different options', () => {
-    const { container } = render(<TimeRangeSelector value="7d" onChange={mockOnChange} />);
+    const { container } = render(
+      <TimeRangeSelector value="7d" onChange={mockOnChange} />
+    );
 
     fireEvent.click(screen.getByText('24H'));
     fireEvent.click(screen.getByText('30D'));

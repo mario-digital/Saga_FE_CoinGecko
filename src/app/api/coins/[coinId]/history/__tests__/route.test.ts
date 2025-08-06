@@ -125,7 +125,9 @@ describe('GET /api/coins/[coinId]/history', () => {
     const response = await GET(request, { params });
     const data = await response.json();
 
-    expect(data).toEqual({ error: 'API rate limit exceeded. Please try again later.' });
+    expect(data).toEqual({
+      error: 'API rate limit exceeded. Please try again later.',
+    });
     expect(response.status).toBe(429);
   });
 

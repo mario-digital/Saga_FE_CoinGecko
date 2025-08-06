@@ -35,7 +35,9 @@ export async function GET(
           { status: 429 }
         );
       }
-      console.error(`CoinGecko API error: ${response.status} ${response.statusText}`);
+      console.error(
+        `CoinGecko API error: ${response.status} ${response.statusText}`
+      );
       throw new Error(`API responded with status: ${response.status}`);
     }
 

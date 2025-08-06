@@ -92,7 +92,9 @@ describe('Skeleton', () => {
   });
 
   it('can be used with aria-busy for accessibility', () => {
-    const { container } = render(<Skeleton aria-busy="true" aria-live="polite" />);
+    const { container } = render(
+      <Skeleton aria-busy="true" aria-live="polite" />
+    );
     const skeleton = document.querySelector('[aria-busy="true"]');
 
     expect(skeleton).toBeInTheDocument();
@@ -175,7 +177,9 @@ describe('Skeleton', () => {
   });
 
   it('supports data attributes for testing', () => {
-    const { container } = render(<Skeleton data-test="skeleton" data-loading="true" />);
+    const { container } = render(
+      <Skeleton data-test="skeleton" data-loading="true" />
+    );
 
     const skeleton = document.querySelector('[data-test="skeleton"]');
     expect(skeleton).toHaveAttribute('data-loading', 'true');

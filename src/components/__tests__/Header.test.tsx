@@ -97,6 +97,58 @@ describe('Header', () => {
     expect(screen.getByTestId('search-command')).toBeInTheDocument();
   });
 
+  it('renders mobile menu button on small screens', () => {
+    const { container } = render(<Header />);
+
+    // Mobile menu button should be present (it's hidden on desktop via CSS)
+    const menuButtons = container.querySelectorAll('[aria-label="Open menu"]');
+    expect(menuButtons.length).toBeGreaterThan(0);
+  });
+
+  it('toggles mobile menu when clicking menu button', async () => {
+    const user = userEvent.setup();
+    const { container } = render(<Header />);
+
+    // Find and click the mobile menu button
+    const menuButton = container.querySelector(
+      '[aria-label="Open menu"]'
+    ) as HTMLElement;
+    expect(menuButton).toBeInTheDocument();
+
+    await user.click(menuButton);
+
+    // Menu should now be open and show close button
+    const closeButton = container.querySelector('[aria-label="Close menu"]');
+    expect(closeButton).toBeInTheDocument();
+
+    // Menu items should be visible
+    expect(screen.getByText('Home')).toBeInTheDocument();
+    expect(screen.getByText('Top 10 Coins')).toBeInTheDocument();
+    expect(screen.getByText('Search Coins')).toBeInTheDocument();
+  });
+
+  it('navigates to filtered page when clicking Top 10 Coins in mobile menu', async () => {
+    const user = userEvent.setup();
+    const { container } = render(<Header />);
+
+    // Open mobile menu
+    const menuButton = container.querySelector(
+      '[aria-label="Open menu"]'
+    ) as HTMLElement;
+    await user.click(menuButton);
+
+    // Click on Top 10 Coins link
+    const top10Link = screen.getByText('Top 10 Coins');
+    expect(top10Link).toHaveAttribute('href', '/?filter=top10');
+
+    // Verify the link structure
+    await user.click(top10Link);
+
+    // The mobile menu should close after clicking
+    const openMenuButton = container.querySelector('[aria-label="Open menu"]');
+    expect(openMenuButton).toBeInTheDocument();
+  });
+
   it('navigates to coin page when selecting a coin', async () => {
     const user = userEvent.setup();
     const { container } = render(<Header />);
@@ -205,7 +257,7 @@ describe('Header', () => {
 
   describe('Mobile menu', () => {
     it('toggles mobile menu when clicking menu button', () => {
-    const { container } = render(<Header />);
+      const { container } = render(<Header />);
 
       // Menu should be closed initially
       const menuButton = screen.getByLabelText('Open menu');
@@ -231,7 +283,7 @@ describe('Header', () => {
     });
 
     it('closes mobile menu when clicking a navigation link', () => {
-    const { container } = render(<Header />);
+      const { container } = render(<Header />);
 
       // Open menu
       const menuButton = screen.getByLabelText('Open menu');
@@ -246,7 +298,7 @@ describe('Header', () => {
     });
 
     it('opens search and closes menu when clicking search in mobile menu', () => {
-    const { container } = render(<Header />);
+      const { container } = render(<Header />);
 
       // Open menu
       const menuButton = screen.getByLabelText('Open menu');
@@ -262,7 +314,7 @@ describe('Header', () => {
     });
 
     it('has correct mobile menu link hrefs', () => {
-    const { container } = render(<Header />);
+      const { container } = render(<Header />);
 
       // Open menu
       const menuButton = screen.getByLabelText('Open menu');
@@ -296,7 +348,7 @@ describe('Header', () => {
 
   describe('Mobile search', () => {
     it('opens search dialog when clicking mobile search button', () => {
-    const { container } = render(<Header />);
+      const { container } = render(<Header />);
 
       // Find mobile search button by aria-label
       const searchButton = screen.getByLabelText('Search');
@@ -307,7 +359,7 @@ describe('Header', () => {
     });
 
     it('renders mobile search button with correct classes', () => {
-    const { container } = render(<Header />);
+      const { container } = render(<Header />);
 
       const searchButton = screen.getByLabelText('Search');
       expect(searchButton).toHaveClass(
@@ -324,7 +376,7 @@ describe('Header', () => {
 
   describe('Responsive text', () => {
     it('renders responsive title text', () => {
-    const { container } = render(<Header />);
+      const { container } = render(<Header />);
 
       // Desktop title
       const desktopTitle = screen.getByText('Cryptocurrency Market');
@@ -336,7 +388,7 @@ describe('Header', () => {
     });
 
     it('hides description on mobile', () => {
-    const { container } = render(<Header />);
+      const { container } = render(<Header />);
 
       const description = screen.getByText(
         'Real-time cryptocurrency prices and market data'
@@ -347,7 +399,7 @@ describe('Header', () => {
 
   describe('Theme toggle', () => {
     it('renders theme toggle buttons', () => {
-    const { container } = render(<Header />);
+      const { container } = render(<Header />);
 
       // Should have two theme toggles (desktop and mobile)
       const themeToggles = screen.getAllByTestId('theme-toggle');
@@ -378,7 +430,7 @@ describe('Header', () => {
     });
 
     it('applies mobile menu icon classes', () => {
-    const { container } = render(<Header />);
+      const { container } = render(<Header />);
 
       const menuButton = screen.getByLabelText('Open menu');
       const menuIcon = menuButton.querySelector('.w-5.h-5');
@@ -388,7 +440,7 @@ describe('Header', () => {
 
   describe('Navigation interactions', () => {
     it('navigates correctly from mobile menu links', () => {
-    const { container } = render(<Header />);
+      const { container } = render(<Header />);
 
       // Open menu
       const menuButton = screen.getByLabelText('Open menu');
@@ -403,7 +455,7 @@ describe('Header', () => {
     });
 
     it('applies hover styles to mobile menu items', () => {
-    const { container } = render(<Header />);
+      const { container } = render(<Header />);
 
       // Open menu
       const menuButton = screen.getByLabelText('Open menu');

@@ -7,6 +7,7 @@ import {
   useCoinDetail,
   CoinNotFoundError,
   NetworkError,
+  RateLimitError,
 } from '../useCoinDetail';
 import { ApiError } from '@/lib/fetcher';
 
@@ -149,9 +150,9 @@ describe('useCoinDetail', () => {
 
     expect(result.current.isLoading).toBe(false);
     expect(result.current.coin).toBeUndefined();
-    expect(result.current.error).toBeInstanceOf(NetworkError);
+    expect(result.current.error).toBeInstanceOf(RateLimitError);
     expect(result.current.error?.message).toBe(
-      'Rate limit exceeded. Please try again later.'
+      'API rate limit exceeded. The free tier allows 10-30 requests per minute. Please wait a moment before trying again.'
     );
   });
 

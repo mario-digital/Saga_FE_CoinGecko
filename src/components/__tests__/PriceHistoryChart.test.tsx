@@ -121,7 +121,9 @@ describe('PriceHistoryChart', () => {
   });
 
   it('renders chart with data', () => {
-    const { container } = render(<PriceHistoryChart coinId="bitcoin" coinName="Bitcoin" />);
+    const { container } = render(
+      <PriceHistoryChart coinId="bitcoin" coinName="Bitcoin" />
+    );
 
     expect(screen.getByTestId('line-chart')).toBeInTheDocument();
     expect(screen.getByText('Price History')).toBeInTheDocument();
@@ -394,7 +396,9 @@ describe('PriceHistoryChart', () => {
   });
 
   it('displays correct description with coin name', () => {
-    const { container } = render(<PriceHistoryChart coinId="bitcoin" coinName="Bitcoin" />);
+    const { container } = render(
+      <PriceHistoryChart coinId="bitcoin" coinName="Bitcoin" />
+    );
 
     expect(screen.getByText('Bitcoin price over time')).toBeInTheDocument();
   });

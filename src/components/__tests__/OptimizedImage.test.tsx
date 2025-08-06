@@ -68,7 +68,9 @@ describe('OptimizedImage', () => {
 
   it('shows error placeholder when image fails to load', () => {
     const onError = jest.fn();
-    const { container } = render(<OptimizedImage {...defaultProps} onError={onError} />);
+    const { container } = render(
+      <OptimizedImage {...defaultProps} onError={onError} />
+    );
 
     const image = screen.getByAltText('Test image');
     fireEvent.error(image);
@@ -87,7 +89,9 @@ describe('OptimizedImage', () => {
   });
 
   it('sets priority loading when priority prop is true', () => {
-    const { container } = render(<OptimizedImage {...defaultProps} priority={true} />);
+    const { container } = render(
+      <OptimizedImage {...defaultProps} priority={true} />
+    );
 
     const image = screen.getByAltText('Test image');
     expect(image).toHaveAttribute('loading', 'eager');
@@ -95,7 +99,9 @@ describe('OptimizedImage', () => {
   });
 
   it('sets lazy loading when priority prop is false', () => {
-    const { container } = render(<OptimizedImage {...defaultProps} priority={false} />);
+    const { container } = render(
+      <OptimizedImage {...defaultProps} priority={false} />
+    );
 
     const image = screen.getByAltText('Test image');
     expect(image).toHaveAttribute('loading', 'lazy');
@@ -103,7 +109,9 @@ describe('OptimizedImage', () => {
 
   it('passes sizes prop to Image component', () => {
     const sizes = '(max-width: 768px) 100vw, 50vw';
-    const { container } = render(<OptimizedImage {...defaultProps} sizes={sizes} />);
+    const { container } = render(
+      <OptimizedImage {...defaultProps} sizes={sizes} />
+    );
 
     const image = screen.getByAltText('Test image');
     expect(image).toHaveAttribute('sizes', sizes);
@@ -119,7 +127,9 @@ describe('OptimizedImage', () => {
   });
 
   it('shows error placeholder with correct dimensions', () => {
-    const { container } = render(<OptimizedImage {...defaultProps} width={200} height={150} />);
+    const { container } = render(
+      <OptimizedImage {...defaultProps} width={200} height={150} />
+    );
 
     const image = screen.getByAltText('Test image');
     fireEvent.error(image);
