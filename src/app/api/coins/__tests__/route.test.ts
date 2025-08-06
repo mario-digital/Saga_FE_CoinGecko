@@ -149,7 +149,7 @@ describe('GET /api/coins', () => {
   });
 
   it('should use default values when query parameters are empty strings', async () => {
-    const mockData = [];
+    const mockData: any[] = [];
 
     (global.fetch as jest.Mock).mockResolvedValueOnce({
       ok: true,

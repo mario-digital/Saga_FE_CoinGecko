@@ -29,7 +29,26 @@ jest.mock('../../CoinDescription', () => ({
 
 describe('CoinDescriptionDynamic', () => {
   it('renders CoinDescription component', async () => {
-    render(<CoinDescriptionDynamic description="Test description" />);
+    const mockLinks = {
+      homepage: [],
+      blockchain_site: [],
+      official_forum_url: [],
+      chat_url: [],
+      announcement_url: [],
+      twitter_screen_name: '',
+      facebook_username: '',
+      bitcointalk_thread_identifier: null,
+      telegram_channel_identifier: '',
+      subreddit_url: null,
+      repos_url: { github: [], bitbucket: [] },
+    };
+    render(
+      <CoinDescriptionDynamic
+        description="Test description"
+        links={mockLinks}
+        categories={[]}
+      />
+    );
 
     await waitFor(() => {
       expect(screen.getByTestId('coin-description')).toBeInTheDocument();
@@ -39,7 +58,26 @@ describe('CoinDescriptionDynamic', () => {
 
   it('shows loading state initially', () => {
     // In test environment, dynamic imports resolve synchronously
-    render(<CoinDescriptionDynamic description="Test" />);
+    const mockLinks = {
+      homepage: [],
+      blockchain_site: [],
+      official_forum_url: [],
+      chat_url: [],
+      announcement_url: [],
+      twitter_screen_name: '',
+      facebook_username: '',
+      bitcointalk_thread_identifier: null,
+      telegram_channel_identifier: '',
+      subreddit_url: null,
+      repos_url: { github: [], bitbucket: [] },
+    };
+    render(
+      <CoinDescriptionDynamic
+        description="Test"
+        links={mockLinks}
+        categories={[]}
+      />
+    );
 
     // Component should render successfully
     expect(screen.getByTestId('coin-description')).toBeInTheDocument();
@@ -47,7 +85,26 @@ describe('CoinDescriptionDynamic', () => {
 
   it('passes props correctly to CoinDescription', async () => {
     const testDescription = 'Bitcoin is a decentralized digital currency';
-    render(<CoinDescriptionDynamic description={testDescription} />);
+    const mockLinks = {
+      homepage: [],
+      blockchain_site: [],
+      official_forum_url: [],
+      chat_url: [],
+      announcement_url: [],
+      twitter_screen_name: '',
+      facebook_username: '',
+      bitcointalk_thread_identifier: null,
+      telegram_channel_identifier: '',
+      subreddit_url: null,
+      repos_url: { github: [], bitbucket: [] },
+    };
+    render(
+      <CoinDescriptionDynamic
+        description={testDescription}
+        links={mockLinks}
+        categories={[]}
+      />
+    );
 
     await waitFor(() => {
       expect(screen.getByText(testDescription)).toBeInTheDocument();

@@ -133,7 +133,7 @@ describe('SwipeableCoinCard', () => {
 
   it('should handle swipe left to show details', () => {
     let swipeLeftCallback: Function;
-    mockUseSwipeGesture.mockImplementation(({ onSwipeLeft }) => {
+    mockUseSwipeGesture.mockImplementation(({ onSwipeLeft }: any) => {
       swipeLeftCallback = onSwipeLeft;
       return {
         swipeState: { isSwiping: false, offsetX: 0 },
@@ -159,7 +159,7 @@ describe('SwipeableCoinCard', () => {
 
   it('should handle swipe right to show main view', () => {
     let swipeRightCallback: Function;
-    mockUseSwipeGesture.mockImplementation(({ onSwipeRight }) => {
+    mockUseSwipeGesture.mockImplementation(({ onSwipeRight }: any) => {
       swipeRightCallback = onSwipeRight;
       return {
         swipeState: { isSwiping: false, offsetX: 0 },
@@ -232,9 +232,9 @@ describe('SwipeableCoinCard', () => {
   it('should handle coins with missing optional data', () => {
     const coinWithMissingData = {
       ...mockCoinData[0],
-      ath: null,
-      ath_change_percentage: null,
-      max_supply: null,
+      ath: undefined,
+      ath_change_percentage: undefined,
+      max_supply: undefined,
     };
 
     render(

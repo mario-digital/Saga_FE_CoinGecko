@@ -10,7 +10,7 @@ jest.mock('@/components/ui/toggle-group', () => ({
       {React.Children.map(children, child =>
         React.isValidElement(child)
           ? React.cloneElement(child as React.ReactElement<any>, {
-              onClick: () => onValueChange?.(child.props.value),
+              onClick: () => onValueChange?.((child as any).props.value),
             })
           : child
       )}

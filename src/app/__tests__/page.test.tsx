@@ -181,7 +181,7 @@ describe('HomePage', () => {
     } as any);
 
     // Mock useSearchParams to return a proper URLSearchParams object
-    const searchParams = new URLSearchParams();
+    const searchParams = new URLSearchParams() as any;
     mockUseSearchParams.mockReturnValue(searchParams);
 
     // Mock window.scrollTo

@@ -15,7 +15,20 @@ jest.mock('recharts', () => ({
   ),
   Line: ({ dataKey }: any) => <div data-testid={`line-${dataKey}`} />,
   XAxis: ({ dataKey }: any) => <div data-testid={`xaxis-${dataKey}`} />,
-  YAxis: () => <div data-testid="yaxis" />,
+  YAxis: ({ tickFormatter }: any) => {
+    // Test the tickFormatter function if provided
+    if (tickFormatter) {
+      const testValues = [0.5, 50, 500, 5000, 50000];
+      const formattedValues = testValues.map(tickFormatter);
+      return (
+        <div
+          data-testid="yaxis"
+          data-formatted-values={JSON.stringify(formattedValues)}
+        />
+      );
+    }
+    return <div data-testid="yaxis" />;
+  },
   CartesianGrid: () => <div data-testid="cartesian-grid" />,
   ResponsiveContainer: ({ children }: any) => (
     <div data-testid="responsive-container">{children}</div>
@@ -28,12 +41,38 @@ jest.mock('@/components/ui/chart', () => ({
   ChartContainer: ({ children }: any) => (
     <div data-testid="chart-container">{children}</div>
   ),
-  ChartTooltip: ({ children }: any) => (
-    <div data-testid="chart-tooltip">{children}</div>
-  ),
-  ChartTooltipContent: ({ children }: any) => (
-    <div data-testid="chart-tooltip-content">{children}</div>
-  ),
+  ChartTooltip: ({ content }: any) => {
+    // Extract and test the tooltip content if it has props
+    if (content && content.props) {
+      return (
+        <div data-testid="chart-tooltip" data-has-content="true">
+          {content}
+        </div>
+      );
+    }
+    return <div data-testid="chart-tooltip" />;
+  },
+  ChartTooltipContent: ({ formatter, labelFormatter }: any) => {
+    // Test the formatter functions if provided
+    let formattedValues: any[] = [];
+    if (formatter) {
+      const testValues = [0.001, 0.5, 10, 1000, 50000, 'text', null, undefined];
+      formattedValues = testValues.map(formatter);
+    }
+
+    let formattedLabel = '';
+    if (labelFormatter) {
+      formattedLabel = labelFormatter('2024-01-01');
+    }
+
+    return (
+      <div
+        data-testid="chart-tooltip-content"
+        data-formatted-values={JSON.stringify(formattedValues)}
+        data-formatted-label={formattedLabel}
+      />
+    );
+  },
 }));
 
 // Mock TimeRangeSelector
@@ -109,7 +148,7 @@ describe('PriceHistoryChart', () => {
     mockUsePriceHistory.mockReturnValue({
       data: null,
       isLoading: false,
-      error: { message: 'Failed to fetch data' },
+      error: 'Failed to fetch data',
       retry: mockRetry,
     });
 
@@ -126,7 +165,7 @@ describe('PriceHistoryChart', () => {
     mockUsePriceHistory.mockReturnValue({
       data: null,
       isLoading: false,
-      error: { message: 'Error' },
+      error: 'Error',
       retry: mockRetry,
     });
 
@@ -292,5 +331,170 @@ describe('PriceHistoryChart', () => {
     expect(mockUsePriceHistory.mock.calls.length).toBeLessThanOrEqual(
       initialCallCount + 1
     );
+  });
+
+  it('formats Y-axis tick values correctly', () => {
+    render(<PriceHistoryChart coinId="bitcoin" />);
+
+    const yAxis = screen.getByTestId('yaxis');
+    const formattedValues = JSON.parse(
+      yAxis.getAttribute('data-formatted-values') || '[]'
+    );
+
+    // Test different price ranges
+    expect(formattedValues[0]).toBe('$0.5000'); // < 1
+    expect(formattedValues[1]).toBe('$50.00'); // >= 1 but < 1000
+    expect(formattedValues[2]).toBe('$500.00'); // >= 1 but < 1000
+    expect(formattedValues[3]).toBe('$5.0k'); // >= 1000
+    expect(formattedValues[4]).toBe('$50.0k'); // >= 1000
+  });
+
+  it('formats tooltip values correctly', () => {
+    render(<PriceHistoryChart coinId="bitcoin" />);
+
+    const tooltipContent = screen.getByTestId('chart-tooltip-content');
+    const formattedValues = JSON.parse(
+      tooltipContent.getAttribute('data-formatted-values') || '[]'
+    );
+
+    // Test number formatting
+    expect(formattedValues[0]).toBe('$0.0010'); // Small number < 1
+    expect(formattedValues[1]).toBe('$0.5000'); // Number < 1
+    expect(formattedValues[2]).toBe('$10.00'); // Number >= 1
+    expect(formattedValues[3]).toBe('$1,000.00'); // Large number
+    expect(formattedValues[4]).toBe('$50,000.00'); // Very large number
+
+    // Test non-number values
+    expect(formattedValues[5]).toBe('text'); // String passes through
+    expect(formattedValues[6]).toBe(null); // Null passes through
+    expect(formattedValues[7]).toBe(null); // Undefined becomes null in JSON
+  });
+
+  it('formats tooltip label correctly', () => {
+    render(<PriceHistoryChart coinId="bitcoin" />);
+
+    const tooltipContent = screen.getByTestId('chart-tooltip-content');
+    const formattedLabel = tooltipContent.getAttribute('data-formatted-label');
+
+    // labelFormatter should pass through the value as-is
+    expect(formattedLabel).toBe('2024-01-01');
+  });
+
+  it('handles null data gracefully', () => {
+    mockUsePriceHistory.mockReturnValue({
+      data: null,
+      isLoading: false,
+      error: null,
+      retry: mockRetry,
+    });
+
+    render(<PriceHistoryChart coinId="bitcoin" />);
+
+    expect(screen.getByText('No price data available')).toBeInTheDocument();
+  });
+
+  it('displays correct description with coin name', () => {
+    render(<PriceHistoryChart coinId="bitcoin" coinName="Bitcoin" />);
+
+    expect(screen.getByText('Bitcoin price over time')).toBeInTheDocument();
+  });
+
+  it('displays generic description without coin name', () => {
+    render(<PriceHistoryChart coinId="bitcoin" />);
+
+    expect(screen.getByText('Price over time')).toBeInTheDocument();
+  });
+
+  it('renders chart tooltip with content', () => {
+    render(<PriceHistoryChart coinId="bitcoin" />);
+
+    const tooltip = screen.getByTestId('chart-tooltip');
+    expect(tooltip).toHaveAttribute('data-has-content', 'true');
+  });
+
+  it('handles error with fallback message', () => {
+    mockUsePriceHistory.mockReturnValue({
+      data: null,
+      isLoading: false,
+      error: null, // No error message
+      retry: mockRetry,
+    });
+
+    render(<PriceHistoryChart coinId="bitcoin" />);
+
+    // Should show no data message when error is null but data is also null
+    expect(screen.getByText('No price data available')).toBeInTheDocument();
+  });
+
+  it('displays formatted data in chart', () => {
+    const detailedMockData = [
+      { date: '2024-01-01', formattedDate: 'Jan 1', price: 0.001 },
+      { date: '2024-01-02', formattedDate: 'Jan 2', price: 999.99 },
+      { date: '2024-01-03', formattedDate: 'Jan 3', price: 50000 },
+    ];
+
+    mockUsePriceHistory.mockReturnValue({
+      data: detailedMockData,
+      isLoading: false,
+      error: null,
+      retry: mockRetry,
+    });
+
+    render(<PriceHistoryChart coinId="bitcoin" />);
+
+    const chart = screen.getByTestId('line-chart');
+    const data = JSON.parse(chart.getAttribute('data-data') || '[]');
+
+    expect(data).toEqual(detailedMockData);
+    expect(data[0].formattedDate).toBe('Jan 1');
+  });
+
+  it('shows no data when error is empty string', () => {
+    mockUsePriceHistory.mockReturnValue({
+      data: null,
+      isLoading: false,
+      error: '', // Empty string error is falsy
+      retry: mockRetry,
+    });
+
+    render(<PriceHistoryChart coinId="bitcoin" />);
+
+    // Empty string error is falsy, so shows no data state
+    expect(screen.getByText('No price data available')).toBeInTheDocument();
+    expect(
+      screen.getByText('No price history data available for this time range')
+    ).toBeInTheDocument();
+  });
+
+  it('shows error with custom error message', () => {
+    mockUsePriceHistory.mockReturnValue({
+      data: null,
+      isLoading: false,
+      error: 'Network timeout occurred', // Custom error message
+      retry: mockRetry,
+    });
+
+    render(<PriceHistoryChart coinId="bitcoin" />);
+
+    expect(screen.getByText('Unable to load price data')).toBeInTheDocument();
+    expect(screen.getByText('Network timeout occurred')).toBeInTheDocument();
+  });
+
+  it('shows error with whitespace-only error message', () => {
+    mockUsePriceHistory.mockReturnValue({
+      data: null,
+      isLoading: false,
+      error: '   ', // Whitespace-only string is truthy
+      retry: mockRetry,
+    });
+
+    const { container } = render(<PriceHistoryChart coinId="bitcoin" />);
+
+    expect(screen.getByText('Unable to load price data')).toBeInTheDocument();
+    // Check that the whitespace error is in the paragraph
+    const errorParagraph = container.querySelector(
+      '.text-sm.text-muted-foreground.mb-4'
+    );
+    expect(errorParagraph?.textContent).toBe('   ');
   });
 });

@@ -19,7 +19,7 @@ describe('useServiceWorker', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    process.env.NODE_ENV = 'production';
+    (process.env as any).NODE_ENV = 'production';
 
     // Mock navigator with serviceWorker
     Object.defineProperty(global, 'navigator', {
@@ -42,7 +42,7 @@ describe('useServiceWorker', () => {
   });
 
   afterEach(() => {
-    process.env.NODE_ENV = originalEnv;
+    (process.env as any).NODE_ENV = originalEnv;
     Object.defineProperty(global, 'navigator', {
       writable: true,
       value: originalNavigator,
@@ -66,7 +66,7 @@ describe('useServiceWorker', () => {
   });
 
   it('registers service worker even in development', async () => {
-    process.env.NODE_ENV = 'development';
+    (process.env as any).NODE_ENV = 'development';
 
     const { result } = renderHook(() => useServiceWorker());
 
@@ -133,7 +133,7 @@ describe('useServiceWorker', () => {
     };
 
     mockServiceWorker.register.mockResolvedValueOnce(mockRegistration);
-    mockServiceWorker.controller = {}; // Set controller to make update available
+    mockServiceWorker.controller = {} as any; // Set controller to make update available
 
     const { result } = renderHook(() => useServiceWorker());
 
@@ -152,17 +152,19 @@ describe('useServiceWorker', () => {
         addEventListener: jest.fn(),
         removeEventListener: jest.fn(),
         state: 'installed',
-      };
+      } as any;
 
       await act(async () => {
         updateFoundCallback();
       });
 
       // Simulate state change to installed
-      const stateChangeCallback =
-        mockRegistration.installing.addEventListener.mock.calls.find(
-          call => call[0] === 'statechange'
-        )?.[1];
+      const installingWorker = mockRegistration.installing as any;
+      const stateChangeCallback = installingWorker
+        ? installingWorker.addEventListener.mock.calls.find(
+            (call: any) => call[0] === 'statechange'
+          )?.[1]
+        : undefined;
 
       if (stateChangeCallback) {
         await act(async () => {

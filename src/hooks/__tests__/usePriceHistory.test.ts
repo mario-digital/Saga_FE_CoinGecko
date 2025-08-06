@@ -1,5 +1,5 @@
 import { renderHook, waitFor, act } from '@testing-library/react';
-import { usePriceHistory } from '../usePriceHistory';
+import { usePriceHistory, TimeRange } from '../usePriceHistory';
 import { api } from '@/lib/api';
 
 // Mock the API
@@ -157,9 +157,10 @@ describe('usePriceHistory', () => {
       .mockResolvedValueOnce(mockData2);
 
     const { result, rerender } = renderHook(
-      ({ coinId, timeRange }) => usePriceHistory(coinId, timeRange),
+      ({ coinId, timeRange }: { coinId: string; timeRange: TimeRange }) =>
+        usePriceHistory(coinId, timeRange),
       {
-        initialProps: { coinId: 'bitcoin', timeRange: '7d' as const },
+        initialProps: { coinId: 'bitcoin', timeRange: '7d' as TimeRange },
       }
     );
 
@@ -170,7 +171,7 @@ describe('usePriceHistory', () => {
     });
 
     await act(async () => {
-      rerender({ coinId: 'bitcoin', timeRange: '30d' });
+      rerender({ coinId: 'bitcoin', timeRange: '30d' as TimeRange });
     });
 
     await waitFor(() => {

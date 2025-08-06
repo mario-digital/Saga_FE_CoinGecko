@@ -35,12 +35,16 @@ const PullToRefresh = dynamic(
     import(
       /* webpackChunkName: "pull-refresh" */
       '@/components/PullToRefresh'
-    ).then(mod => mod.PullToRefresh),
+    ),
   {
     ssr: false,
     loading: () => <div />, // Empty div to prevent layout shift
   }
-);
+) as React.ComponentType<{
+  onRefresh: () => void;
+  disabled: boolean;
+  children: React.ReactNode;
+}>;
 
 function HomePageContent() {
   const router = useRouter();

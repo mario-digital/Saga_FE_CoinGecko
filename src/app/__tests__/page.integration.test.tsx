@@ -15,7 +15,8 @@ jest.mock('@/hooks/useCoins');
 
 // Mock PullToRefresh component
 jest.mock('@/components/PullToRefresh', () => ({
-  PullToRefresh: ({ children }: { children: React.ReactNode }) => children,
+  __esModule: true,
+  default: ({ children }: { children: React.ReactNode }) => children,
 }));
 
 // Mock next/dynamic to avoid issues with dynamic imports in tests
@@ -46,8 +47,7 @@ jest.mock('next/dynamic', () => ({
       return SwipeableCoinCard;
     }
     // For other components, resolve the promise synchronously
-    const Component = React.lazy(() => Promise.resolve().then(() => fn()));
-    Component.preload = jest.fn();
+    const Component = () => null;
     return Component;
   },
 }));

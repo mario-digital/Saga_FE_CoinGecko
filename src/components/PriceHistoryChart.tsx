@@ -69,7 +69,7 @@ export const PriceHistoryChart: FC<PriceHistoryChartProps> = memo(
             <div className="flex flex-col items-center justify-center h-[350px] text-center">
               <AlertCircle className="h-10 w-10 text-destructive mb-4" />
               <p className="text-sm text-muted-foreground mb-4">
-                {error.message || 'Failed to load price history'}
+                {error || 'Failed to load price history'}
               </p>
               <Button onClick={retry} variant="outline" size="sm">
                 <RefreshCw className="mr-2 h-4 w-4" />
