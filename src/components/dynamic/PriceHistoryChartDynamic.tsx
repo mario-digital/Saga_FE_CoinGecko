@@ -13,8 +13,7 @@ const ChartSkeleton = () => (
 );
 
 export const PriceHistoryChartDynamic = dynamic(
-  () =>
-    import('@/components/PriceHistoryChart').then(mod => mod.PriceHistoryChart),
+  () => import('@/components/PriceHistoryChart'),
   {
     loading: () => <ChartSkeleton />,
     ssr: false,

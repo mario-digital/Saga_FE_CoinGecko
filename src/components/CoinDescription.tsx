@@ -172,3 +172,5 @@ export const CoinDescription: FC<CoinDescriptionProps> = ({
     </Card>
   );
 };
+
+export default CoinDescription;

@@ -45,30 +45,34 @@ const PullToRefresh = dynamic(
 function HomePageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [filter, setFilter] = useState<string>('all');
+
+  // Initialize from URL params immediately
+  const urlFilter = searchParams.get('filter');
+  const urlPage = searchParams.get('page');
+
+  const [currentPage, setCurrentPage] = useState<number>(() => {
+    if (urlPage) {
+      const pageNum = parseInt(urlPage, 10);
+      if (!isNaN(pageNum) && pageNum > 0) {
+        return pageNum;
+      }
+    }
+    return 1;
+  });
+
+  const [filter, setFilter] = useState<string>(() => {
+    if (urlFilter && ['all', 'top10', 'top50', 'top100'].includes(urlFilter)) {
+      return urlFilter;
+    }
+    return 'all';
+  });
+
   const [isMounted, setIsMounted] = useState<boolean>(false);
 
   // Detect if we're on client side after hydration
   useEffect(() => {
     setIsMounted(true);
   }, []);
-
-  // Initialize filter and page from URL on mount
-  useEffect(() => {
-    const urlFilter = searchParams.get('filter');
-    if (urlFilter && ['all', 'top10', 'top50', 'top100'].includes(urlFilter)) {
-      setFilter(urlFilter);
-    }
-
-    const urlPage = searchParams.get('page');
-    if (urlPage) {
-      const pageNum = parseInt(urlPage, 10);
-      if (!isNaN(pageNum) && pageNum > 0) {
-        setCurrentPage(pageNum);
-      }
-    }
-  }, [searchParams]);
 
   const { coins, isLoading, error, refetch } = useCoins(
     currentPage,
@@ -92,8 +96,12 @@ function HomePageContent() {
     (page: number): void => {
       setCurrentPage(page);
 
-      // Update URL parameters
-      const params = new URLSearchParams(searchParams.toString());
+      // Update URL parameters - maintain consistent order (filter first, then page)
+      const params = new URLSearchParams();
+      const currentFilter = searchParams.get('filter');
+      if (currentFilter && currentFilter !== 'all') {
+        params.set('filter', currentFilter);
+      }
       params.set('page', page.toString());
 
       const newUrl = `/?${params.toString()}`;
@@ -108,19 +116,17 @@ function HomePageContent() {
       setFilter(newFilter);
       setCurrentPage(1); // Reset to page 1 when filter changes
 
-      // Update URL parameters
-      const params = new URLSearchParams(searchParams.toString());
-      if (newFilter === 'all') {
-        params.delete('filter');
-      } else {
+      // Update URL parameters - maintain consistent order (filter first, then page)
+      const params = new URLSearchParams();
+      if (newFilter && newFilter !== 'all') {
         params.set('filter', newFilter);
       }
       params.set('page', '1');
 
-      const newUrl = params.toString() ? `/?${params.toString()}` : '/';
+      const newUrl = `/?${params.toString()}`;
       router.push(newUrl as any);
     },
-    [router, searchParams]
+    [router]
   );
 
   // Calculate total pages (approximate - CoinGecko doesn't provide total count)

@@ -6,7 +6,7 @@
 import dynamic from 'next/dynamic';
 
 export const PullToRefreshDynamic = dynamic(
-  () => import('@/components/PullToRefresh').then(mod => mod.PullToRefresh),
+  () => import('@/components/PullToRefresh'),
   {
     ssr: false, // Disable SSR for touch-based component
   }

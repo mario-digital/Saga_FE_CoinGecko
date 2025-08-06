@@ -262,3 +262,5 @@ export const SwipeableCoinCard: React.FC<SwipeableCoinCardProps> = ({
     </div>
   );
 };
+
+export default SwipeableCoinCard;

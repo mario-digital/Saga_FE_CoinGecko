@@ -24,7 +24,7 @@ export const TimeRangeSelector: FC<TimeRangeSelectorProps> = ({
   onChange,
 }) => {
   const handleValueChange = (newValue: string) => {
-    if (newValue) {
+    if (newValue && onChange) {
       onChange(newValue as TimeRange);
     }
   };

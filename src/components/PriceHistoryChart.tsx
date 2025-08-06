@@ -181,3 +181,5 @@ export const PriceHistoryChart: FC<PriceHistoryChartProps> = memo(
 );
 
 PriceHistoryChart.displayName = 'PriceHistoryChart';
+
+export default PriceHistoryChart;

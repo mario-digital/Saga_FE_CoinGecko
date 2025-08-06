@@ -28,8 +28,7 @@ export function useTheme() {
     }
   }, []);
 
-  const toggleTheme = () => {
-    const newTheme = theme === 'light' ? 'dark' : 'light';
+  const updateTheme = (newTheme: Theme) => {
     setTheme(newTheme);
     localStorage.setItem('theme', newTheme);
 
@@ -41,10 +40,15 @@ export function useTheme() {
     }
   };
 
+  const toggleTheme = () => {
+    const newTheme = theme === 'light' ? 'dark' : 'light';
+    updateTheme(newTheme);
+  };
+
   // Prevent hydration mismatch
   if (!mounted) {
-    return { theme: 'light', toggleTheme };
+    return { theme: 'light', toggleTheme, setTheme: updateTheme };
   }
 
-  return { theme, toggleTheme };
+  return { theme, toggleTheme, setTheme: updateTheme };
 }

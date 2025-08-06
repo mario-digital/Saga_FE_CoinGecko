@@ -4,7 +4,7 @@
 
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { PullToRefresh } from '../PullToRefresh';
+import PullToRefresh from '../PullToRefresh';
 
 describe('PullToRefresh', () => {
   const mockOnRefresh = jest.fn();

@@ -29,6 +29,21 @@ jest.mock('../SearchCommand', () => ({
   ),
 }));
 
+// Mock the ThemeToggle component
+jest.mock('../ThemeToggle', () => ({
+  ThemeToggle: () => <button data-testid="theme-toggle">Theme Toggle</button>,
+}));
+
+// Mock Next.js Link component
+jest.mock('next/link', () => ({
+  __esModule: true,
+  default: ({ children, href, onClick, className }: any) => (
+    <a href={href} onClick={onClick} className={className}>
+      {children}
+    </a>
+  ),
+}));
+
 const mockRouter = {
   push: jest.fn(),
   replace: jest.fn(),
@@ -186,5 +201,223 @@ describe('Header', () => {
     await user.click(closeButton);
 
     expect(screen.queryByText('Select Bitcoin')).not.toBeInTheDocument();
+  });
+
+  describe('Mobile menu', () => {
+    it('toggles mobile menu when clicking menu button', () => {
+      render(<Header />);
+
+      // Menu should be closed initially
+      const menuButton = screen.getByLabelText('Open menu');
+      expect(menuButton).toBeInTheDocument();
+
+      // Open menu
+      fireEvent.click(menuButton);
+
+      // Menu button should now show close
+      const closeButton = screen.getByLabelText('Close menu');
+      expect(closeButton).toBeInTheDocument();
+
+      // Menu items should be visible
+      expect(screen.getByText('Home')).toBeInTheDocument();
+      expect(screen.getByText('Top 10 Coins')).toBeInTheDocument();
+      expect(screen.getByText('Search Coins')).toBeInTheDocument();
+      expect(screen.getByText('About')).toBeInTheDocument();
+
+      // Close menu
+      fireEvent.click(closeButton);
+
+      // Menu button should show open again
+      expect(screen.getByLabelText('Open menu')).toBeInTheDocument();
+    });
+
+    it('closes mobile menu when clicking a navigation link', () => {
+      render(<Header />);
+
+      // Open menu
+      const menuButton = screen.getByLabelText('Open menu');
+      fireEvent.click(menuButton);
+
+      // Click home link
+      const homeLink = screen.getByText('Home');
+      fireEvent.click(homeLink);
+
+      // Menu should close
+      expect(screen.getByLabelText('Open menu')).toBeInTheDocument();
+    });
+
+    it('opens search and closes menu when clicking search in mobile menu', () => {
+      render(<Header />);
+
+      // Open menu
+      const menuButton = screen.getByLabelText('Open menu');
+      fireEvent.click(menuButton);
+
+      // Click search button in menu
+      const searchButton = screen.getByText('Search Coins');
+      fireEvent.click(searchButton);
+
+      // Menu should close and search should open
+      expect(screen.getByLabelText('Open menu')).toBeInTheDocument();
+      expect(screen.getByText('Select Bitcoin')).toBeInTheDocument();
+    });
+
+    it('has correct mobile menu link hrefs', () => {
+      render(<Header />);
+
+      // Open menu
+      const menuButton = screen.getByLabelText('Open menu');
+      fireEvent.click(menuButton);
+
+      const homeLink = screen.getByText('Home').closest('a');
+      expect(homeLink).toHaveAttribute('href', '/');
+
+      const top10Link = screen.getByText('Top 10 Coins').closest('a');
+      expect(top10Link).toHaveAttribute('href', '/?filter=top10');
+
+      const aboutLink = screen.getByText('About').closest('a');
+      expect(aboutLink).toHaveAttribute('href', '/about');
+    });
+
+    it('applies correct mobile menu styling classes', () => {
+      const { container } = render(<Header />);
+
+      // Check for mobile menu drawer container
+      const mobileMenuDrawer = container.querySelector('.sm\\:hidden.border-t');
+      expect(mobileMenuDrawer).toBeInTheDocument();
+
+      // Initially closed (max-h-0)
+      expect(mobileMenuDrawer).toHaveClass('max-h-0');
+
+      // Open menu
+      const menuButton = screen.getByLabelText('Open menu');
+      fireEvent.click(menuButton);
+
+      // Should be open (max-h-64)
+      expect(mobileMenuDrawer).toHaveClass('max-h-64');
+    });
+  });
+
+  describe('Mobile search', () => {
+    it('opens search dialog when clicking mobile search button', () => {
+      render(<Header />);
+
+      // Find mobile search button by aria-label
+      const searchButton = screen.getByLabelText('Search');
+      fireEvent.click(searchButton);
+
+      // Search dialog should open
+      expect(screen.getByText('Select Bitcoin')).toBeInTheDocument();
+    });
+
+    it('renders mobile search button with correct classes', () => {
+      render(<Header />);
+
+      const searchButton = screen.getByLabelText('Search');
+      expect(searchButton).toHaveClass(
+        'p-2',
+        'text-gray-500',
+        'dark:text-gray-400',
+        'hover:bg-gray-100',
+        'dark:hover:bg-gray-800',
+        'rounded-md',
+        'transition-colors'
+      );
+    });
+  });
+
+  describe('Responsive text', () => {
+    it('renders responsive title text', () => {
+      render(<Header />);
+
+      // Desktop title
+      const desktopTitle = screen.getByText('Cryptocurrency Market');
+      expect(desktopTitle).toHaveClass('hidden', 'sm:inline');
+
+      // Mobile title
+      const mobileTitle = screen.getByText('Crypto Market');
+      expect(mobileTitle).toHaveClass('sm:hidden');
+    });
+
+    it('hides description on mobile', () => {
+      render(<Header />);
+
+      const description = screen.getByText(
+        'Real-time cryptocurrency prices and market data'
+      );
+      expect(description).toHaveClass('hidden', 'sm:block');
+    });
+  });
+
+  describe('Theme toggle', () => {
+    it('renders theme toggle buttons', () => {
+      render(<Header />);
+
+      // Should have two theme toggles (desktop and mobile)
+      const themeToggles = screen.getAllByTestId('theme-toggle');
+      expect(themeToggles).toHaveLength(2);
+    });
+  });
+
+  describe('Header styling', () => {
+    it('applies sticky positioning and z-index', () => {
+      const { container } = render(<Header />);
+
+      const header = container.querySelector('header');
+      expect(header).toHaveClass(
+        'sticky',
+        'top-0',
+        'z-50',
+        'bg-white/95',
+        'dark:bg-gray-900',
+        'backdrop-blur-md'
+      );
+    });
+
+    it('applies correct container padding', () => {
+      const { container } = render(<Header />);
+
+      const containerDiv = container.querySelector('.container');
+      expect(containerDiv).toHaveClass('py-2', 'sm:py-4');
+    });
+
+    it('applies mobile menu icon classes', () => {
+      render(<Header />);
+
+      const menuButton = screen.getByLabelText('Open menu');
+      const menuIcon = menuButton.querySelector('.w-5.h-5');
+      expect(menuIcon).toBeInTheDocument();
+    });
+  });
+
+  describe('Navigation interactions', () => {
+    it('navigates correctly from mobile menu links', () => {
+      render(<Header />);
+
+      // Open menu
+      const menuButton = screen.getByLabelText('Open menu');
+      fireEvent.click(menuButton);
+
+      // Click Top 10 link
+      const top10Link = screen.getByText('Top 10 Coins');
+      fireEvent.click(top10Link);
+
+      // Menu should close after navigation
+      expect(screen.getByLabelText('Open menu')).toBeInTheDocument();
+    });
+
+    it('applies hover styles to mobile menu items', () => {
+      render(<Header />);
+
+      // Open menu
+      const menuButton = screen.getByLabelText('Open menu');
+      fireEvent.click(menuButton);
+
+      const homeLink = screen.getByText('Home').closest('a');
+      expect(homeLink).toHaveClass(
+        'hover:bg-gray-100',
+        'dark:hover:bg-gray-800'
+      );
+    });
   });
 });

@@ -199,10 +199,8 @@ All core MVP features have been successfully implemented:
 ```bash
 pnpm dev          # Start dev server with automatic port detection
 pnpm dev:turbo    # Start dev server with Turbo mode and port detection
-pnpm dev:fixed    # Start dev server on port 3000 (no fallback)
 pnpm build        # Build production application
 pnpm start        # Start production server with port detection
-pnpm start:fixed  # Start production server on port 3000 (no fallback)
 ```
 
 ### Code Quality Commands
@@ -222,6 +220,15 @@ pnpm test         # Run unit tests
 pnpm test:watch   # Run tests in watch mode
 pnpm test:coverage # Run tests with coverage report
 ```
+
+### Performance Testing
+
+```bash
+pnpm lighthouse        # Run Lighthouse mobile audit
+pnpm lighthouse:mobile # Run Lighthouse mobile audit (alias)
+```
+
+> 📝 **Note**: For detailed information about the development and production server scripts with automatic port detection, see [scripts/README.md](scripts/README.md)
 
 ## 🌐 API Configuration
 

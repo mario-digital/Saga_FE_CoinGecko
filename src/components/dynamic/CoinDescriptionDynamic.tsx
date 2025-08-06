@@ -6,7 +6,7 @@
 import dynamic from 'next/dynamic';
 
 export const CoinDescriptionDynamic = dynamic(
-  () => import('@/components/CoinDescription').then(mod => mod.CoinDescription),
+  () => import('@/components/CoinDescription'),
   {
     loading: () => (
       <div className="animate-pulse">

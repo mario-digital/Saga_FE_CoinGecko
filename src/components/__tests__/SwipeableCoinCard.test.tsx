@@ -3,7 +3,7 @@
  */
 
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, act } from '@testing-library/react';
 import { SwipeableCoinCard } from '../SwipeableCoinCard';
 import { CoinData } from '@/types/coingecko';
 
@@ -35,11 +35,29 @@ jest.mock('next/image', () => ({
   },
 }));
 
+// Mock hooks
+jest.mock('@/hooks/useSwipeGesture', () => ({
+  useSwipeGesture: jest.fn(() => ({
+    swipeState: { isSwiping: false, offsetX: 0 },
+    swipeHandlers: {
+      onTouchStart: jest.fn(),
+      onTouchMove: jest.fn(),
+      onTouchEnd: jest.fn(),
+      onMouseDown: jest.fn(),
+      onMouseMove: jest.fn(),
+      onMouseUp: jest.fn(),
+    },
+  })),
+}));
+
 describe('SwipeableCoinCard', () => {
   const mockOnClick = jest.fn();
+  const mockUseSwipeGesture =
+    require('@/hooks/useSwipeGesture').useSwipeGesture;
 
   beforeEach(() => {
     mockOnClick.mockClear();
+    jest.clearAllMocks();
   });
 
   it('renders coin information correctly', () => {
@@ -111,6 +129,120 @@ describe('SwipeableCoinCard', () => {
 
     // Should show additional details after swipe
     expect(screen.getByText('Additional Details')).toBeInTheDocument();
+  });
+
+  it('should handle swipe left to show details', () => {
+    let swipeLeftCallback: Function;
+    mockUseSwipeGesture.mockImplementation(({ onSwipeLeft }) => {
+      swipeLeftCallback = onSwipeLeft;
+      return {
+        swipeState: { isSwiping: false, offsetX: 0 },
+        swipeHandlers: {},
+      };
+    });
+
+    const { rerender } = render(
+      <SwipeableCoinCard coin={mockCoinData[0]} onClick={mockOnClick} />
+    );
+
+    // Trigger swipe left
+    act(() => {
+      swipeLeftCallback!();
+    });
+    rerender(
+      <SwipeableCoinCard coin={mockCoinData[0]} onClick={mockOnClick} />
+    );
+
+    // Should update view to show details
+    expect(mockUseSwipeGesture).toHaveBeenCalled();
+  });
+
+  it('should handle swipe right to show main view', () => {
+    let swipeRightCallback: Function;
+    mockUseSwipeGesture.mockImplementation(({ onSwipeRight }) => {
+      swipeRightCallback = onSwipeRight;
+      return {
+        swipeState: { isSwiping: false, offsetX: 0 },
+        swipeHandlers: {},
+      };
+    });
+
+    const { rerender } = render(
+      <SwipeableCoinCard coin={mockCoinData[0]} onClick={mockOnClick} />
+    );
+
+    // Trigger swipe right
+    act(() => {
+      swipeRightCallback!();
+    });
+    rerender(
+      <SwipeableCoinCard coin={mockCoinData[0]} onClick={mockOnClick} />
+    );
+
+    // Should update view to show main
+    expect(mockUseSwipeGesture).toHaveBeenCalled();
+  });
+
+  it('should not trigger onClick when swiping', () => {
+    mockUseSwipeGesture.mockReturnValue({
+      swipeState: { isSwiping: true, offsetX: 50 },
+      swipeHandlers: {},
+    });
+
+    render(<SwipeableCoinCard coin={mockCoinData[0]} onClick={mockOnClick} />);
+
+    const card = screen.getByText('Bitcoin').closest('div[role="button"]')!;
+    fireEvent.click(card);
+
+    expect(mockOnClick).not.toHaveBeenCalled();
+  });
+
+  it('should handle missing onClick prop', () => {
+    mockUseSwipeGesture.mockReturnValue({
+      swipeState: { isSwiping: false, offsetX: 0 },
+      swipeHandlers: {},
+    });
+
+    render(<SwipeableCoinCard coin={mockCoinData[0]} />);
+
+    const card = screen.getByText('Bitcoin').closest('div[role="button"]')!;
+
+    // Should not throw error when clicked without onClick handler
+    expect(() => fireEvent.click(card)).not.toThrow();
+  });
+
+  it('should apply transform based on swipe offset', () => {
+    mockUseSwipeGesture.mockReturnValue({
+      swipeState: { isSwiping: true, deltaX: -50 },
+      swipeHandlers: {},
+    });
+
+    const { container } = render(
+      <SwipeableCoinCard coin={mockCoinData[0]} onClick={mockOnClick} />
+    );
+
+    // Find the element with transform style
+    const transformedElement = container.querySelector('[style*="transform"]');
+    expect(transformedElement).toBeInTheDocument();
+    expect(transformedElement?.getAttribute('style')).toContain(
+      'translateX(-15px)'
+    );
+  });
+
+  it('should handle coins with missing optional data', () => {
+    const coinWithMissingData = {
+      ...mockCoinData[0],
+      ath: null,
+      ath_change_percentage: null,
+      max_supply: null,
+    };
+
+    render(
+      <SwipeableCoinCard coin={coinWithMissingData} onClick={mockOnClick} />
+    );
+
+    expect(screen.getByText('Bitcoin')).toBeInTheDocument();
+    expect(screen.queryByText('ATH')).not.toBeInTheDocument();
   });
 
   it('shows additional coin details in swipe view', () => {

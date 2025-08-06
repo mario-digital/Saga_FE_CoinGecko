@@ -1,35 +1,58 @@
 import {
-  formatPrice,
+  formatCurrency,
+  formatLargeNumber,
   formatMarketCap,
-  formatPercentageChange,
+  formatPercentage,
   getPercentageChangeColor,
   truncateText,
   debounce,
   cn,
+  safeFormatCurrency,
+  safeFormatMarketCap,
+  safeFormatPercentage,
+  sanitizeHTML,
+  formatDate,
 } from '../utils';
 
 describe('Utils', () => {
-  describe('formatPrice', () => {
+  describe('formatCurrency', () => {
     it('formats prices above $1 with 2 decimal places', () => {
-      expect(formatPrice(1234.56)).toBe('$1,234.56');
-      expect(formatPrice(45000)).toBe('$45,000.00');
+      expect(formatCurrency(1234.56)).toBe('$1,234.56');
+      expect(formatCurrency(45000)).toBe('$45,000.00');
     });
 
     it('formats prices below $1 with 6 decimal places', () => {
-      expect(formatPrice(0.123456)).toBe('$0.123456');
-      expect(formatPrice(0.000001)).toBe('$0.000001');
+      expect(formatCurrency(0.123456)).toBe('$0.123456');
+      expect(formatCurrency(0.000001)).toBe('$0.000001');
     });
 
     it('handles zero price', () => {
-      expect(formatPrice(0)).toBe('$0.000000');
+      expect(formatCurrency(0)).toBe('$0.000000');
     });
 
     it('supports different currencies', () => {
-      expect(formatPrice(100, 'EUR')).toBe('€100.00');
+      expect(formatCurrency(100, 'EUR')).toBe('€100.00');
     });
 
     it('handles very large numbers', () => {
-      expect(formatPrice(1234567890.12)).toBe('$1,234,567,890.12');
+      expect(formatCurrency(1234567890.12)).toBe('$1,234,567,890.12');
+    });
+  });
+
+  describe('formatLargeNumber', () => {
+    it('formats numbers without prefix', () => {
+      expect(formatLargeNumber(1500000000, false)).toBe('1.50B');
+      expect(formatLargeNumber(2340000, false)).toBe('2.34M');
+    });
+
+    it('formats numbers with prefix', () => {
+      expect(formatLargeNumber(1500000000, true)).toBe('$1.50B');
+      expect(formatLargeNumber(2340000, true)).toBe('$2.34M');
+    });
+
+    it('handles small numbers', () => {
+      expect(formatLargeNumber(500000, false)).toBe('500,000');
+      expect(formatLargeNumber(1234, true)).toBe('$1,234');
     });
   });
 
@@ -66,29 +89,29 @@ describe('Utils', () => {
     });
   });
 
-  describe('formatPercentageChange', () => {
+  describe('formatPercentage', () => {
     it('formats positive changes with plus sign', () => {
-      expect(formatPercentageChange(2.5)).toBe('+2.50%');
-      expect(formatPercentageChange(0.1)).toBe('+0.10%');
+      expect(formatPercentage(2.5)).toBe('+2.50%');
+      expect(formatPercentage(0.1)).toBe('+0.10%');
     });
 
     it('formats negative changes with minus sign', () => {
-      expect(formatPercentageChange(-3.2)).toBe('-3.20%');
-      expect(formatPercentageChange(-0.05)).toBe('-0.05%');
+      expect(formatPercentage(-3.2)).toBe('-3.20%');
+      expect(formatPercentage(-0.05)).toBe('-0.05%');
     });
 
     it('formats zero change', () => {
-      expect(formatPercentageChange(0)).toBe('+0.00%');
+      expect(formatPercentage(0)).toBe('+0.00%');
     });
 
     it('handles very small changes', () => {
-      expect(formatPercentageChange(0.001)).toBe('+0.00%');
-      expect(formatPercentageChange(-0.001)).toBe('-0.00%');
+      expect(formatPercentage(0.001)).toBe('+0.00%');
+      expect(formatPercentage(-0.001)).toBe('-0.00%');
     });
 
     it('handles large changes', () => {
-      expect(formatPercentageChange(150.789)).toBe('+150.79%');
-      expect(formatPercentageChange(-99.999)).toBe('-100.00%');
+      expect(formatPercentage(150.789)).toBe('+150.79%');
+      expect(formatPercentage(-99.999)).toBe('-100.00%');
     });
   });
 
@@ -105,6 +128,21 @@ describe('Utils', () => {
 
     it('returns gray color for zero change', () => {
       expect(getPercentageChangeColor(0)).toBe(
+        'text-gray-600 dark:text-gray-400'
+      );
+    });
+
+    it('returns gray color for null or undefined', () => {
+      expect(getPercentageChangeColor(null)).toBe(
+        'text-gray-600 dark:text-gray-400'
+      );
+      expect(getPercentageChangeColor(undefined)).toBe(
+        'text-gray-600 dark:text-gray-400'
+      );
+    });
+
+    it('returns gray color for NaN', () => {
+      expect(getPercentageChangeColor(NaN)).toBe(
         'text-gray-600 dark:text-gray-400'
       );
     });
@@ -222,6 +260,112 @@ describe('Utils', () => {
       expect(
         cn('base-class', isActive && 'active', isDisabled && 'disabled')
       ).toBe('base-class active');
+    });
+  });
+
+  describe('safeFormatCurrency', () => {
+    it('formats valid numbers', () => {
+      expect(safeFormatCurrency(100)).toBe('$100.00');
+      expect(safeFormatCurrency(0.5)).toBe('$0.500000');
+    });
+
+    it('returns N/A for null', () => {
+      expect(safeFormatCurrency(null)).toBe('N/A');
+    });
+
+    it('returns N/A for undefined', () => {
+      expect(safeFormatCurrency(undefined)).toBe('N/A');
+    });
+
+    it('returns N/A for NaN', () => {
+      expect(safeFormatCurrency(NaN)).toBe('N/A');
+    });
+
+    it('supports different currencies', () => {
+      expect(safeFormatCurrency(100, 'EUR')).toBe('€100.00');
+    });
+  });
+
+  describe('safeFormatMarketCap', () => {
+    it('formats valid numbers', () => {
+      expect(safeFormatMarketCap(1000000000)).toBe('$1.00B');
+      expect(safeFormatMarketCap(500000)).toBe('$500,000');
+    });
+
+    it('returns N/A for null', () => {
+      expect(safeFormatMarketCap(null)).toBe('N/A');
+    });
+
+    it('returns N/A for undefined', () => {
+      expect(safeFormatMarketCap(undefined)).toBe('N/A');
+    });
+
+    it('returns N/A for NaN', () => {
+      expect(safeFormatMarketCap(NaN)).toBe('N/A');
+    });
+  });
+
+  describe('safeFormatPercentage', () => {
+    it('formats valid numbers', () => {
+      expect(safeFormatPercentage(2.5)).toBe('+2.50%');
+      expect(safeFormatPercentage(-1.5)).toBe('-1.50%');
+    });
+
+    it('returns 0.00% for null', () => {
+      expect(safeFormatPercentage(null)).toBe('0.00%');
+    });
+
+    it('returns 0.00% for undefined', () => {
+      expect(safeFormatPercentage(undefined)).toBe('0.00%');
+    });
+
+    it('returns 0.00% for NaN', () => {
+      expect(safeFormatPercentage(NaN)).toBe('0.00%');
+    });
+  });
+
+  describe('sanitizeHTML', () => {
+    it('removes HTML tags', () => {
+      expect(sanitizeHTML('<p>Hello</p>')).toBe('Hello');
+      expect(sanitizeHTML('<div>Test<span>Content</span></div>')).toBe(
+        'TestContent'
+      );
+    });
+
+    it('handles plain text', () => {
+      expect(sanitizeHTML('Plain text')).toBe('Plain text');
+    });
+
+    it('handles empty string', () => {
+      expect(sanitizeHTML('')).toBe('');
+    });
+
+    it('handles complex HTML', () => {
+      // The browser's DOMParser removes script content for security
+      const result = sanitizeHTML('<script>alert("xss")</script>Safe text');
+      expect(result).toBe('Safe text');
+    });
+
+    it('handles self-closing tags', () => {
+      expect(sanitizeHTML('Text<br/>More text')).toBe('TextMore text');
+    });
+  });
+
+  describe('formatDate', () => {
+    it('formats ISO date string', () => {
+      const result = formatDate('2024-01-15T10:30:00Z');
+      // Check it's a valid date string
+      expect(result).toBeTruthy();
+      expect(typeof result).toBe('string');
+    });
+
+    it('formats date with different formats', () => {
+      const result = formatDate('2023-12-25');
+      // Check it's a valid date string
+      expect(result).toBeTruthy();
+      expect(typeof result).toBe('string');
+      // Should contain Dec for December
+      expect(result).toMatch(/Dec|12/);
     });
   });
 });

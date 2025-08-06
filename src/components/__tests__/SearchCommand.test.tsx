@@ -15,16 +15,29 @@ jest.mock('@radix-ui/react-dialog', () => {
   const originalModule = jest.requireActual('@radix-ui/react-dialog');
   return {
     ...originalModule,
-    Root: ({ children, ...props }: any) => <div {...props}>{children}</div>,
+    Root: ({ children, onOpenChange, ...props }: any) => {
+      // Filter out onOpenChange from being passed to DOM element
+      return <div {...props}>{children}</div>;
+    },
     Portal: ({ children }: any) => (
       <div data-testid="dialog-portal">{children}</div>
     ),
     Overlay: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-    Content: ({ children, ...props }: any) => (
-      <div role="dialog" {...props}>
-        {children}
-      </div>
-    ),
+    Content: ({
+      children,
+      onOpenChange,
+      onPointerDownOutside,
+      onEscapeKeyDown,
+      onInteractOutside,
+      ...props
+    }: any) => {
+      // Filter out non-DOM props
+      return (
+        <div role="dialog" {...props}>
+          {children}
+        </div>
+      );
+    },
     Title: ({ children, ...props }: any) => <h1 {...props}>{children}</h1>,
     Trigger: ({ children, ...props }: any) => (
       <button {...props}>{children}</button>

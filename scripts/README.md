@@ -11,9 +11,8 @@ Development server with automatic port detection. If port 3000 is busy, it autom
 **Usage:**
 
 ```bash
-npm run dev        # Start with automatic port detection
-npm run dev:turbo  # Start with turbo mode and automatic port detection
-npm run dev:fixed  # Force port 3000 (original behavior)
+pnpm dev        # Start with automatic port detection
+pnpm dev:turbo  # Start with turbo mode and automatic port detection
 ```
 
 ### `start-server.js`
@@ -23,9 +22,8 @@ Production server with automatic port detection. If port 3000 is busy, it automa
 **Usage:**
 
 ```bash
-npm run build      # Build the application first
-npm start          # Start with automatic port detection
-npm run start:fixed # Force port 3000 (original behavior)
+pnpm build      # Build the application first
+pnpm start      # Start with automatic port detection
 ```
 
 ## Features
@@ -45,6 +43,6 @@ Runs Lighthouse performance audits with mobile device emulation.
 **Usage:**
 
 ```bash
-npm run lighthouse         # Run mobile audit
-npm run lighthouse:mobile  # Run mobile audit (alias)
+pnpm lighthouse         # Run mobile audit
+pnpm lighthouse:mobile  # Run mobile audit (alias)
 ```

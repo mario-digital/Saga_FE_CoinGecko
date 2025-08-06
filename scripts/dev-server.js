@@ -35,7 +35,8 @@ function isPortAvailable(port) {
       resolve(true);
     });
 
-    server.listen(port, HOST);
+    // Listen on all interfaces (0.0.0.0) to match Next.js behavior
+    server.listen(port, '0.0.0.0');
   });
 }
 
@@ -66,7 +67,7 @@ async function findAvailablePort() {
  * @param {boolean} turbo - Whether to use turbo mode
  */
 function startDevServer(port, turbo = false) {
-  const args = ['dev', '--port', port.toString()];
+  const args = ['dev', '-p', port.toString()];
 
   if (turbo) {
     args.push('--turbo');
@@ -79,9 +80,13 @@ function startDevServer(port, turbo = false) {
   console.log(`\n🚀 Starting Next.js development server on port ${port}...`);
   console.log(`📡 Server will be available at: http://localhost:${port}\n`);
 
+  // Set PORT environment variable as well for compatibility
+  const env = { ...process.env, PORT: port.toString() };
+
   const child = spawn('next', args, {
     stdio: 'inherit',
     shell: true,
+    env: env,
   });
 
   child.on('error', error => {

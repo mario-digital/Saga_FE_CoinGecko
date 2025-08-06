@@ -11,7 +11,7 @@ interface PullToRefreshProps {
   disabled?: boolean;
 }
 
-export function PullToRefresh({
+export default function PullToRefresh({
   onRefresh,
   children,
   disabled = false,

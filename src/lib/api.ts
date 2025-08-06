@@ -47,3 +47,102 @@ export const buildSearchUrl = (params: SearchParams): string => {
 
   return `${API_ENDPOINTS.SEARCH}?${searchParams.toString()}`;
 };
+
+export const api = {
+  getCoins: async (page: number = 1, perPage: number = 20) => {
+    try {
+      const response = await fetch(
+        `/api/coins?page=${page}&per_page=${perPage}`,
+        {
+          headers: { 'Content-Type': 'application/json' },
+        }
+      );
+      if (!response) {
+        throw new Error('No response received');
+      }
+      if (!response.ok) {
+        throw new Error(response.statusText || 'Failed to fetch coins');
+      }
+      return response.json();
+    } catch (error) {
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error(String(error));
+    }
+  },
+
+  getCoinDetail: async (coinId: string) => {
+    try {
+      const response = await fetch(`/api/coins/${coinId}`, {
+        headers: { 'Content-Type': 'application/json' },
+      });
+      if (!response) {
+        throw new Error('No response received');
+      }
+      if (!response.ok) {
+        throw new Error(response.statusText || 'Failed to fetch coin detail');
+      }
+      return response.json();
+    } catch (error) {
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error(String(error));
+    }
+  },
+
+  searchCoins: async (query: string) => {
+    try {
+      const response = await fetch(
+        `/api/search?q=${encodeURIComponent(query)}`,
+        {
+          headers: { 'Content-Type': 'application/json' },
+        }
+      );
+      if (!response) {
+        throw new Error('No response received');
+      }
+      if (!response.ok) {
+        throw new Error(response.statusText || 'Failed to search coins');
+      }
+      return response.json();
+    } catch (error) {
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error(String(error));
+    }
+  },
+
+  getPriceHistory: async (coinId: string, timeRange: string) => {
+    try {
+      const timeRangeToDays: Record<string, number> = {
+        '24h': 1,
+        '7d': 7,
+        '30d': 30,
+        '90d': 90,
+        '1y': 365,
+      };
+      const days = timeRangeToDays[timeRange] || 7;
+      const response = await fetch(
+        `/api/coins/${coinId}/history?days=${days}`,
+        {
+          headers: { 'Content-Type': 'application/json' },
+        }
+      );
+      if (!response) {
+        throw new Error('No response received');
+      }
+      if (!response.ok) {
+        throw new Error(response.statusText || 'Failed to fetch price history');
+      }
+      return response.json();
+    } catch (error) {
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error(String(error));
+    }
+  },
+};
