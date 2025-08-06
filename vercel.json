@@ -1,0 +1,61 @@
+{
+  "buildCommand": "pnpm build",
+  "outputDirectory": ".next",
+  "devCommand": "pnpm dev",
+  "installCommand": "pnpm install",
+  "framework": "nextjs",
+  "regions": ["iad1"],
+  "functions": {
+    "src/app/api/coins/route.ts": {
+      "maxDuration": 10
+    },
+    "src/app/api/coins/[coinId]/route.ts": {
+      "maxDuration": 10
+    },
+    "src/app/api/coins/[coinId]/history/route.ts": {
+      "maxDuration": 10
+    }
+  },
+  "env": {
+    "NEXT_PUBLIC_COINGECKO_API_KEY": "@coingecko-api-key",
+    "NEXT_PUBLIC_API_BASE_URL": "@api-base-url"
+  },
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        }
+      ]
+    },
+    {
+      "source": "/sw.js",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        },
+        {
+          "key": "Service-Worker-Allowed",
+          "value": "/"
+        }
+      ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/sw.js",
+      "destination": "/sw.js"
+    }
+  ]
+}
