@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { apiCache, getCacheKey, CACHE_TTL } from '@/lib/cache';
+import { rateLimitedFetch } from '@/lib/rate-limiter';
 
 const COINGECKO_API_BASE_URL = 'https://api.coingecko.com/api/v3';
 
@@ -11,46 +13,70 @@ export async function GET(
     const days = searchParams.get('days') || '7';
     const { coinId } = await params;
 
-    const url = `${COINGECKO_API_BASE_URL}/coins/${coinId}/market_chart?vs_currency=usd&days=${days}&interval=daily`;
+    // Generate cache key
+    const cacheKey = getCacheKey('price-history', { coinId, days });
 
-    const response = await fetch(url, {
-      headers: {
-        Accept: 'application/json',
+    // Use dedupeRequest to prevent concurrent identical requests
+    const data = await apiCache.dedupeRequest(
+      cacheKey,
+      async () => {
+        const url = `${COINGECKO_API_BASE_URL}/coins/${coinId}/market_chart?vs_currency=usd&days=${days}&interval=daily`;
+
+        const response = await rateLimitedFetch(url, {
+          headers: {
+            Accept: 'application/json',
+          },
+        });
+
+        return response.json();
       },
-      // Cache for 5 minutes
-      next: { revalidate: 300 },
-    });
+      CACHE_TTL.PRICE_HISTORY
+    );
 
-    if (!response.ok) {
-      if (response.status === 404) {
-        return NextResponse.json(
-          { error: 'Price history not found for this coin' },
-          { status: 404 }
-        );
-      }
-      if (response.status === 429) {
-        console.warn('CoinGecko API rate limit exceeded for price history');
-        return NextResponse.json(
-          { error: 'API rate limit exceeded. Please try again later.' },
-          { status: 429 }
-        );
-      }
-      console.error(
-        `CoinGecko API error: ${response.status} ${response.statusText}`
-      );
-      throw new Error(`API responded with status: ${response.status}`);
-    }
-
-    const data = await response.json();
+    const xCacheStatus = apiCache.has(cacheKey) ? 'HIT' : 'MISS';
 
     return NextResponse.json(data, {
       headers: {
-        'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600',
+        'Cache-Control': 'public, s-maxage=900, stale-while-revalidate=1800',
+        'X-Cache': xCacheStatus,
+        'X-Cache-Key': cacheKey,
       },
     });
-  } catch (error) {
+  } catch (error: any) {
+    const { searchParams } = new URL(request.url);
+    const days = searchParams.get('days') || '7';
     const { coinId } = await params;
     console.error(`Error fetching price history for ${coinId}:`, error);
+
+    // Try to return stale data if available
+    const cacheKey = getCacheKey('price-history', { coinId, days });
+    const staleData = apiCache.getStale(cacheKey);
+
+    if (staleData) {
+      console.warn(`Returning stale price history for ${coinId} due to error`);
+      return NextResponse.json(staleData, {
+        headers: {
+          'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600',
+          'X-Cache': 'STALE',
+        },
+      });
+    }
+
+    // Return appropriate error based on status
+    if (error.status === 404) {
+      return NextResponse.json(
+        { error: 'Price history not found for this coin' },
+        { status: 404 }
+      );
+    }
+
+    if (error.status === 429) {
+      console.warn('CoinGecko API rate limit exceeded for price history');
+      return NextResponse.json(
+        { error: 'API rate limit exceeded. Please try again later.' },
+        { status: 429 }
+      );
+    }
 
     return NextResponse.json(
       { error: 'Failed to fetch price history' },

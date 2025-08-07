@@ -44,7 +44,7 @@ export const useCoinDetail = (coinId: string): UseCoinDetailReturn => {
     {
       revalidateOnFocus: false,
       revalidateOnReconnect: true,
-      dedupingInterval: 60000, // 1 minute cache
+      dedupingInterval: 5000, // 5 seconds - rely on server cache instead
       shouldRetryOnError: false, // Don't retry on errors (especially 404s)
       errorRetryCount: 0, // No automatic retries
       onErrorRetry: (error, _key, _config, revalidate, { retryCount }) => {

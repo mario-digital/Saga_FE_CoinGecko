@@ -17,7 +17,7 @@ export const API_ENDPOINTS = {
 export const SWR_CONFIG = {
   revalidateOnFocus: false,
   revalidateOnReconnect: true,
-  dedupingInterval: 60000, // 1 minute
+  dedupingInterval: 5000, // 5 seconds - rely on server cache instead
   focusThrottleInterval: 5000,
   errorRetryCount: 3,
   errorRetryInterval: 5000,

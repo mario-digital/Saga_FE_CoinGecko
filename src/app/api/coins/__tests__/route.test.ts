@@ -18,6 +18,7 @@ jest.mock('next/server', () => ({
 
 import { GET } from '../route';
 import { NextRequest } from 'next/server';
+import { apiCache } from '@/lib/cache';
 
 // Mock the global fetch
 global.fetch = jest.fn();
@@ -27,6 +28,8 @@ describe('GET /api/coins', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    // Clear the cache before each test
+    apiCache.clear();
     // Suppress console.error for expected errors
     consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
   });
@@ -64,13 +67,12 @@ describe('GET /api/coins', () => {
         headers: {
           Accept: 'application/json',
         },
-        next: { revalidate: 60 },
       })
     );
 
     expect(data).toEqual(mockData);
     expect(response.headers.get('Cache-Control')).toBe(
-      'public, s-maxage=60, stale-while-revalidate=120'
+      'public, s-maxage=120, stale-while-revalidate=300'
     );
   });
 
@@ -109,14 +111,17 @@ describe('GET /api/coins', () => {
     (global.fetch as jest.Mock).mockResolvedValueOnce({
       ok: false,
       status: 429,
+      statusText: 'Too Many Requests',
     });
 
     const request = new NextRequest('http://localhost:3000/api/coins');
     const response = await GET(request);
     const data = await response.json();
 
-    expect(data).toEqual({ error: 'Failed to fetch coins data' });
-    expect(response.status).toBe(500);
+    expect(data).toEqual({
+      error: 'API rate limit exceeded. Please try again later.',
+    });
+    expect(response.status).toBe(429);
   });
 
   it('should handle network errors', async () => {

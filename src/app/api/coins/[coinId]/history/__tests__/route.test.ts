@@ -18,6 +18,7 @@ jest.mock('next/server', () => ({
 
 import { GET } from '../route';
 import { NextRequest } from 'next/server';
+import { apiCache } from '@/lib/cache';
 
 // Mock the global fetch
 global.fetch = jest.fn();
@@ -28,6 +29,8 @@ describe('GET /api/coins/[coinId]/history', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    // Clear cache before each test
+    apiCache.clear();
     // Suppress console.error for expected errors
     consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
     // Suppress console.warn for rate limit warnings
@@ -75,13 +78,12 @@ describe('GET /api/coins/[coinId]/history', () => {
         headers: {
           Accept: 'application/json',
         },
-        next: { revalidate: 300 },
       })
     );
 
     expect(data).toEqual(mockData);
     expect(response.headers.get('Cache-Control')).toBe(
-      'public, s-maxage=300, stale-while-revalidate=600'
+      'public, s-maxage=900, stale-while-revalidate=1800'
     );
   });
 
