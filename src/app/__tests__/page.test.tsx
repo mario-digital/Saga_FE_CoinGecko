@@ -304,7 +304,7 @@ describe('HomePage', () => {
 
     const { container } = render(<HomePage />);
 
-    expect(screen.getByText('Error Loading Data')).toBeInTheDocument();
+    expect(screen.getByText('Error Loading Coin Data')).toBeInTheDocument();
     expect(screen.getByText('Failed to fetch data')).toBeInTheDocument();
     expect(screen.getByText('Try Again')).toBeInTheDocument();
   });

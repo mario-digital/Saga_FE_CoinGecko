@@ -88,12 +88,6 @@ function CoinDetailContent() {
               <BreadcrumbList>
                 <BreadcrumbItem>
                   <BreadcrumbLink asChild>
-                    <Link href="/">Home</Link>
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem>
-                  <BreadcrumbLink asChild>
                     <Link href="/">Coins</Link>
                   </BreadcrumbLink>
                 </BreadcrumbItem>

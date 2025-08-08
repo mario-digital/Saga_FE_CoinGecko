@@ -30,7 +30,7 @@ export const CoinDetailError: FC<CoinDetailErrorProps> = ({ error, retry }) => {
 
   // Auto-retry for CORS errors after a delay
   const [corsRetryCountdown, setCorsRetryCountdown] = useState<number>(
-    isCorsError ? 3 : 0
+    isCorsError ? 15 : 0
   );
 
   useEffect(() => {

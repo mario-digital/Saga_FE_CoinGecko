@@ -154,20 +154,27 @@ function HomePageContent() {
   );
 
   if (error) {
+    // Log error for debugging (only in development)
+    if (process.env.NODE_ENV === 'development') {
+      console.error('API Error:', error);
+    }
+
     return (
-      <div className="text-center py-12">
+      <div className="text-center py-12 px-4">
         <div
           className={`${isRateLimited ? 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800' : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'} border rounded-lg p-6 max-w-md mx-auto`}
         >
           <h2
             className={`text-lg font-semibold ${isRateLimited ? 'text-yellow-900 dark:text-yellow-400' : 'text-red-900 dark:text-red-400'} mb-2`}
           >
-            {isRateLimited ? 'Rate Limit Reached' : 'Error Loading Data'}
+            {isRateLimited ? 'Rate Limit Reached' : 'Error Loading Coin Data'}
           </h2>
           <p
             className={`${isRateLimited ? 'text-yellow-700 dark:text-yellow-300' : 'text-red-700 dark:text-red-300'} text-sm mb-4`}
           >
-            {error}
+            {error === 'Load failed'
+              ? 'Unable to connect to CoinGecko API. This may be due to network issues or API restrictions. Please check your connection and try again.'
+              : error}
           </p>
           {isRateLimited ? (
             <p className="text-xs text-gray-600 dark:text-gray-400 mt-2">
@@ -175,9 +182,20 @@ function HomePageContent() {
               wait a moment before refreshing.
             </p>
           ) : (
-            <button onClick={() => refetch()} className="btn-primary">
-              Try Again
-            </button>
+            <div className="flex gap-3 justify-center">
+              <button
+                onClick={() => (window.location.href = '/')}
+                className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700"
+              >
+                Go Back
+              </button>
+              <button
+                onClick={() => refetch()}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              >
+                Try Again
+              </button>
+            </div>
           )}
         </div>
       </div>

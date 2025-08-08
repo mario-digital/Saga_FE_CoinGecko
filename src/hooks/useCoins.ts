@@ -28,8 +28,26 @@ export const useCoins = (
     SWR_CONFIG
   );
 
+  // Better error message handling
+  let errorMessage: string | null = null;
+  if (error) {
+    if (
+      error.message === 'Load failed' ||
+      error.message === 'Failed to fetch'
+    ) {
+      errorMessage =
+        'Unable to connect to CoinGecko API. Please check your network connection and try again.';
+    } else if (error.message?.includes('Unable to connect')) {
+      errorMessage = error.message;
+    } else if (error.message?.includes('Rate limit')) {
+      errorMessage = error.message;
+    } else {
+      errorMessage =
+        error.message || 'An unexpected error occurred. Please try again.';
+    }
+  }
+
   const isRateLimited = error?.message?.includes('Rate limit') || false;
-  const errorMessage = error?.message || null;
 
   return {
     coins: data,

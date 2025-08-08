@@ -92,7 +92,9 @@ describe('useCoins', () => {
     });
 
     expect(result.current.coins).toBeUndefined();
-    expect(result.current.error).toBe(errorMessage);
+    expect(result.current.error).toBe(
+      'Unable to connect to CoinGecko API. Please check your network connection and try again.'
+    );
   });
 
   it('uses default parameters correctly', () => {
@@ -160,7 +162,9 @@ describe('useCoins', () => {
       expect(result.current.isLoading).toBe(false);
     });
 
-    expect(result.current.error).toBeNull();
+    expect(result.current.error).toBe(
+      'An unexpected error occurred. Please try again.'
+    );
   });
 
   it('handles string errors', async () => {
@@ -175,7 +179,9 @@ describe('useCoins', () => {
       expect(result.current.isLoading).toBe(false);
     });
 
-    expect(result.current.error).toBeNull();
+    expect(result.current.error).toBe(
+      'An unexpected error occurred. Please try again.'
+    );
   });
 
   it('maintains referential stability of return object properties', () => {

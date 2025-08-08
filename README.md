@@ -2,6 +2,13 @@
 
 A high-performance single-page application built with Next.js 15, React 19, and TypeScript, implementing real-time cryptocurrency market data visualization through the CoinGecko API v3.
 
+## Modes
+
+- **Spec Mode (Submission)**  
+  Pure static SPA (`output: 'export'`), no API routes, and direct browser calls to the public CoinGecko API. Deployable to any CDN or static host (Netlify, GitHub Pages, S3, etc.).
+- **Production Mode (Optional)**  
+  Real-world architecture with API route proxies, caching, and rate limiting to handle CORS restrictions and vendor quotas. This mode is not part of the submission but demonstrates production-readiness. Available on the `production-mode` branch.
+
 ## Technical Architecture
 
 ### Core Technologies
@@ -134,6 +141,16 @@ export function CoinList() {
 2. **SWR Hooks**: Manage caching, revalidation, and request deduplication
 3. **Custom Hooks**: Transform API responses and handle business logic
 4. **Components**: Render UI based on hook state
+
+## Design Decisions & Challenges
+
+- **SWR vs React Query** – Chose SWR for its smaller API surface, built-in stale-while-revalidate semantics, and low bundle cost. React Query's richer feature set wasn't necessary for this small SPA.
+- **Static Export + CSR** – Used `output: 'export'` to meet the requirement for a static-deployable SPA. All data is fetched client-side to ensure fresh market data without rebuilding.
+- **CORS Handling** – Direct CoinGecko calls are possible in Spec Mode using their public/demo endpoints. In Production Mode, API routes with caching mitigate CORS and rate limits.
+- **Rate Limit Strategy** – Implemented exponential backoff and retry-after handling to avoid 429 errors, with a visual retry indicator in the UI.
+- **Performance** – Virtual scrolling for large lists, dynamic imports for heavy charts, and preconnect/dns-prefetch to API endpoints.
+- **Error States** – Dedicated components for loading, empty, and error cases. Errors include retry actions for better UX.
+- **Trade-offs** – Production Mode improves reliability and performance but violates the "no API routes" requirement, hence it's on a separate branch.
 
 ### State Management
 

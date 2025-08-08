@@ -592,4 +592,279 @@ describe('api', () => {
       );
     });
   });
+
+  describe('API key handling', () => {
+    const originalEnv = process.env;
+
+    beforeEach(() => {
+      jest.resetModules();
+      process.env = { ...originalEnv };
+    });
+
+    afterEach(() => {
+      process.env = originalEnv;
+    });
+
+    it('includes API key header when environment variable is set', async () => {
+      process.env.NEXT_PUBLIC_COINGECKO_API_KEY = 'test-api-key';
+
+      // Re-import the module to pick up the new env var
+      jest.resetModules();
+      const { api: apiWithKey } = require('../api');
+
+      (global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: true,
+        json: async () => [],
+      });
+
+      await apiWithKey.getCoins();
+
+      expect(global.fetch).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          headers: expect.objectContaining({
+            'x-cg-demo-api-key': 'test-api-key',
+          }),
+        })
+      );
+    });
+  });
+
+  describe('Error status handling', () => {
+    it('handles 429 rate limit with retry-after header', async () => {
+      const headers = new Headers();
+      headers.set('retry-after', '120');
+
+      (global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: false,
+        status: 429,
+        headers,
+      });
+
+      await expect(api.getCoins()).rejects.toMatchObject({
+        message: 'Rate limit exceeded',
+        status: 429,
+        retryAfter: 120,
+      });
+    });
+
+    it('handles 429 rate limit without retry-after header', async () => {
+      (global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: false,
+        status: 429,
+        headers: new Headers(),
+      });
+
+      await expect(api.getCoins()).rejects.toMatchObject({
+        message: 'Rate limit exceeded',
+        status: 429,
+        retryAfter: 60,
+      });
+    });
+
+    it('handles 400 bad request', async () => {
+      (global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: false,
+        status: 400,
+        headers: new Headers(),
+      });
+
+      await expect(api.getCoins()).rejects.toMatchObject({
+        message: 'Invalid request. Please check your parameters.',
+        status: 400,
+      });
+    });
+
+    it('handles 500 server error', async () => {
+      (global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: false,
+        status: 500,
+        headers: new Headers(),
+      });
+
+      await expect(api.getCoins()).rejects.toMatchObject({
+        message: 'Server error. Please try again later.',
+        status: 500,
+      });
+    });
+
+    it('handles 502 bad gateway', async () => {
+      (global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: false,
+        status: 502,
+        headers: new Headers(),
+      });
+
+      await expect(api.getCoins()).rejects.toMatchObject({
+        message: 'Server error. Please try again later.',
+        status: 502,
+      });
+    });
+
+    it('handles 503 service unavailable', async () => {
+      (global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: false,
+        status: 503,
+        headers: new Headers(),
+      });
+
+      await expect(api.getCoins()).rejects.toMatchObject({
+        message: 'Server error. Please try again later.',
+        status: 503,
+      });
+    });
+  });
+
+  describe('CORS error handling', () => {
+    it('retries on CORS error and succeeds', async () => {
+      const mockData = [{ id: 'bitcoin', name: 'Bitcoin' }];
+
+      // First call fails with CORS, second succeeds
+      (global.fetch as jest.Mock)
+        .mockRejectedValueOnce(new TypeError('Failed to fetch'))
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => mockData,
+        });
+
+      const result = await api.getCoins();
+
+      expect(result).toEqual(mockData);
+      expect(global.fetch).toHaveBeenCalledTimes(2);
+    });
+
+    it('handles Load failed error as CORS', async () => {
+      (global.fetch as jest.Mock).mockRejectedValue(
+        new TypeError('Load failed')
+      );
+
+      await expect(api.getCoins()).rejects.toThrow(
+        'Unable to connect to CoinGecko API. This might be a temporary issue. Please try again in a moment.'
+      );
+    });
+
+    it('handles NetworkError as CORS', async () => {
+      (global.fetch as jest.Mock).mockRejectedValue(
+        new TypeError('NetworkError')
+      );
+
+      await expect(api.getCoins()).rejects.toThrow(
+        'Unable to connect to CoinGecko API. This might be a temporary issue. Please try again in a moment.'
+      );
+    });
+
+    it('handles Network request failed as CORS', async () => {
+      (global.fetch as jest.Mock).mockRejectedValue(
+        new TypeError('Network request failed')
+      );
+
+      await expect(api.getCoins()).rejects.toThrow(
+        'Unable to connect to CoinGecko API. This might be a temporary issue. Please try again in a moment.'
+      );
+    });
+
+    it('fails after retry attempts are exhausted', async () => {
+      (global.fetch as jest.Mock).mockRejectedValue(
+        new TypeError('Failed to fetch')
+      );
+
+      await expect(api.getCoins()).rejects.toThrow(
+        'Unable to connect to CoinGecko API. This might be a temporary issue. Please try again in a moment.'
+      );
+
+      // Should be called twice (initial + 1 retry)
+      expect(global.fetch).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  describe('Mobile browser handling', () => {
+    const originalUserAgent = window.navigator.userAgent;
+
+    afterEach(() => {
+      Object.defineProperty(window.navigator, 'userAgent', {
+        value: originalUserAgent,
+        writable: true,
+      });
+    });
+
+    it('detects iPhone and sets appropriate CORS options', async () => {
+      Object.defineProperty(window.navigator, 'userAgent', {
+        value: 'Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X)',
+        writable: true,
+      });
+
+      (global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: true,
+        json: async () => [],
+      });
+
+      await api.getCoins();
+
+      expect(global.fetch).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          mode: 'cors',
+          credentials: 'omit',
+        })
+      );
+    });
+
+    it('detects Android and sets appropriate CORS options', async () => {
+      Object.defineProperty(window.navigator, 'userAgent', {
+        value: 'Mozilla/5.0 (Linux; Android 10; SM-G960U)',
+        writable: true,
+      });
+
+      (global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: true,
+        json: async () => [],
+      });
+
+      await api.getCoins();
+
+      expect(global.fetch).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          mode: 'cors',
+          credentials: 'omit',
+        })
+      );
+    });
+  });
+
+  describe('getCoinDetail CORS handling', () => {
+    it('handles CORS error for getCoinDetail', async () => {
+      (global.fetch as jest.Mock).mockRejectedValue(
+        new TypeError('Failed to fetch')
+      );
+
+      await expect(api.getCoinDetail('bitcoin')).rejects.toThrow(
+        'Unable to connect to CoinGecko API. This might be a temporary issue. Please try again in a moment.'
+      );
+    });
+  });
+
+  describe('getPriceHistory CORS handling', () => {
+    it('handles CORS error for getPriceHistory', async () => {
+      (global.fetch as jest.Mock).mockRejectedValue(
+        new TypeError('Failed to fetch')
+      );
+
+      await expect(api.getPriceHistory('bitcoin', '7d')).rejects.toThrow(
+        'Unable to connect to CoinGecko API. This might be a temporary issue. Please try again in a moment.'
+      );
+    });
+  });
+
+  describe('searchCoins CORS handling', () => {
+    it('handles CORS error for searchCoins', async () => {
+      (global.fetch as jest.Mock).mockRejectedValue(
+        new TypeError('Failed to fetch')
+      );
+
+      await expect(api.searchCoins('bitcoin')).rejects.toThrow(
+        'Unable to connect to CoinGecko API. This might be a temporary issue. Please try again in a moment.'
+      );
+    });
+  });
 });

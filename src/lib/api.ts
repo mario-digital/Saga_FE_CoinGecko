@@ -69,13 +69,29 @@ const fetchWithCorsHandling = async (
   retries = 1
 ): Promise<Response> => {
   try {
-    const response = await fetch(url, options);
+    // Detect mobile browsers for enhanced CORS handling
+    const _isMobile =
+      typeof window !== 'undefined' &&
+      /iPhone|iPad|iPod|Android/i.test(window.navigator?.userAgent || '');
+
+    // Enhanced options for mobile compatibility
+    const fetchOptions: RequestInit = {
+      ...options,
+      mode: 'cors',
+      credentials: 'omit', // Don't send cookies for CORS requests
+    };
+
+    const response = await fetch(url, fetchOptions);
     return response;
   } catch (error: any) {
     // Check if it's a CORS error (network error with no status)
+    // Mobile browsers may throw different error messages
     if (
       error instanceof TypeError &&
-      error.message.includes('Failed to fetch')
+      (error.message.includes('Failed to fetch') ||
+        error.message.includes('Load failed') ||
+        error.message.includes('NetworkError') ||
+        error.message.includes('Network request failed'))
     ) {
       // This is likely a CORS error
       const corsError: any = new Error('CORS');
@@ -138,7 +154,6 @@ export const api = {
       const url = buildCoinsMarketsUrl({ page, per_page: perPage });
       const response = await fetchWithCorsHandling(url, {
         headers: getHeaders(),
-        mode: 'cors',
       });
       return handleResponse(response);
     } catch (error: any) {
@@ -159,7 +174,6 @@ export const api = {
       const url = buildCoinDetailUrl(coinId);
       const response = await fetchWithCorsHandling(url, {
         headers: getHeaders(),
-        mode: 'cors',
       });
       return handleResponse(response);
     } catch (error: any) {
@@ -180,7 +194,6 @@ export const api = {
       const url = buildSearchUrl({ query });
       const response = await fetchWithCorsHandling(url, {
         headers: getHeaders(),
-        mode: 'cors',
       });
       return handleResponse(response);
     } catch (error: any) {
@@ -210,7 +223,6 @@ export const api = {
       const url = `${API_BASE_URL}/coins/${coinId}/market_chart?vs_currency=usd&days=${days}`;
       const response = await fetchWithCorsHandling(url, {
         headers: getHeaders(),
-        mode: 'cors',
       });
 
       const data = await handleResponse(response);
