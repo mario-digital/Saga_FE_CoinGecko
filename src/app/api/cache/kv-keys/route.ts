@@ -3,6 +3,14 @@ import { kv } from '@vercel/kv';
 
 export async function GET(_request: NextRequest) {
   try {
+    // Map Vercel's KV_KV_ prefixed variables to what @vercel/kv expects
+    if (!process.env.KV_REST_API_URL && process.env.KV_KV_REST_API_URL) {
+      process.env.KV_REST_API_URL = process.env.KV_KV_REST_API_URL;
+    }
+    if (!process.env.KV_REST_API_TOKEN && process.env.KV_KV_REST_API_TOKEN) {
+      process.env.KV_REST_API_TOKEN = process.env.KV_KV_REST_API_TOKEN;
+    }
+
     // Check if KV is available
     if (!process.env.KV_REST_API_URL || !process.env.KV_REST_API_TOKEN) {
       return NextResponse.json({

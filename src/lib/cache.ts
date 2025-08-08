@@ -79,12 +79,27 @@ class ApiCache {
     if (kvChecked) return kvAvailable;
 
     try {
-      // Check if KV credentials are configured (handle both KV_ and KV_KV_ prefixes)
+      // Map Vercel's KV_KV_ prefixed variables to what @vercel/kv expects
+      if (!process.env.KV_REST_API_URL && process.env.KV_KV_REST_API_URL) {
+        process.env.KV_REST_API_URL = process.env.KV_KV_REST_API_URL;
+      }
+      if (!process.env.KV_REST_API_TOKEN && process.env.KV_KV_REST_API_TOKEN) {
+        process.env.KV_REST_API_TOKEN = process.env.KV_KV_REST_API_TOKEN;
+      }
+      if (
+        !process.env.KV_REST_API_READ_ONLY_TOKEN &&
+        process.env.KV_KV_REST_API_READ_ONLY_TOKEN
+      ) {
+        process.env.KV_REST_API_READ_ONLY_TOKEN =
+          process.env.KV_KV_REST_API_READ_ONLY_TOKEN;
+      }
+      if (!process.env.KV_URL && process.env.KV_KV_URL) {
+        process.env.KV_URL = process.env.KV_KV_URL;
+      }
+
+      // Check if KV credentials are configured
       const hasCredentials =
-        process.env.KV_REST_API_URL ||
-        process.env.KV_REST_API_TOKEN ||
-        process.env.KV_KV_REST_API_URL ||
-        process.env.KV_KV_REST_API_TOKEN;
+        process.env.KV_REST_API_URL || process.env.KV_REST_API_TOKEN;
 
       if (!hasCredentials) {
         kvAvailable = false;
