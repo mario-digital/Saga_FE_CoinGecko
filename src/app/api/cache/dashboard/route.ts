@@ -1,5 +1,6 @@
 /**
  * Cache Dashboard HTML endpoint
+ * Updated: Debug information and dynamic stats
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -8,6 +9,7 @@ import { rateLimiter } from '@/lib/rate-limiter';
 
 export async function GET(_request: NextRequest) {
   const stats = apiCache.getStats();
+  const kvStats = await apiCache.getKvStats();
   const rateLimitStats = rateLimiter.getStats();
   const hitRatePercentage = stats.hitRatePercentage || '0.00%';
   const hitRateValue = stats.hitRate || 0;
@@ -29,11 +31,15 @@ export async function GET(_request: NextRequest) {
         :root {
             --primary: #6366f1;
             --primary-dark: #4f46e5;
+            --primary-rgb: 99, 102, 241;
             --success: #10b981;
+            --success-rgb: 16, 185, 129;
             --warning: #f59e0b;
+            --warning-rgb: 245, 158, 11;
             --danger: #ef4444;
             --dark: #1e293b;
             --gray: #64748b;
+            --gray-rgb: 100, 116, 139;
             --light: #f1f5f9;
             --white: #ffffff;
             --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
@@ -81,25 +87,30 @@ export async function GET(_request: NextRequest) {
         .live-indicator {
             display: inline-flex;
             align-items: center;
-            gap: 0.5rem;
-            background: rgba(16, 185, 129, 0.1);
-            padding: 0.25rem 1rem;
+            gap: 0.75rem;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.05));
+            padding: 0.5rem 1.25rem;
             border-radius: 100px;
-            margin-top: 1rem;
+            margin-top: 1.5rem;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.1);
         }
         
         .live-dot {
-            width: 8px;
-            height: 8px;
+            width: 10px;
+            height: 10px;
             background: var(--success);
             border-radius: 50%;
             animation: pulse 2s infinite;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
         }
         
         .live-text {
             color: var(--success);
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
         }
         
         /* Stats Grid */
@@ -516,8 +527,20 @@ export async function GET(_request: NextRequest) {
         }
         
         @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+            0% { 
+                opacity: 1;
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+            }
+            50% { 
+                opacity: 0.8;
+                transform: scale(1.05);
+            }
+            100% { 
+                opacity: 1;
+                transform: scale(1);
+                box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+            }
         }
         
         @keyframes drawCircle {
@@ -560,6 +583,7 @@ export async function GET(_request: NextRequest) {
                 <span class="live-dot"></span>
                 <span class="live-text">Live Updates</span>
             </div>
+        </div>
         
         <!-- Stats Grid -->
         <div class="stats-grid">
@@ -637,6 +661,51 @@ export async function GET(_request: NextRequest) {
                     <span class="stat-value">${new Date(rateLimitStats.windowStart).toLocaleTimeString()}</span>
                 </div>
             </div>
+
+            <!-- Vercel KV Stats Card -->
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-title">
+                        <div class="stat-icon icon-primary">🗄️</div>
+                        Vercel KV (Redis)
+                    </div>
+                    <span class="status-badge ${kvStats.available ? 'status-ready' : 'status-busy'}">
+                        <span class="status-icon"></span>
+                        ${kvStats.available ? 'CONNECTED' : 'OFFLINE'}
+                    </span>
+                </div>
+                ${
+                  kvStats.available
+                    ? `
+                <div class="stat-item">
+                    <span class="stat-label">Keys Stored</span>
+                    <span class="stat-value">${kvStats.dbSize}</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">LRU Hits</span>
+                    <span class="stat-value">${stats.lruHits || 0} (${stats.lruHitRate || '0%'})</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">KV Hits</span>
+                    <span class="stat-value">${stats.kvHits || 0} (${stats.kvHitRate || '0%'})</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Cache Strategy</span>
+                    <span class="stat-value">LRU → KV → API</span>
+                </div>
+                `
+                    : `
+                <div class="stat-item">
+                    <span class="stat-label">Status</span>
+                    <span class="stat-value">Using in-memory cache only</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Reason</span>
+                    <span class="stat-value">KV not configured or unavailable</span>
+                </div>
+                `
+                }
+            </div>
             
             <!-- Cache Configuration Card -->
             <div class="stat-card">
@@ -677,7 +746,7 @@ export async function GET(_request: NextRequest) {
         <div class="cache-section">
             <div class="section-header">
                 <div class="section-title">
-                    📦 Cached Items
+                    📦 In-Memory Cache (LRU)
                     <span class="item-count" id="itemCount">0 items</span>
                 </div>
             </div>
@@ -686,6 +755,23 @@ export async function GET(_request: NextRequest) {
                     <div class="empty-icon">📭</div>
                     <div class="empty-text">No items currently cached</div>
                     <div class="empty-subtext">Items will appear here as they are cached</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Vercel KV Items Section -->
+        <div class="cache-section">
+            <div class="section-header">
+                <div class="section-title">
+                    🗄️ Vercel KV Storage
+                    <span class="item-count" id="kvItemCount">0 items</span>
+                </div>
+            </div>
+            <div class="cache-items-list" id="kvItemsList">
+                <div class="empty-state">
+                    <div class="empty-icon">📭</div>
+                    <div class="empty-text">Loading KV items...</div>
+                    <div class="empty-subtext">Fetching data from Vercel KV</div>
                 </div>
             </div>
         </div>
@@ -706,6 +792,7 @@ export async function GET(_request: NextRequest) {
         setInterval(() => {
             loadCacheItems();
             loadCacheStats();
+            loadKvKeys();
             updateLiveIndicator();
         }, 5000);
         
@@ -741,12 +828,13 @@ export async function GET(_request: NextRequest) {
                     circle.style.strokeDashoffset = dashOffset;
                 }
                 
-                // Update stats values
+                // Update all stats values dynamically
                 document.querySelectorAll('.stat-item').forEach(item => {
                     const label = item.querySelector('.stat-label')?.textContent;
                     const valueElement = item.querySelector('.stat-value');
                     if (label && valueElement) {
                         switch(label) {
+                            // Cache Performance Card
                             case 'Total Hits':
                                 valueElement.textContent = stats.hits || 0;
                                 break;
@@ -758,6 +846,14 @@ export async function GET(_request: NextRequest) {
                                 break;
                             case 'Cache Size':
                                 valueElement.textContent = ((stats.size || 0) / 1024).toFixed(2) + ' KB';
+                                break;
+                            
+                            // Vercel KV Card
+                            case 'LRU Hits':
+                                valueElement.innerHTML = \`\${stats.lruHits || 0} (\${stats.lruHitRate || '0%'})\`;
+                                break;
+                            case 'KV Hits':
+                                valueElement.innerHTML = \`\${stats.kvHits || 0} (\${stats.kvHitRate || '0%'})\`;
                                 break;
                         }
                     }
@@ -811,6 +907,77 @@ export async function GET(_request: NextRequest) {
             }
         }
         
+        // Load KV keys
+        async function loadKvKeys() {
+            try {
+                const baseUrl = window.location.origin;
+                const response = await fetch(baseUrl + '/api/cache/kv-keys');
+                if (!response.ok) {
+                    console.warn('Failed to fetch KV keys:', response.status);
+                    return;
+                }
+                const data = await response.json();
+                
+                const kvItemsList = document.getElementById('kvItemsList');
+                const kvItemCount = document.getElementById('kvItemCount');
+                
+                if (!data.available) {
+                    kvItemsList.innerHTML = \`
+                        <div class="empty-state">
+                            <div class="empty-icon">🔌</div>
+                            <div class="empty-text">KV Storage Offline</div>
+                            <div class="empty-subtext">Vercel KV is not configured or unavailable</div>
+                        </div>
+                    \`;
+                    kvItemCount.textContent = '0 items';
+                    return;
+                }
+                
+                kvItemCount.textContent = data.totalKeys + ' items' + (data.totalKeys > 50 ? ' (showing 50)' : '');
+                
+                if (data.keys.length === 0) {
+                    kvItemsList.innerHTML = \`
+                        <div class="empty-state">
+                            <div class="empty-icon">📭</div>
+                            <div class="empty-text">No items in KV storage</div>
+                            <div class="empty-subtext">Items will persist here across deployments</div>
+                        </div>
+                    \`;
+                } else {
+                    kvItemsList.innerHTML = data.keys.map(item => {
+                        const isExpired = item.ttl === 'No expiry' || item.ttl === 'Unknown';
+                        const ttlText = item.ttl === 'No expiry' ? 'Persistent' : 
+                                       item.ttl === 'Unknown' ? 'Unknown' : 
+                                       \`\${item.ttl}s\`;
+                        const sizeInKB = (item.size / 1024).toFixed(2);
+                        const typeColor = item.type === 'coins' ? 'primary' :
+                                         item.type === 'coin-detail' ? 'success' :
+                                         item.type === 'price-history' ? 'warning' : 'gray';
+                        return \`
+                            <div class="cache-item">
+                                <span class="cache-key">\${item.key}</span>
+                                <div class="cache-meta">
+                                    <span class="cache-size" style="background: rgba(var(--\${typeColor}-rgb, 99, 102, 241), 0.1); color: var(--\${typeColor})">\${item.type}</span>
+                                    <span class="cache-size">\${sizeInKB} KB</span>
+                                    <span class="cache-ttl \${isExpired ? '' : 'expired'}">\${ttlText}</span>
+                                </div>
+                            </div>
+                        \`;
+                    }).join('');
+                }
+            } catch (error) {
+                console.error('Failed to load KV keys:', error);
+                const kvItemsList = document.getElementById('kvItemsList');
+                kvItemsList.innerHTML = \`
+                    <div class="empty-state">
+                        <div class="empty-icon">⚠️</div>
+                        <div class="empty-text">Failed to load KV items</div>
+                        <div class="empty-subtext">\${error.message}</div>
+                    </div>
+                \`;
+            }
+        }
+        
         // Clear cache function
         async function clearCache() {
             if (confirm('Are you sure you want to clear all cached items?')) {
@@ -823,6 +990,7 @@ export async function GET(_request: NextRequest) {
         // Load items and stats on page load
         loadCacheItems();
         loadCacheStats();
+        loadKvKeys();
         
         // Add smooth scrolling
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {

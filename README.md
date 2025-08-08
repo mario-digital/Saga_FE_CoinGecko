@@ -396,21 +396,32 @@ pnpm lighthouse:mobile # Run Lighthouse mobile audit (alias)
 
 ## 🚀 API Caching & Rate Limit Protection
 
-### Advanced Caching System
+### Two-Tier Advanced Caching System
 
-This application includes a sophisticated caching system to minimize API calls and prevent rate limiting:
+This application features a sophisticated two-tier caching architecture that combines in-memory speed with persistent storage, ensuring optimal performance and protection against rate limits:
+
+#### Architecture Overview
+
+```
+Request → LRU Cache (Memory) → Vercel KV (Redis) → CoinGecko API
+         ↓ Fast (50ms)        ↓ Persistent      ↓ Slow (1000ms+)
+```
 
 #### Key Features
 
-- **🔄 LRU (Least Recently Used) Cache**: Automatically evicts old data when cache is full
+- **🚀 Two-Tier Caching**: Dual-layer architecture for maximum efficiency
+  - **Layer 1 - LRU Memory Cache**: Ultra-fast in-memory storage for instant responses
+  - **Layer 2 - Vercel KV (Redis)**: Persistent cache that survives deployments and restarts
+- **🔄 LRU (Least Recently Used) Algorithm**: Intelligent cache eviction when memory is full
 - **⏱️ Smart TTL Management**: Different cache durations for different data types
   - Coin lists: 2 minutes (frequently changing)
   - Coin details: 5 minutes (moderately stable)
   - Price history: 15 minutes (less volatile)
 - **🔀 Request Deduplication**: Prevents duplicate API calls for the same data
-- **📊 Real-time Cache Dashboard**: Monitor cache performance and efficiency
+- **📊 Real-time Cache Dashboard**: Monitor both cache layers' performance
 - **💾 Stale-While-Revalidate**: Returns cached data while fetching fresh data in background
-- **🛡️ Rate Limit Protection**: Queues requests to stay within API limits
+- **🛡️ Rate Limit Protection**: Advanced queuing system to stay within API limits
+- **🔥 Development Mode Protection**: Persistent KV cache prevents rate limits during hot-reload
 
 ### Cache Dashboard
 
@@ -453,22 +464,32 @@ Despite the dashboard limitations, the cache provides significant benefits:
 #### Dashboard Features
 
 - **📈 Live Statistics** (auto-refreshes every 5 seconds)
-- **🎯 Cache Performance Metrics**
-- **📦 Cached Items List** with TTL status
-- **⚡ Rate Limiter Status**
+- **🎯 Cache Performance Metrics** with visual hit rate indicator
+- **📦 In-Memory Cache Items** with TTL countdown
+- **🗄️ Vercel KV Storage Items** showing persistent cache contents
+- **⚡ Rate Limiter Status** with active request monitoring
+- **🔌 KV Connection Status** showing Redis availability
 
 #### Understanding Cache Metrics
 
 **Cache Performance Panel:**
 
-- **Hit Rate**: Percentage of requests served from cache (higher is better)
+- **Hit Rate**: Combined hit rate from both cache layers (higher is better)
   - 0-30%: Low efficiency, most requests hit the API
   - 30-60%: Moderate efficiency, good balance
   - 60-100%: High efficiency, excellent cache utilization
-- **Total Hits**: Number of times data was found in cache (fast response, no API call)
-- **Total Misses**: Number of times data wasn't in cache (requires API call)
-- **Items Cached**: Current number of items stored in memory
-- **Cache Size**: Total memory used by cached data
+- **Total Hits**: Aggregate hits from both LRU and KV cache
+- **Total Misses**: Number of times data wasn't in either cache
+- **Items Cached**: Current number of items in LRU memory cache
+- **Cache Size**: Total memory used by LRU cache
+
+**Vercel KV (Redis) Panel:**
+
+- **Connection Status**: CONNECTED or OFFLINE
+- **Keys Stored**: Number of items in persistent storage
+- **LRU Hits**: Raw count and percentage of hits served from memory (fastest)
+- **KV Hits**: Raw count and percentage of hits served from Redis (persistent)
+- **Cache Strategy**: Shows data flow (LRU → KV → API)
 
 **Rate Limiter Panel:**
 
@@ -484,33 +505,53 @@ Despite the dashboard limitations, the cache provides significant benefits:
 4. **🔄 Better UX**: Users see instant data when navigating between pages
 5. **📱 Mobile Optimization**: Reduces data usage for mobile users
 
-#### How It Works
+#### How The Two-Tier Cache Works
 
-1. **First Visit**: When you visit a coin page for the first time:
-   - Cache checks if data exists (MISS)
-   - Fetches from CoinGecko API
-   - Stores in cache with appropriate TTL
-   - Returns data to user
+1. **First Request** (Cold Cache):
+   - Check LRU memory cache → MISS
+   - Check Vercel KV (Redis) → MISS
+   - Fetch from CoinGecko API (slow)
+   - Store in both LRU and KV with TTL
+   - Return data to user
 
-2. **Subsequent Visits** (within TTL):
-   - Cache finds existing data (HIT)
-   - Returns immediately without API call
-   - Much faster response time
+2. **Subsequent Requests** (Hot Cache):
+   - Check LRU memory cache → HIT (ultra-fast, ~50ms)
+   - Return immediately without checking KV or API
+   - Fastest possible response
 
-3. **After TTL Expires**:
-   - Cache considers data stale
-   - Fetches fresh data from API
-   - Updates cache with new data
+3. **After Server Restart/Deploy** (Memory cleared, KV persists):
+   - Check LRU memory cache → MISS
+   - Check Vercel KV → HIT (fast, ~100ms)
+   - Populate LRU cache for next request
+   - Return data without API call
+   - **This prevents rate limits during development hot-reloads!**
+
+4. **After TTL Expires**:
+   - Both caches consider data stale
+   - Fetch fresh data from API
+   - Update both cache layers
 
 #### Cache Configuration
 
-The cache system is configured with:
+**LRU Memory Cache:**
 
 - **Maximum Items**: 500 cached responses
 - **Maximum Size**: 100MB memory limit
 - **Eviction Policy**: LRU (Least Recently Used)
+- **Location**: Server memory (cleared on restart)
+
+**Vercel KV (Redis):**
+
+- **Storage**: Unlimited items (within plan limits)
+- **Persistence**: Survives deployments and restarts
+- **Provider**: Upstash Redis via Vercel
+- **Location**: Cloud-based persistent storage
+
+**Rate Limiter:**
+
 - **Concurrent Requests**: Maximum 10 API calls at once
 - **Request Deduplication**: Prevents duplicate API calls for same data
+- **Queue Management**: Automatic request queuing when at limit
 
 ## 🌐 API Configuration
 
@@ -545,9 +586,17 @@ NEXT_PUBLIC_COINGECKO_API_KEY=your-api-key-here
 # Optional: API Base URL (defaults to public CoinGecko API)
 NEXT_PUBLIC_API_BASE_URL=https://api.coingecko.com/api/v3
 
+# Optional: Vercel KV (Redis) Configuration
+# Get these from your Vercel dashboard after creating a KV database
+KV_REST_API_URL=https://your-instance.upstash.io
+KV_REST_API_TOKEN=your-token-here
+KV_REST_API_READ_ONLY_TOKEN=your-read-only-token-here
+
 # Optional: Development settings
 NODE_ENV=development
 ```
+
+> **Note**: Vercel KV is optional but highly recommended to prevent rate limits during development. Without it, the app will use in-memory cache only.
 
 ## 🧪 Testing
 

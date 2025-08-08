@@ -10,6 +10,7 @@ export async function GET(_request: NextRequest) {
   try {
     // Get cache statistics
     const cacheStats = apiCache.getStats();
+    const kvStats = await apiCache.getKvStats();
     const rateLimitStats = rateLimiter.getStats();
 
     const stats = {
@@ -17,6 +18,7 @@ export async function GET(_request: NextRequest) {
         ...cacheStats,
         hitRatePercentage: `${(cacheStats.hitRate * 100).toFixed(2)}%`,
       },
+      kv: kvStats,
       rateLimiter: rateLimitStats,
       containerAge: getContainerAge(),
       timestamp: new Date().toISOString(),

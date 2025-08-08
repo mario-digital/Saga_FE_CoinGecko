@@ -17,23 +17,27 @@ class MockApiCache {
     misses: 0,
     size: 0,
     itemCount: 0,
+    lruHits: 0,
+    kvHits: 0,
+    kvMisses: 0,
   };
 
-  get<T = any>(key: string): T | undefined {
+  async get<T = any>(key: string): Promise<T | undefined> {
     const value = this.cache.get(key);
     if (value !== undefined) {
       this.stats.hits++;
+      this.stats.lruHits++;
     } else {
       this.stats.misses++;
     }
     return value;
   }
 
-  getStale<T = any>(key: string): T | undefined {
+  async getStale<T = any>(key: string): Promise<T | undefined> {
     return this.cache.get(key);
   }
 
-  set<T = any>(key: string, value: T, ttl?: number): void {
+  async set<T = any>(key: string, value: T, ttl?: number): Promise<void> {
     this.cache.set(key, value);
     if (ttl !== undefined) {
       this.ttls.set(key, Date.now() + ttl);
@@ -48,11 +52,11 @@ class MockApiCache {
     );
   }
 
-  has(key: string): boolean {
+  async has(key: string): Promise<boolean> {
     return this.cache.has(key);
   }
 
-  delete(key: string): boolean {
+  async delete(key: string): Promise<boolean> {
     const result = this.cache.delete(key);
     this.ttls.delete(key);
     this.stats.itemCount = this.cache.size;
@@ -64,7 +68,7 @@ class MockApiCache {
     return result;
   }
 
-  clear(): void {
+  async clear(): Promise<void> {
     this.cache.clear();
     this.ttls.clear();
     this.stats = {
@@ -72,19 +76,32 @@ class MockApiCache {
       misses: 0,
       size: 0,
       itemCount: 0,
+      lruHits: 0,
+      kvHits: 0,
+      kvMisses: 0,
     };
   }
 
   getStats() {
     const total = this.stats.hits + this.stats.misses;
+    const hitRate = total > 0 ? this.stats.hits / total : 0;
+    const lruHitRate =
+      total > 0 ? ((this.stats.lruHits / total) * 100).toFixed(1) : '0';
+    const kvHitRate =
+      total > 0 ? ((this.stats.kvHits / total) * 100).toFixed(1) : '0';
+
     return {
       ...this.stats,
-      hitRate: total > 0 ? this.stats.hits / total : 0,
-      hitRatePercentage:
-        total > 0
-          ? `${((this.stats.hits / total) * 100).toFixed(2)}%`
-          : '0.00%',
+      hitRate,
+      hitRatePercentage: `${(hitRate * 100).toFixed(2)}%`,
+      lruHitRate: `${lruHitRate}%`,
+      kvHitRate: `${kvHitRate}%`,
+      kvAvailable: false,
     };
+  }
+
+  async getKvStats(): Promise<{ dbSize: number; available: boolean }> {
+    return { dbSize: 0, available: false };
   }
 
   getCacheItems() {
@@ -109,18 +126,18 @@ class MockApiCache {
     fetcher: () => Promise<T>,
     ttl?: number
   ): Promise<T> {
-    const cached = this.get<T>(key);
+    const cached = await this.get<T>(key);
     if (cached !== undefined) {
       return cached;
     }
 
     try {
       const data = await fetcher();
-      this.set(key, data, ttl);
+      await this.set(key, data, ttl);
       return data;
     } catch (error) {
       // Try to return stale data on error
-      const stale = this.getStale<T>(key);
+      const stale = await this.getStale<T>(key);
       if (stale !== undefined) {
         return stale;
       }

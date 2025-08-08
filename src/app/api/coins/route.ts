@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
       CACHE_TTL.COINS_LIST
     );
 
-    const xCacheStatus = apiCache.has(cacheKey) ? 'HIT' : 'MISS';
+    const xCacheStatus = (await apiCache.has(cacheKey)) ? 'HIT' : 'MISS';
 
     return NextResponse.json(data, {
       headers: {
@@ -47,7 +47,7 @@ export async function GET(request: NextRequest) {
     const page = searchParams.get('page') || '1';
     const per_page = searchParams.get('per_page') || '20';
     const cacheKey = getCacheKey('coins', { page, per_page });
-    const staleData = apiCache.getStale(cacheKey);
+    const staleData = await apiCache.getStale(cacheKey);
 
     if (staleData) {
       console.warn('Returning stale data due to error');

@@ -33,7 +33,7 @@ export async function GET(
       CACHE_TTL.PRICE_HISTORY
     );
 
-    const xCacheStatus = apiCache.has(cacheKey) ? 'HIT' : 'MISS';
+    const xCacheStatus = (await apiCache.has(cacheKey)) ? 'HIT' : 'MISS';
 
     return NextResponse.json(data, {
       headers: {
@@ -50,7 +50,7 @@ export async function GET(
 
     // Try to return stale data if available
     const cacheKey = getCacheKey('price-history', { coinId, days });
-    const staleData = apiCache.getStale(cacheKey);
+    const staleData = await apiCache.getStale(cacheKey);
 
     if (staleData) {
       console.warn(`Returning stale price history for ${coinId} due to error`);

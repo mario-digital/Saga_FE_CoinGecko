@@ -153,7 +153,8 @@ describe('GET /api/cache/dashboard', () => {
     const html = await response.text();
 
     expect(html).toContain('cache-section');
-    expect(html).toContain('📦 Cached Items');
+    expect(html).toContain('📦 In-Memory Cache (LRU)');
+    expect(html).toContain('🗄️ Vercel KV Storage');
     expect(html).toContain('/api/cache/items');
   });
 

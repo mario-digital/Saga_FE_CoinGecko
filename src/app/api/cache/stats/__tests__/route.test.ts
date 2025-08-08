@@ -24,9 +24,9 @@ import { rateLimiter } from '@/lib/rate-limiter';
 describe('GET /api/cache/stats', () => {
   let consoleErrorSpy: jest.SpyInstance;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     jest.clearAllMocks();
-    apiCache.clear();
+    await apiCache.clear();
     consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
   });
 
@@ -64,9 +64,9 @@ describe('GET /api/cache/stats', () => {
 
   it('should return updated cache statistics after cache operations', async () => {
     // Simulate cache operations
-    apiCache.set('test-key', { data: 'test' }, 5000);
-    apiCache.get('test-key'); // Hit
-    apiCache.get('non-existent'); // Miss
+    await apiCache.set('test-key', { data: 'test' }, 5000);
+    await apiCache.get('test-key'); // Hit
+    await apiCache.get('non-existent'); // Miss
 
     const request = new NextRequest('http://localhost:3000/api/cache/stats');
     const response = await GET(request);
@@ -84,12 +84,12 @@ describe('GET /api/cache/stats', () => {
 
   it('should calculate hit rate percentage correctly', async () => {
     // Simulate multiple cache operations
-    apiCache.set('key1', 'value1');
-    apiCache.set('key2', 'value2');
-    apiCache.get('key1'); // Hit
-    apiCache.get('key1'); // Hit
-    apiCache.get('key2'); // Hit
-    apiCache.get('key3'); // Miss
+    await apiCache.set('key1', 'value1');
+    await apiCache.set('key2', 'value2');
+    await apiCache.get('key1'); // Hit
+    await apiCache.get('key1'); // Hit
+    await apiCache.get('key2'); // Hit
+    await apiCache.get('key3'); // Miss
 
     const request = new NextRequest('http://localhost:3000/api/cache/stats');
     const response = await GET(request);

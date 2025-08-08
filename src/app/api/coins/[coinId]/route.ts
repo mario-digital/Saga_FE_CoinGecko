@@ -31,7 +31,7 @@ export async function GET(
       CACHE_TTL.COIN_DETAIL
     );
 
-    const xCacheStatus = apiCache.has(cacheKey) ? 'HIT' : 'MISS';
+    const xCacheStatus = (await apiCache.has(cacheKey)) ? 'HIT' : 'MISS';
 
     return NextResponse.json(data, {
       headers: {
@@ -46,7 +46,7 @@ export async function GET(
 
     // Try to return stale data if available
     const cacheKey = getCacheKey('coin-detail', { coinId });
-    const staleData = apiCache.getStale(cacheKey);
+    const staleData = await apiCache.getStale(cacheKey);
 
     if (staleData) {
       console.warn(`Returning stale data for coin ${coinId} due to error`);
