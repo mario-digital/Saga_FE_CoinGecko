@@ -109,44 +109,50 @@ describe('api', () => {
   describe('buildCoinDetailUrl', () => {
     it('builds coin detail URL with coin ID', () => {
       const url = buildCoinDetailUrl('bitcoin');
-      expect(url).toBe('/coins/bitcoin');
+      expect(url).toBe('https://api.coingecko.com/api/v3/coins/bitcoin');
     });
 
     it('handles coin IDs with special characters', () => {
       const url = buildCoinDetailUrl('binance-usd');
-      expect(url).toBe('/coins/binance-usd');
+      expect(url).toBe('https://api.coingecko.com/api/v3/coins/binance-usd');
     });
 
     it('handles coin IDs with numbers', () => {
       const url = buildCoinDetailUrl('1inch');
-      expect(url).toBe('/coins/1inch');
+      expect(url).toBe('https://api.coingecko.com/api/v3/coins/1inch');
     });
 
     it('handles long coin IDs', () => {
       const url = buildCoinDetailUrl('cryptocurrency-with-very-long-name');
-      expect(url).toBe('/coins/cryptocurrency-with-very-long-name');
+      expect(url).toBe(
+        'https://api.coingecko.com/api/v3/coins/cryptocurrency-with-very-long-name'
+      );
     });
   });
 
   describe('buildSearchUrl', () => {
     it('builds search URL with query', () => {
       const url = buildSearchUrl({ query: 'bitcoin' });
-      expect(url).toBe('/search?query=bitcoin');
+      expect(url).toBe('https://api.coingecko.com/api/v3/search?query=bitcoin');
     });
 
     it('handles queries with spaces', () => {
       const url = buildSearchUrl({ query: 'bitcoin cash' });
-      expect(url).toBe('/search?query=bitcoin+cash');
+      expect(url).toBe(
+        'https://api.coingecko.com/api/v3/search?query=bitcoin+cash'
+      );
     });
 
     it('handles queries with special characters', () => {
       const url = buildSearchUrl({ query: 'BTC/USD' });
-      expect(url).toBe('/search?query=BTC%2FUSD');
+      expect(url).toBe(
+        'https://api.coingecko.com/api/v3/search?query=BTC%2FUSD'
+      );
     });
 
     it('handles empty query', () => {
       const url = buildSearchUrl({ query: '' });
-      expect(url).toBe('/search?query=');
+      expect(url).toBe('https://api.coingecko.com/api/v3/search?query=');
     });
   });
 
@@ -179,7 +185,9 @@ describe('api', () => {
       const result = await api.getCoins();
 
       expect(global.fetch).toHaveBeenCalledWith(
-        '/api/coins?page=1&per_page=20',
+        expect.stringContaining(
+          'https://api.coingecko.com/api/v3/coins/markets?'
+        ),
         expect.objectContaining({
           headers: { 'Content-Type': 'application/json' },
         })
@@ -198,7 +206,7 @@ describe('api', () => {
       await api.getCoins(2, 50);
 
       expect(global.fetch).toHaveBeenCalledWith(
-        '/api/coins?page=2&per_page=50',
+        expect.stringContaining('page=2'),
         expect.any(Object)
       );
     });
@@ -237,7 +245,7 @@ describe('api', () => {
       const result = await api.getCoinDetail('bitcoin');
 
       expect(global.fetch).toHaveBeenCalledWith(
-        '/api/coins/bitcoin',
+        'https://api.coingecko.com/api/v3/coins/bitcoin',
         expect.objectContaining({
           headers: { 'Content-Type': 'application/json' },
         })
@@ -265,7 +273,7 @@ describe('api', () => {
       await api.getCoinDetail('binance-usd');
 
       expect(global.fetch).toHaveBeenCalledWith(
-        '/api/coins/binance-usd',
+        'https://api.coingecko.com/api/v3/coins/binance-usd',
         expect.any(Object)
       );
     });
@@ -288,12 +296,18 @@ describe('api', () => {
       const result = await api.getPriceHistory('bitcoin', '7d');
 
       expect(global.fetch).toHaveBeenCalledWith(
-        '/api/coins/bitcoin/history?days=7',
+        expect.stringContaining(
+          'https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?'
+        ),
         expect.objectContaining({
           headers: { 'Content-Type': 'application/json' },
         })
       );
-      expect(result).toEqual(mockPriceHistory);
+      expect(result).toEqual({
+        prices: mockPriceHistory.prices,
+        market_caps: [],
+        total_volumes: [],
+      });
     });
 
     it('maps time range to days correctly', async () => {
@@ -314,7 +328,7 @@ describe('api', () => {
         await api.getPriceHistory('bitcoin', timeRange as any);
 
         expect(global.fetch).toHaveBeenCalledWith(
-          `/api/coins/bitcoin/history?days=${days}`,
+          expect.stringContaining(`days=${days}`),
           expect.any(Object)
         );
       }
@@ -339,7 +353,11 @@ describe('api', () => {
 
       const result = await api.getPriceHistory('bitcoin', '30d');
 
-      expect(result).toEqual({ prices: [] });
+      expect(result).toEqual({
+        prices: [],
+        market_caps: [],
+        total_volumes: [],
+      });
     });
   });
 
@@ -360,7 +378,7 @@ describe('api', () => {
       const result = await api.searchCoins('bitcoin');
 
       expect(global.fetch).toHaveBeenCalledWith(
-        '/api/search?q=bitcoin',
+        'https://api.coingecko.com/api/v3/search?query=bitcoin',
         expect.objectContaining({
           headers: { 'Content-Type': 'application/json' },
         })
@@ -377,7 +395,7 @@ describe('api', () => {
       await api.searchCoins('BTC/USD & test');
 
       expect(global.fetch).toHaveBeenCalledWith(
-        '/api/search?q=BTC%2FUSD%20%26%20test',
+        'https://api.coingecko.com/api/v3/search?query=BTC%2FUSD+%26+test',
         expect.any(Object)
       );
     });
@@ -391,7 +409,7 @@ describe('api', () => {
       await api.searchCoins('');
 
       expect(global.fetch).toHaveBeenCalledWith(
-        '/api/search?q=',
+        'https://api.coingecko.com/api/v3/search?query=',
         expect.any(Object)
       );
     });
@@ -412,7 +430,7 @@ describe('api', () => {
       });
 
       await expect(api.searchCoins('test')).rejects.toThrow(
-        'Failed to search coins'
+        'API Error: undefined Unknown error'
       );
     });
 
@@ -467,7 +485,9 @@ describe('api', () => {
         statusText: '',
       });
 
-      await expect(api.getCoins()).rejects.toThrow('Failed to fetch coins');
+      await expect(api.getCoins()).rejects.toThrow(
+        'API Error: undefined Unknown error'
+      );
     });
 
     it('handles missing statusText for getCoinDetail', async () => {
@@ -477,7 +497,7 @@ describe('api', () => {
       });
 
       await expect(api.getCoinDetail('bitcoin')).rejects.toThrow(
-        'Failed to fetch coin detail'
+        'API Error: undefined Unknown error'
       );
     });
 
@@ -488,7 +508,7 @@ describe('api', () => {
       });
 
       await expect(api.getPriceHistory('bitcoin', '7d')).rejects.toThrow(
-        'Failed to fetch price history'
+        'API Error: undefined Unknown error'
       );
     });
 
@@ -553,7 +573,7 @@ describe('api', () => {
       await api.getPriceHistory('bitcoin', 'unknown' as any);
 
       expect(global.fetch).toHaveBeenCalledWith(
-        '/api/coins/bitcoin/history?days=7',
+        expect.stringContaining('days=7'),
         expect.any(Object)
       );
     });
@@ -567,7 +587,7 @@ describe('api', () => {
       await api.getPriceHistory('bitcoin', '2h' as any);
 
       expect(global.fetch).toHaveBeenCalledWith(
-        '/api/coins/bitcoin/history?days=7',
+        expect.stringContaining('days=7'),
         expect.any(Object)
       );
     });

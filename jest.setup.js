@@ -35,12 +35,6 @@ console.error = (...args) => {
 
 global.fetch = jest.fn();
 
-// Mock cache and rate limiter modules to avoid ESM issues
-jest.mock('@/lib/cache', () => require('./src/lib/__mocks__/cache'));
-jest.mock('@/lib/rate-limiter', () =>
-  require('./src/lib/__mocks__/rate-limiter')
-);
-
 // Only set up browser mocks if window is defined (jsdom environment)
 if (typeof window !== 'undefined') {
   const mockIntersectionObserver = jest.fn();

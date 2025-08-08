@@ -99,7 +99,7 @@ function HomePageContent() {
 
   const handleCoinClick = useCallback(
     (coinId: string): void => {
-      router.push(`/${coinId}` as any);
+      router.push(`/coin?id=${coinId}`);
     },
     [router]
   );

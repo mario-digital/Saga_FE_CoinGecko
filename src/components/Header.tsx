@@ -24,7 +24,7 @@ export function Header(): ReactNode {
   } = useSearch();
 
   const handleSelectCoin = (coinId: string) => {
-    router.push(`/${coinId}`);
+    router.push(`/coin?id=${coinId}`);
     clearSearch();
   };
 

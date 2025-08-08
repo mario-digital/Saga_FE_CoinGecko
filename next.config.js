@@ -5,7 +5,7 @@ const nextConfig = {
     optimizePackageImports: ['@/components', '@/hooks', 'lucide-react'],
   },
   // Enable static export for flexible deployment
-  // output: 'export', // Temporarily disabled to fix CSS issues
+  output: 'export', // Static HTML export for CDN deployment
   trailingSlash: false,
   images: {
     unoptimized: true,
@@ -14,14 +14,6 @@ const nextConfig = {
   // Performance optimizations
   reactStrictMode: true,
   poweredByHeader: false,
-  // Development server configuration
-  async rewrites() {
-    return {
-      beforeFiles: [],
-      afterFiles: [],
-      fallback: [],
-    };
-  },
   // Webpack optimization for mobile performance
   webpack: (config, { isServer }) => {
     if (!isServer) {

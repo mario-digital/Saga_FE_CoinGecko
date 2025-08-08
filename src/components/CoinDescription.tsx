@@ -54,12 +54,12 @@ export const CoinDescription: FC<CoinDescriptionProps> = ({
     : cleanDescription;
 
   // Extract useful links
-  const homepage = links.homepage.find(url => url);
-  const twitter = links.twitter_screen_name
+  const homepage = links?.homepage?.find(url => url);
+  const twitter = links?.twitter_screen_name
     ? `https://twitter.com/${links.twitter_screen_name}`
     : null;
-  const reddit = links.subreddit_url;
-  const github = links.repos_url.github.find(url => url);
+  const reddit = links?.subreddit_url;
+  const github = links?.repos_url?.github?.find(url => url);
 
   return (
     <Card className="mb-8">
@@ -71,7 +71,7 @@ export const CoinDescription: FC<CoinDescriptionProps> = ({
       </CardHeader>
       <CardContent>
         {/* Categories */}
-        {categories.length > 0 && (
+        {categories && categories.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-4">
             {categories.map((category, index) => (
               <Badge key={index} variant="outline">

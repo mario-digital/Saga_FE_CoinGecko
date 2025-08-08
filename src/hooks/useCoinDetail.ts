@@ -3,7 +3,7 @@
  */
 
 import useSWR from 'swr';
-import { fetcher } from '@/lib/fetcher';
+import { api } from '@/lib/api';
 import { CoinDetailData } from '@/types/coingecko';
 
 export class CoinNotFoundError extends Error {
@@ -29,6 +29,13 @@ export class RateLimitError extends Error {
   }
 }
 
+export class CorsError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'CorsError';
+  }
+}
+
 interface UseCoinDetailReturn {
   coin: CoinDetailData | undefined;
   isLoading: boolean;
@@ -37,10 +44,10 @@ interface UseCoinDetailReturn {
 }
 
 export const useCoinDetail = (coinId: string): UseCoinDetailReturn => {
-  // Use our API route instead of direct CoinGecko API
+  // Call CoinGecko API directly for static deployment
   const { data, error, isLoading, mutate } = useSWR<CoinDetailData>(
-    coinId ? `/api/coins/${coinId}` : null,
-    fetcher,
+    coinId ? `coin-${coinId}` : null,
+    coinId ? () => api.getCoinDetail(coinId) : null,
     {
       revalidateOnFocus: false,
       revalidateOnReconnect: true,
@@ -66,16 +73,43 @@ export const useCoinDetail = (coinId: string): UseCoinDetailReturn => {
   // Transform error into proper error instances
   let processedError = null;
   if (error) {
-    if (error.status === 404) {
+    // Check for CORS errors first
+    if (error.message?.includes('Unable to connect to CoinGecko API')) {
+      processedError = new CorsError(
+        'Connection issue with CoinGecko API. This is often temporary - please wait a moment and try again. If the issue persists, try refreshing the page.'
+      );
+    } else if (
+      error.status === 404 ||
+      error.message?.toLowerCase().includes('not found')
+    ) {
       processedError = new CoinNotFoundError(coinId);
-    } else if (error.status === 429) {
+    } else if (
+      error.status === 429 ||
+      error.message?.toLowerCase().includes('rate limit')
+    ) {
+      const retryAfter = error.retryAfter || 60;
       processedError = new RateLimitError(
-        'API rate limit exceeded. The free tier allows 10-30 requests per minute. Please wait a moment before trying again.',
-        60 // Suggest waiting 60 seconds
+        `API rate limit exceeded. The free tier allows 10-30 requests per minute. Please wait ${retryAfter} seconds before trying again.`,
+        retryAfter
+      );
+    } else if (
+      error.status >= 500 ||
+      error.message?.toLowerCase().includes('server error')
+    ) {
+      processedError = new NetworkError(
+        'Server is experiencing issues. Please try again in a few moments.'
+      );
+    } else if (
+      error.message?.toLowerCase().includes('network') ||
+      error.message?.toLowerCase().includes('fetch')
+    ) {
+      processedError = new NetworkError(
+        'Network connection issue. Please check your internet connection and try again.'
       );
     } else {
+      // Generic error with more descriptive message
       processedError = new NetworkError(
-        error.message || 'Failed to fetch coin data'
+        error.message || 'Unable to load coin data. Please try again later.'
       );
     }
   }

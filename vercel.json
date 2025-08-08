@@ -6,17 +6,6 @@
   "installCommand": "pnpm install",
   "framework": "nextjs",
   "regions": ["iad1"],
-  "functions": {
-    "src/app/api/coins/route.ts": {
-      "maxDuration": 10
-    },
-    "src/app/api/coins/[coinId]/route.ts": {
-      "maxDuration": 10
-    },
-    "src/app/api/coins/[coinId]/history/route.ts": {
-      "maxDuration": 10
-    }
-  },
   "headers": [
     {
       "source": "/(.*)",

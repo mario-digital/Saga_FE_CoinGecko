@@ -6,8 +6,7 @@
 import { useState, useCallback, useMemo } from 'react';
 import useSWR from 'swr';
 import { SearchResponse, SearchCoin } from '@/types/coingecko';
-import { buildSearchUrl } from '@/lib/api';
-import { fetcher } from '@/lib/fetcher';
+import { api } from '@/lib/api';
 import { debounce } from '@/lib/utils';
 
 interface UseSearchReturn {
@@ -52,12 +51,12 @@ export const useSearch = (): UseSearchReturn => {
     setDebouncedQuery('');
   }, []);
 
-  // Build search URL only if we have a valid debounced query
-  const searchUrl = useMemo(() => {
+  // Build search key only if we have a valid debounced query
+  const searchKey = useMemo(() => {
     if (!debouncedQuery || debouncedQuery.length < MIN_SEARCH_LENGTH) {
       return null;
     }
-    return buildSearchUrl({ query: debouncedQuery });
+    return `search-${debouncedQuery}`;
   }, [debouncedQuery]);
 
   // Fetch search results using SWR
@@ -65,13 +64,17 @@ export const useSearch = (): UseSearchReturn => {
     data: searchResponse,
     error,
     isLoading,
-  } = useSWR<SearchResponse>(searchUrl, fetcher, {
-    revalidateOnFocus: false,
-    revalidateOnReconnect: false,
-    dedupingInterval: 30000, // 30 seconds
-    errorRetryCount: 2,
-    errorRetryInterval: 1000,
-  });
+  } = useSWR<SearchResponse>(
+    searchKey,
+    searchKey ? () => api.searchCoins(debouncedQuery) : null,
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+      dedupingInterval: 30000, // 30 seconds
+      errorRetryCount: 2,
+      errorRetryInterval: 1000,
+    }
+  );
 
   // Extract coins from search response
   const searchResults = useMemo(() => {
@@ -80,8 +83,8 @@ export const useSearch = (): UseSearchReturn => {
 
   // Determine if we're currently searching
   const isSearching = useMemo(() => {
-    return isLoading && !!searchUrl;
-  }, [isLoading, searchUrl]);
+    return isLoading && !!searchKey;
+  }, [isLoading, searchKey]);
 
   // Format error message
   const searchError = useMemo(() => {

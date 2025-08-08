@@ -3,20 +3,9 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { SWRConfig } from 'swr';
 import { useCoins } from '../useCoins';
 import { CoinData } from '@/types/coingecko';
-import { fetcher } from '@/lib/fetcher';
+import { api } from '@/lib/api';
 
-jest.mock('@/lib/fetcher');
-jest.mock('@/lib/api', () => ({
-  buildCoinsMarketsUrl: jest.fn(params => {
-    const searchParams = new URLSearchParams();
-    Object.entries(params).forEach(([key, value]) => {
-      if (value !== undefined) {
-        searchParams.append(key, String(value));
-      }
-    });
-    return `https://api.coingecko.com/api/v3/coins/markets?${searchParams.toString()}`;
-  }),
-}));
+jest.mock('@/lib/api');
 
 const mockCoinData: CoinData[] = [
   {
@@ -45,7 +34,7 @@ const mockCoinData: CoinData[] = [
   },
 ];
 
-const mockFetcher = fetcher as jest.MockedFunction<typeof fetcher>;
+const mockApi = api as jest.MockedObject<typeof api>;
 
 const createWrapper = ({ children }: { children: React.ReactNode }) => (
   <SWRConfig
@@ -64,7 +53,7 @@ describe('useCoins', () => {
   });
 
   it('returns loading state initially', () => {
-    mockFetcher.mockImplementation(() => new Promise(() => {}));
+    mockApi.getCoins.mockImplementation(() => new Promise(() => {}));
 
     const { result } = renderHook(() => useCoins(), {
       wrapper: createWrapper,
@@ -76,7 +65,7 @@ describe('useCoins', () => {
   });
 
   it('returns coins data on successful fetch', async () => {
-    mockFetcher.mockResolvedValue(mockCoinData);
+    mockApi.getCoins.mockResolvedValue(mockCoinData);
 
     const { result } = renderHook(() => useCoins(), {
       wrapper: createWrapper,
@@ -92,7 +81,7 @@ describe('useCoins', () => {
 
   it('returns error state on fetch failure', async () => {
     const errorMessage = 'Failed to fetch';
-    mockFetcher.mockRejectedValue(new Error(errorMessage));
+    mockApi.getCoins.mockRejectedValue(new Error(errorMessage));
 
     const { result } = renderHook(() => useCoins(), {
       wrapper: createWrapper,
@@ -107,41 +96,37 @@ describe('useCoins', () => {
   });
 
   it('uses default parameters correctly', () => {
-    mockFetcher.mockImplementation(() => new Promise(() => {}));
+    mockApi.getCoins.mockImplementation(() => new Promise(() => {}));
 
     renderHook(() => useCoins(), {
       wrapper: createWrapper,
     });
 
-    expect(mockFetcher).toHaveBeenCalledWith(
-      expect.stringContaining('page=1&per_page=50')
-    );
+    expect(mockApi.getCoins).toHaveBeenCalledWith(1, 50);
   });
 
   it('uses custom page and perPage parameters', () => {
-    mockFetcher.mockImplementation(() => new Promise(() => {}));
+    mockApi.getCoins.mockImplementation(() => new Promise(() => {}));
 
     renderHook(() => useCoins(2, 25), {
       wrapper: createWrapper,
     });
 
-    expect(mockFetcher).toHaveBeenCalledWith(
-      expect.stringContaining('page=2&per_page=25')
-    );
+    expect(mockApi.getCoins).toHaveBeenCalledWith(2, 25);
   });
 
-  it('uses the API proxy endpoint', () => {
-    mockFetcher.mockImplementation(() => new Promise(() => {}));
+  it('calls the api.getCoins function', () => {
+    mockApi.getCoins.mockImplementation(() => new Promise(() => {}));
 
     renderHook(() => useCoins(2, 100), {
       wrapper: createWrapper,
     });
 
-    expect(mockFetcher).toHaveBeenCalledWith('/api/coins?page=2&per_page=100');
+    expect(mockApi.getCoins).toHaveBeenCalledWith(2, 100);
   });
 
   it('provides refetch function', async () => {
-    mockFetcher.mockResolvedValue(mockCoinData);
+    mockApi.getCoins.mockResolvedValue(mockCoinData);
 
     const { result } = renderHook(() => useCoins(), {
       wrapper: createWrapper,
@@ -153,19 +138,19 @@ describe('useCoins', () => {
 
     expect(typeof result.current.refetch).toBe('function');
 
-    mockFetcher.mockClear();
-    mockFetcher.mockResolvedValue([]);
+    mockApi.getCoins.mockClear();
+    mockApi.getCoins.mockResolvedValue([]);
 
     result.current.refetch();
 
     await waitFor(() => {
-      expect(mockFetcher).toHaveBeenCalled();
+      expect(mockApi.getCoins).toHaveBeenCalled();
     });
   });
 
   it('handles error objects without message property', async () => {
     const errorWithoutMessage = { status: 404 };
-    mockFetcher.mockRejectedValue(errorWithoutMessage);
+    mockApi.getCoins.mockRejectedValue(errorWithoutMessage);
 
     const { result } = renderHook(() => useCoins(), {
       wrapper: createWrapper,
@@ -180,7 +165,7 @@ describe('useCoins', () => {
 
   it('handles string errors', async () => {
     const stringError = 'Network error';
-    mockFetcher.mockRejectedValue(stringError);
+    mockApi.getCoins.mockRejectedValue(stringError);
 
     const { result } = renderHook(() => useCoins(), {
       wrapper: createWrapper,
@@ -194,7 +179,7 @@ describe('useCoins', () => {
   });
 
   it('maintains referential stability of return object properties', () => {
-    mockFetcher.mockImplementation(() => new Promise(() => {}));
+    mockApi.getCoins.mockImplementation(() => new Promise(() => {}));
 
     const { result, rerender } = renderHook(() => useCoins(), {
       wrapper: createWrapper,

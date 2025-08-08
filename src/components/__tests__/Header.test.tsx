@@ -161,7 +161,7 @@ describe('Header', () => {
     const selectButton = screen.getByText('Select Bitcoin');
     await user.click(selectButton);
 
-    expect(mockRouter.push).toHaveBeenCalledWith('/bitcoin');
+    expect(mockRouter.push).toHaveBeenCalledWith('/coin?id=bitcoin');
     expect(mockUseSearch.clearSearch).toHaveBeenCalled();
   });
 

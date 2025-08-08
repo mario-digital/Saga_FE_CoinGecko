@@ -3,7 +3,7 @@
  */
 
 import useSWR from 'swr';
-import { fetcher } from '@/lib/fetcher';
+import { api } from '@/lib/api';
 
 export type TimeRange = '24h' | '7d' | '30d' | '90d' | '1y';
 
@@ -32,28 +32,18 @@ const formatDateForChart = (timestamp: number): string => {
   return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 };
 
-const timeRangeToDays: Record<TimeRange, number> = {
-  '24h': 1,
-  '7d': 7,
-  '30d': 30,
-  '90d': 90,
-  '1y': 365,
-};
-
 export const usePriceHistory = (
   coinId: string,
   timeRange: TimeRange
 ): UsePriceHistoryReturn => {
-  const days = timeRangeToDays[timeRange] || 7;
-
   const {
     data: rawData,
     error,
     isLoading,
     mutate,
   } = useSWR(
-    coinId ? `/api/coins/${coinId}/history?days=${days}` : null,
-    fetcher,
+    coinId ? `price-history-${coinId}-${timeRange}` : null,
+    coinId ? () => api.getPriceHistory(coinId, timeRange) : null,
     {
       revalidateOnFocus: false,
       revalidateOnReconnect: true,
@@ -88,10 +78,14 @@ export const usePriceHistory = (
   // Transform error
   let processedError = null;
   if (error) {
-    if (error.status === 429) {
+    const errorMessage = error?.message || '';
+    if (errorMessage.includes('Rate limit')) {
       processedError =
         'Rate limit exceeded. Please wait a minute before refreshing the page.';
-    } else if (error.status === 404) {
+    } else if (
+      errorMessage.includes('404') ||
+      errorMessage.includes('not found')
+    ) {
       processedError = 'Price history not found for this coin.';
     } else {
       processedError = error.message || 'Failed to fetch price history';

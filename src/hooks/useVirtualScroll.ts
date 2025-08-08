@@ -18,6 +18,7 @@ interface VirtualScrollResult<T> {
   offsetY: number;
   startIndex: number;
   endIndex: number;
+  handleScroll: (_scrollPosition: number) => void;
 }
 
 export function useVirtualScroll<T>(
@@ -46,7 +47,7 @@ export function useVirtualScroll<T>(
   const totalHeight = items.length * itemHeight;
 
   // Debounced scroll handler
-  const _handleScroll = useCallback(
+  const handleScroll = useCallback(
     (scrollPosition: number) => {
       if (scrollTimeoutRef.current) {
         clearTimeout(scrollTimeoutRef.current);
@@ -74,5 +75,6 @@ export function useVirtualScroll<T>(
     offsetY,
     startIndex,
     endIndex,
+    handleScroll,
   };
 }

@@ -4,7 +4,7 @@
 
 import useSWR from 'swr';
 import { CoinData } from '@/types/coingecko';
-import { fetcher } from '@/lib/fetcher';
+import { api } from '@/lib/api';
 import { SWR_CONFIG } from '@/lib/constants';
 
 interface UseCoinsReturn {
@@ -19,19 +19,17 @@ export const useCoins = (
   page: number = 1,
   perPage: number = 50
 ): UseCoinsReturn => {
-  // Use our API route instead of direct CoinGecko API
-  const url = `/api/coins?page=${page}&per_page=${perPage}`;
+  // Call CoinGecko API directly for static deployment
+  const key = `coins-${page}-${perPage}`;
 
   const { data, error, isLoading, mutate } = useSWR<CoinData[]>(
-    url,
-    fetcher,
+    key,
+    () => api.getCoins(page, perPage),
     SWR_CONFIG
   );
 
-  const isRateLimited = error?.status === 429;
-  const errorMessage = isRateLimited
-    ? 'API rate limit exceeded. Please wait a minute before refreshing.'
-    : error?.message || null;
+  const isRateLimited = error?.message?.includes('Rate limit') || false;
+  const errorMessage = error?.message || null;
 
   return {
     coins: data,

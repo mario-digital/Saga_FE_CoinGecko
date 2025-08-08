@@ -399,7 +399,7 @@ describe('HomePage', () => {
       name: /View details for Bitcoin/i,
     });
     await user.click(bitcoinCard);
-    expect(mockPush).toHaveBeenCalledWith('/bitcoin');
+    expect(mockPush).toHaveBeenCalledWith('/coin?id=bitcoin');
   });
 
   it('renders pagination component with correct props', async () => {

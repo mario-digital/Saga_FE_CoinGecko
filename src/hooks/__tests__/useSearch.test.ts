@@ -89,12 +89,8 @@ describe('useSearch', () => {
       result.current.setSearchQuery('b');
     });
 
-    // SWR should be called with null URL for short queries
-    expect(mockUseSWR).toHaveBeenCalledWith(
-      null,
-      expect.any(Function),
-      expect.any(Object)
-    );
+    // SWR should be called with null key for short queries
+    expect(mockUseSWR).toHaveBeenCalledWith(null, null, expect.any(Object));
   });
 
   it('triggers search for queries with 2 or more characters', () => {
@@ -112,9 +108,9 @@ describe('useSearch', () => {
       result.current.setSearchQuery('bitcoin');
     });
 
-    // SWR should be called with a valid URL
+    // SWR should be called with a valid key
     expect(mockUseSWR).toHaveBeenCalledWith(
-      '/search?query=bitcoin',
+      'search-bitcoin',
       expect.any(Function),
       expect.any(Object)
     );
@@ -302,7 +298,7 @@ describe('useSearch', () => {
 
     // The actual search should use trimmed query
     expect(mockUseSWR).toHaveBeenCalledWith(
-      '/search?query=bitcoin',
+      'search-bitcoin',
       expect.any(Function),
       expect.any(Object)
     );
@@ -319,7 +315,7 @@ describe('useSearch', () => {
 
     renderHook(() => useSearch());
 
-    expect(mockUseSWR).toHaveBeenCalledWith(null, expect.any(Function), {
+    expect(mockUseSWR).toHaveBeenCalledWith(null, null, {
       revalidateOnFocus: false,
       revalidateOnReconnect: false,
       dedupingInterval: 30000,
