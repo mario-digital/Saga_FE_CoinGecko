@@ -2,7 +2,11 @@
  * Coin description component with read more/less functionality
  */
 
+import { ExternalLink, ChevronDown, ChevronUp } from 'lucide-react';
 import { FC, useState } from 'react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -10,11 +14,8 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Collapsible, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { CoinDetailData } from '@/types/coingecko';
-import { ExternalLink, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface CoinDescriptionProps {
   description: string;

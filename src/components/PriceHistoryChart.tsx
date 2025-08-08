@@ -2,9 +2,13 @@
  * Price history chart component with time range selector
  */
 
-import { FC, memo } from 'react';
+import { AlertCircle, Clock, RefreshCw } from 'lucide-react';
+import { FC, memo, useState, useEffect } from 'react';
 import * as React from 'react';
 import { Line, LineChart, XAxis, YAxis, CartesianGrid } from 'recharts';
+
+import { TimeRangeSelector } from '@/components/TimeRangeSelector';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -19,10 +23,7 @@ import {
   ChartTooltipContent,
 } from '@/components/ui/chart';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Button } from '@/components/ui/button';
-import { TimeRangeSelector } from '@/components/TimeRangeSelector';
 import { usePriceHistory, TimeRange } from '@/hooks/usePriceHistory';
-import { AlertCircle, RefreshCw } from 'lucide-react';
 
 interface PriceHistoryChartProps {
   coinId: string;
@@ -44,6 +45,48 @@ export const PriceHistoryChart: FC<PriceHistoryChartProps> = memo(
       timeRange
     );
 
+    // CORS error detection and auto-retry timer
+    const isCorsError =
+      error?.toLowerCase().includes('cors') ||
+      error?.toLowerCase().includes('network') ||
+      error?.toLowerCase().includes('failed to fetch') ||
+      error?.toLowerCase().includes('unable to connect to coingecko');
+    const isRateLimited = error?.includes('Rate limit exceeded');
+
+    const [corsRetryCountdown, setCorsRetryCountdown] = useState<number>(0);
+    const [hasRetriedOnce, setHasRetriedOnce] = useState(false);
+
+    // Reset retry flag when timeRange changes
+    useEffect(() => {
+      setHasRetriedOnce(false);
+      setCorsRetryCountdown(0);
+    }, [timeRange]);
+
+    useEffect(() => {
+      // Only set countdown if we have a CORS error and haven't retried yet
+      if (isCorsError && error && !hasRetriedOnce) {
+        setCorsRetryCountdown(45);
+      }
+    }, [error, isCorsError, hasRetriedOnce]);
+
+    useEffect(() => {
+      if (corsRetryCountdown > 0) {
+        const timer = setTimeout(() => {
+          setCorsRetryCountdown(corsRetryCountdown - 1);
+        }, 1000);
+        return () => clearTimeout(timer);
+      } else if (
+        corsRetryCountdown === 0 &&
+        isCorsError &&
+        !hasRetriedOnce &&
+        retry
+      ) {
+        // Auto-retry ONCE when countdown reaches 0
+        setHasRetriedOnce(true);
+        retry();
+      }
+    }, [corsRetryCountdown, isCorsError, hasRetriedOnce, retry]);
+
     if (isLoading) {
       return (
         <Card>
@@ -59,8 +102,6 @@ export const PriceHistoryChart: FC<PriceHistoryChartProps> = memo(
     }
 
     if (error) {
-      const isRateLimited = error.includes('Rate limit exceeded');
-
       return (
         <Card>
           <CardHeader>
@@ -70,11 +111,53 @@ export const PriceHistoryChart: FC<PriceHistoryChartProps> = memo(
           <CardContent>
             <div className="flex flex-col items-center justify-center h-[350px] text-center">
               <AlertCircle className="h-10 w-10 text-destructive mb-4" />
-              <p className="text-sm text-muted-foreground mb-4">
-                {error || 'Failed to load price history'}
-              </p>
-              {!isRateLimited && (
+              <div className="space-y-2 mb-4">
+                <p className="text-sm text-muted-foreground">
+                  {isCorsError
+                    ? 'Having trouble connecting to CoinGecko API. This is usually temporary.'
+                    : error || 'Failed to load price history'}
+                </p>
+                {corsRetryCountdown > 0 && (
+                  <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+                    <RefreshCw className="w-4 h-4 animate-spin" />
+                    <span>
+                      Retrying automatically in{' '}
+                      <strong className="text-foreground">
+                        {corsRetryCountdown}
+                      </strong>{' '}
+                      seconds...
+                    </span>
+                  </div>
+                )}
+                {isCorsError && (
+                  <p className="text-xs text-muted-foreground">
+                    If this persists, try refreshing the page or check your
+                    browser extensions.
+                  </p>
+                )}
+                {isRateLimited && (
+                  <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+                    <Clock className="w-4 h-4 animate-pulse" />
+                    <span>Please wait before trying again</span>
+                  </div>
+                )}
+              </div>
+              {!isRateLimited && !isCorsError && (
                 <Button onClick={retry} variant="outline" size="sm">
+                  <RefreshCw className="mr-2 h-4 w-4" />
+                  Try Again
+                </Button>
+              )}
+              {isCorsError && corsRetryCountdown === 0 && (
+                <Button
+                  onClick={() => {
+                    setHasRetriedOnce(false);
+                    setCorsRetryCountdown(45);
+                    // Don't call retry() here - let the countdown effect handle it
+                  }}
+                  variant="outline"
+                  size="sm"
+                >
                   <RefreshCw className="mr-2 h-4 w-4" />
                   Try Again
                 </Button>

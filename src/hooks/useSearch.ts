@@ -5,9 +5,10 @@
 
 import { useState, useCallback, useMemo } from 'react';
 import useSWR from 'swr';
-import { SearchResponse, SearchCoin } from '@/types/coingecko';
+
 import { api } from '@/lib/api';
 import { debounce } from '@/lib/utils';
+import { SearchResponse, SearchCoin } from '@/types/coingecko';
 
 interface UseSearchReturn {
   searchQuery: string;

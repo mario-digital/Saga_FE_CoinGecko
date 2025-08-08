@@ -2,11 +2,12 @@
  * Error state component for coin detail page
  */
 
-import { FC, useState, useEffect } from 'react';
+import { AlertCircle, ArrowLeft, Clock, RefreshCw } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { FC, useState, useEffect } from 'react';
+
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import { AlertCircle, ArrowLeft, Clock, RefreshCw } from 'lucide-react';
 import {
   CoinNotFoundError,
   RateLimitError,
@@ -30,7 +31,7 @@ export const CoinDetailError: FC<CoinDetailErrorProps> = ({ error, retry }) => {
 
   // Auto-retry for CORS errors after a delay
   const [corsRetryCountdown, setCorsRetryCountdown] = useState<number>(
-    isCorsError ? 15 : 0
+    isCorsError ? 45 : 0
   );
 
   useEffect(() => {

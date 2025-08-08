@@ -47,6 +47,7 @@ const mockCoin: CoinDetailData = {
   id: 'bitcoin',
   symbol: 'btc',
   name: 'Bitcoin',
+  asset_platform_id: null,
   market_cap_rank: 1,
   image: {
     thumb: 'https://example.com/thumb.png',
@@ -278,7 +279,7 @@ describe('CoinDetailHeader', () => {
   });
 
   it('handles null market cap rank', () => {
-    const noRankCoin = { ...mockCoin, market_cap_rank: null };
+    const noRankCoin = { ...mockCoin, market_cap_rank: null } as any;
     render(<CoinDetailHeader coin={noRankCoin} />);
 
     // When rank is null, it should show "Rank #null" or "Rank #"

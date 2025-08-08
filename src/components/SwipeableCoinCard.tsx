@@ -2,10 +2,11 @@
  * Swipeable CoinCard component that reveals additional data on swipe
  */
 
-import React, { useState, useCallback } from 'react';
-import Image from 'next/image';
 import { TrendingUp, TrendingDown, ChevronLeft } from 'lucide-react';
-import { CoinData } from '@/types/coingecko';
+import Image from 'next/image';
+import React, { useState, useCallback } from 'react';
+
+import { useSwipeGesture } from '@/hooks/useSwipeGesture';
 import {
   safeFormatPrice,
   safeFormatMarketCap,
@@ -13,7 +14,7 @@ import {
   formatLargeNumber,
   formatPercentage,
 } from '@/lib/utils';
-import { useSwipeGesture } from '@/hooks/useSwipeGesture';
+import { CoinData } from '@/types/coingecko';
 
 interface SwipeableCoinCardProps {
   coin: CoinData;

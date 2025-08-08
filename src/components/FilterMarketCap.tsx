@@ -1,6 +1,7 @@
 'use client';
 
 import { FC } from 'react';
+
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 
 export interface FilterMarketCapProps {

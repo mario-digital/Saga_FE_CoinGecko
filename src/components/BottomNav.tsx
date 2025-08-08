@@ -1,11 +1,12 @@
 'use client';
 
-import { ReactNode } from 'react';
+import { Home, TrendingUp, Search, MoreHorizontal } from 'lucide-react';
+import type { Route } from 'next';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, TrendingUp, Search, MoreHorizontal } from 'lucide-react';
+import { ReactNode } from 'react';
+
 import { cn } from '@/lib/utils';
-import type { Route } from 'next';
 
 interface NavItem {
   href: Route<string> | '#';

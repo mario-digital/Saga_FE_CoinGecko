@@ -1,16 +1,17 @@
 'use client';
 
-import { Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
-import { useCoinDetail } from '@/hooks/useCoinDetail';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { Suspense } from 'react';
+
+import { CoinDescription } from '@/components/CoinDescription';
+import { CoinDetailError } from '@/components/CoinDetailError';
 import { CoinDetailHeader } from '@/components/CoinDetailHeader';
 import { CoinDetailSkeleton } from '@/components/CoinDetailSkeleton';
-import { CoinDetailError } from '@/components/CoinDetailError';
 import { CoinStats } from '@/components/CoinStats';
-import { PriceChanges } from '@/components/PriceChanges';
-import { CoinDescription } from '@/components/CoinDescription';
 import { PriceHistoryChartDynamic } from '@/components/dynamic/PriceHistoryChartDynamic';
+import { PriceChanges } from '@/components/PriceChanges';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -19,10 +20,11 @@ import {
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
+import { useCoinDetail } from '@/hooks/useCoinDetail';
 
 function CoinDetailContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const coinId = searchParams.get('id') || '';
 
   // Validate coinId parameter
@@ -41,7 +43,7 @@ function CoinDetailContent() {
             'Invalid coin ID format. Coin IDs should only contain lowercase letters, numbers, and hyphens.'
           )
         }
-        retry={() => (window.location.href = '/')}
+        retry={() => router.push('/')}
       />
     );
   }
@@ -53,7 +55,7 @@ function CoinDetailContent() {
         error={
           new Error('No coin selected. Please select a coin from the list.')
         }
-        retry={() => (window.location.href = '/')}
+        retry={() => router.push('/')}
       />
     );
   }

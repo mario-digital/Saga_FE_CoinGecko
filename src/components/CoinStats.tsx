@@ -3,21 +3,6 @@
  * Displays market cap, volume, supply, and all-time high/low
  */
 
-import { FC } from 'react';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import { CoinDetailData } from '@/types/coingecko';
-import {
-  formatCurrency,
-  formatLargeNumber,
-  formatDate,
-  formatPercentage,
-} from '@/lib/utils';
 import {
   DollarSign,
   TrendingUp,
@@ -26,6 +11,22 @@ import {
   Coins,
   Trophy,
 } from 'lucide-react';
+import { FC } from 'react';
+
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import {
+  formatCurrency,
+  formatLargeNumber,
+  formatDate,
+  formatPercentage,
+} from '@/lib/utils';
+import { CoinDetailData } from '@/types/coingecko';
 
 interface CoinStatsProps {
   marketData: CoinDetailData['market_data'];

@@ -1,7 +1,8 @@
 'use client';
 
-import React from 'react';
 import { Moon, Sun } from 'lucide-react';
+import React from 'react';
+
 import { useTheme } from '@/hooks/useTheme';
 import { cn } from '@/lib/utils';
 

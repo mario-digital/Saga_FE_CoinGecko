@@ -3,9 +3,10 @@
  */
 
 import useSWR from 'swr';
-import { CoinData } from '@/types/coingecko';
+
 import { api } from '@/lib/api';
 import { SWR_CONFIG } from '@/lib/constants';
+import { CoinData } from '@/types/coingecko';
 
 interface UseCoinsReturn {
   coins: CoinData[] | undefined;

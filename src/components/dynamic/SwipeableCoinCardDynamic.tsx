@@ -4,6 +4,7 @@
  */
 
 import dynamic from 'next/dynamic';
+
 import { CoinCardSkeleton } from '@/components/CoinCardSkeleton';
 
 export const SwipeableCoinCardDynamic = dynamic(

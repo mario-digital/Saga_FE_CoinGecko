@@ -4,6 +4,7 @@
  */
 
 import { CoinsMarketsParams, SearchParams } from '@/types/coingecko';
+
 import { DEFAULT_CURRENCY, DEFAULT_PER_PAGE, DEFAULT_ORDER } from './constants';
 
 // Use the public CoinGecko API directly

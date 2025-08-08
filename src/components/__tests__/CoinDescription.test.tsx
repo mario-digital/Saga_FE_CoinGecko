@@ -18,6 +18,7 @@ const mockCoin: CoinDetailData = {
   id: 'bitcoin',
   symbol: 'btc',
   name: 'Bitcoin',
+  asset_platform_id: null,
   description: {
     en: 'Bitcoin is a decentralized cryptocurrency originally described in a 2008 whitepaper by a person, or group of people, using the alias Satoshi Nakamoto. It was launched soon after, in January 2009.',
   },

@@ -3,6 +3,7 @@
  */
 
 import useSWR from 'swr';
+
 import { api } from '@/lib/api';
 
 export type TimeRange = '24h' | '7d' | '30d' | '90d' | '1y';

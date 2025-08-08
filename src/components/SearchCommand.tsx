@@ -1,8 +1,9 @@
 'use client';
 
+import { Search } from 'lucide-react';
 import * as React from 'react';
 import type { ReactNode } from 'react';
-import { Search } from 'lucide-react';
+
 import {
   CommandDialog,
   CommandEmpty,

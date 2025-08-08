@@ -2,11 +2,12 @@
  * CoinCard component for displaying individual cryptocurrency information
  */
 
-import React from 'react';
-import Image from 'next/image';
 import { TrendingUp, TrendingDown } from 'lucide-react';
-import { CoinData } from '@/types/coingecko';
+import Image from 'next/image';
+import React from 'react';
+
 import { safeFormatPrice, safeFormatMarketCap, cn } from '@/lib/utils';
+import { CoinData } from '@/types/coingecko';
 
 interface CoinCardProps {
   coin: CoinData;

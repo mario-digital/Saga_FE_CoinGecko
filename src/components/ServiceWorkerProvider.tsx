@@ -5,6 +5,7 @@
  */
 
 import { useEffect } from 'react';
+
 import { useServiceWorker } from '@/hooks/useServiceWorker';
 
 export function ServiceWorkerProvider({

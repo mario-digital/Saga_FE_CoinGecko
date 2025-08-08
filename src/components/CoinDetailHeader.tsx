@@ -3,16 +3,17 @@
  * Displays coin logo, name, price, and rank
  */
 
-import { FC } from 'react';
+import { TrendingUp, TrendingDown } from 'lucide-react';
 import Image from 'next/image';
+import { FC } from 'react';
+
 import { Badge } from '@/components/ui/badge';
-import { CoinDetailData } from '@/types/coingecko';
 import {
   formatCurrency,
   formatPercentage,
   getPercentageChangeColor,
 } from '@/lib/utils';
-import { TrendingUp, TrendingDown } from 'lucide-react';
+import { CoinDetailData } from '@/types/coingecko';
 
 interface CoinDetailHeaderProps {
   coin: CoinDetailData;

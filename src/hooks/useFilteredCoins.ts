@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
+
 import { CoinData } from '@/types/coingecko';
 
 export interface UseFilteredCoinsParams {

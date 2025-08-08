@@ -1,8 +1,9 @@
 'use client';
 
-import { ReactNode } from 'react';
-import { usePullToRefresh } from '@/hooks/usePullToRefresh';
 import { RefreshCw } from 'lucide-react';
+import { ReactNode } from 'react';
+
+import { usePullToRefresh } from '@/hooks/usePullToRefresh';
 import { cn } from '@/lib/utils';
 
 interface PullToRefreshProps {

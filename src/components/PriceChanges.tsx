@@ -2,7 +2,10 @@
  * Price changes component showing percentage changes across different timeframes
  */
 
+import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { FC } from 'react';
+
+import { Badge } from '@/components/ui/badge';
 import {
   Card,
   CardContent,
@@ -10,9 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { formatPercentage, getPercentageChangeColor } from '@/lib/utils';
-import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
 
 interface PriceChangesProps {
   priceChanges: {

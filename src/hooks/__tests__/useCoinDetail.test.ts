@@ -350,7 +350,7 @@ describe('useCoinDetail', () => {
         errorRetryCount: 0,
       });
 
-      expect(typeof config.onErrorRetry).toBe('function');
+      expect(typeof config?.onErrorRetry).toBe('function');
     });
 
     it('calls api.getCoinDetail when fetcher is invoked', async () => {

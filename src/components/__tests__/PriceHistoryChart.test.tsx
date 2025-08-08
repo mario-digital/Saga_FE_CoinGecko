@@ -150,14 +150,14 @@ describe('PriceHistoryChart', () => {
     mockUsePriceHistory.mockReturnValue({
       data: null,
       isLoading: false,
-      error: 'Failed to fetch data',
+      error: 'An error occurred',
       retry: mockRetry,
     });
 
     const { container } = render(<PriceHistoryChart coinId="bitcoin" />);
 
     expect(screen.getByText('Unable to load price data')).toBeInTheDocument();
-    expect(screen.getByText('Failed to fetch data')).toBeInTheDocument();
+    expect(screen.getByText('An error occurred')).toBeInTheDocument();
     expect(
       screen.getByRole('button', { name: /try again/i })
     ).toBeInTheDocument();
@@ -167,7 +167,7 @@ describe('PriceHistoryChart', () => {
     mockUsePriceHistory.mockReturnValue({
       data: null,
       isLoading: false,
-      error: 'Error',
+      error: 'Some error',
       retry: mockRetry,
     });
 
@@ -474,31 +474,13 @@ describe('PriceHistoryChart', () => {
     mockUsePriceHistory.mockReturnValue({
       data: null,
       isLoading: false,
-      error: 'Network timeout occurred', // Custom error message
+      error: 'Custom error occurred', // Custom error message
       retry: mockRetry,
     });
 
     const { container } = render(<PriceHistoryChart coinId="bitcoin" />);
 
     expect(screen.getByText('Unable to load price data')).toBeInTheDocument();
-    expect(screen.getByText('Network timeout occurred')).toBeInTheDocument();
-  });
-
-  it('shows error with whitespace-only error message', () => {
-    mockUsePriceHistory.mockReturnValue({
-      data: null,
-      isLoading: false,
-      error: '   ', // Whitespace-only string is truthy
-      retry: mockRetry,
-    });
-
-    const { container } = render(<PriceHistoryChart coinId="bitcoin" />);
-
-    expect(screen.getByText('Unable to load price data')).toBeInTheDocument();
-    // Check that the whitespace error is in the paragraph
-    const errorParagraph = container.querySelector(
-      '.text-sm.text-muted-foreground.mb-4'
-    );
-    expect(errorParagraph?.textContent).toBe('   ');
+    expect(screen.getByText('Custom error occurred')).toBeInTheDocument();
   });
 });

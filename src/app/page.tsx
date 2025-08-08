@@ -1,5 +1,7 @@
 'use client';
 
+import dynamic from 'next/dynamic';
+import { useRouter, useSearchParams } from 'next/navigation';
 import React, {
   useState,
   useEffect,
@@ -7,12 +9,11 @@ import React, {
   useCallback,
   useMemo,
 } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import dynamic from 'next/dynamic';
+
 import { CoinCard } from '@/components/CoinCard';
 import { CoinCardSkeleton } from '@/components/CoinCardSkeleton';
-import { Pagination } from '@/components/Pagination';
 import FilterMarketCap from '@/components/FilterMarketCap';
+import { Pagination } from '@/components/Pagination';
 import { useCoins } from '@/hooks/useCoins';
 import { useFilteredCoins } from '@/hooks/useFilteredCoins';
 import { DEFAULT_PER_PAGE } from '@/lib/constants';
@@ -118,7 +119,7 @@ function HomePageContent() {
 
       const newUrl = `/?${params.toString()}`;
       // Use Next.js router with scroll to top
-      router.push(newUrl as any, { scroll: true });
+      router.push(newUrl as string, { scroll: true });
     },
     [router, searchParams]
   );
@@ -184,7 +185,7 @@ function HomePageContent() {
           ) : (
             <div className="flex gap-3 justify-center">
               <button
-                onClick={() => (window.location.href = '/')}
+                onClick={() => router.refresh()}
                 className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700"
               >
                 Go Back

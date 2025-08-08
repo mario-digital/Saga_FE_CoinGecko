@@ -3,6 +3,7 @@
  */
 
 import { FC } from 'react';
+
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { TimeRange } from '@/hooks/usePriceHistory';
 

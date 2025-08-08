@@ -8,6 +8,11 @@ import { usePriceHistory } from '@/hooks/usePriceHistory';
 // Mock hooks
 jest.mock('next/navigation', () => ({
   useSearchParams: jest.fn(),
+  useRouter: jest.fn(() => ({
+    push: jest.fn(),
+    back: jest.fn(),
+    refresh: jest.fn(),
+  })),
 }));
 
 jest.mock('@/hooks/useCoinDetail');

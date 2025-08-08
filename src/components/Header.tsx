@@ -1,12 +1,13 @@
 'use client';
 
-import { useState, type ReactNode } from 'react';
-import { useRouter } from 'next/navigation';
 import { Search, Menu, X, Home, TrendingUp } from 'lucide-react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useState, type ReactNode } from 'react';
+
 import { SearchCommand } from '@/components/SearchCommand';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { useSearch } from '@/hooks/useSearch';
-import Link from 'next/link';
 import { cn } from '@/lib/utils';
 
 export function Header(): ReactNode {
