@@ -3,6 +3,15 @@
  * Calls CoinGecko API directly from the client for static deployment
  */
 
+import { z } from 'zod';
+
+import {
+  CoinsResponseSchema,
+  SearchResponseSchema,
+  CoinDetailDataSchema,
+  PriceHistorySchema,
+  APIValidationError,
+} from '@/schemas/coingecko';
 import { CoinsMarketsParams, SearchParams } from '@/types/coingecko';
 
 import { DEFAULT_CURRENCY, DEFAULT_PER_PAGE, DEFAULT_ORDER } from './constants';
@@ -25,8 +34,11 @@ const getHeaders = (): HeadersInit => {
   return headers;
 };
 
-// Helper function to handle API responses
-const handleResponse = async (response: Response | undefined) => {
+// Helper function to handle API responses with optional schema validation
+const handleResponse = async (
+  response: Response | undefined,
+  schema?: z.ZodSchema
+) => {
   if (!response) {
     throw new Error('No response received');
   }
@@ -60,7 +72,19 @@ const handleResponse = async (response: Response | undefined) => {
 
     throw error;
   }
-  return response.json();
+
+  const data = await response.json();
+
+  // Validate if schema provided
+  if (schema) {
+    const result = schema.safeParse(data);
+    if (!result.success) {
+      throw new APIValidationError(result.error);
+    }
+    return result.data;
+  }
+
+  return data;
 };
 
 // Helper function to handle fetch with CORS error detection
@@ -156,16 +180,33 @@ export const api = {
       const response = await fetchWithCorsHandling(url, {
         headers: getHeaders(),
       });
-      return handleResponse(response);
+      return await handleResponse(response, CoinsResponseSchema);
     } catch (error: any) {
+      // Check for validation errors - handle all possible forms
+      if (
+        error instanceof APIValidationError ||
+        error?.name === 'APIValidationError' ||
+        error?.message === 'API response validation failed' ||
+        (error &&
+          error.constructor &&
+          error.constructor.name === 'APIValidationError')
+      ) {
+        console.error(
+          'Schema validation failed:',
+          error.zodError?.errors || error
+        );
+        throw new Error('Invalid data format received from API');
+      }
       if (error.isCorsError) {
         throw new Error(
           'Unable to connect to CoinGecko API. This might be a temporary issue. Please try again in a moment.'
         );
       }
+      // If it's already an Error object, throw it as-is
       if (error instanceof Error) {
         throw error;
       }
+      // Otherwise, wrap it in an Error
       throw new Error(String(error));
     }
   },
@@ -176,16 +217,33 @@ export const api = {
       const response = await fetchWithCorsHandling(url, {
         headers: getHeaders(),
       });
-      return handleResponse(response);
+      return await handleResponse(response, CoinDetailDataSchema);
     } catch (error: any) {
+      // Check for validation errors - handle all possible forms
+      if (
+        error instanceof APIValidationError ||
+        error?.name === 'APIValidationError' ||
+        error?.message === 'API response validation failed' ||
+        (error &&
+          error.constructor &&
+          error.constructor.name === 'APIValidationError')
+      ) {
+        console.error(
+          'Schema validation failed:',
+          error.zodError?.errors || error
+        );
+        throw new Error('Invalid data format received from API');
+      }
       if (error.isCorsError) {
         throw new Error(
           'Unable to connect to CoinGecko API. This might be a temporary issue. Please try again in a moment.'
         );
       }
+      // If it's already an Error object, throw it as-is
       if (error instanceof Error) {
         throw error;
       }
+      // Otherwise, wrap it in an Error
       throw new Error(String(error));
     }
   },
@@ -196,16 +254,33 @@ export const api = {
       const response = await fetchWithCorsHandling(url, {
         headers: getHeaders(),
       });
-      return handleResponse(response);
+      return await handleResponse(response, SearchResponseSchema);
     } catch (error: any) {
+      // Check for validation errors - handle all possible forms
+      if (
+        error instanceof APIValidationError ||
+        error?.name === 'APIValidationError' ||
+        error?.message === 'API response validation failed' ||
+        (error &&
+          error.constructor &&
+          error.constructor.name === 'APIValidationError')
+      ) {
+        console.error(
+          'Schema validation failed:',
+          error.zodError?.errors || error
+        );
+        throw new Error('Invalid data format received from API');
+      }
       if (error.isCorsError) {
         throw new Error(
           'Unable to connect to CoinGecko API. This might be a temporary issue. Please try again in a moment.'
         );
       }
+      // If it's already an Error object, throw it as-is
       if (error instanceof Error) {
         throw error;
       }
+      // Otherwise, wrap it in an Error
       throw new Error(String(error));
     }
   },
@@ -226,7 +301,7 @@ export const api = {
         headers: getHeaders(),
       });
 
-      const data = await handleResponse(response);
+      const data = await handleResponse(response, PriceHistorySchema);
 
       // Transform the response to match our expected format
       return {
@@ -235,14 +310,31 @@ export const api = {
         total_volumes: data.total_volumes || [],
       };
     } catch (error: any) {
+      // Check for validation errors - handle all possible forms
+      if (
+        error instanceof APIValidationError ||
+        error?.name === 'APIValidationError' ||
+        error?.message === 'API response validation failed' ||
+        (error &&
+          error.constructor &&
+          error.constructor.name === 'APIValidationError')
+      ) {
+        console.error(
+          'Schema validation failed:',
+          error.zodError?.errors || error
+        );
+        throw new Error('Invalid data format received from API');
+      }
       if (error.isCorsError) {
         throw new Error(
           'Unable to connect to CoinGecko API. This might be a temporary issue. Please try again in a moment.'
         );
       }
+      // If it's already an Error object, throw it as-is
       if (error instanceof Error) {
         throw error;
       }
+      // Otherwise, wrap it in an Error
       throw new Error(String(error));
     }
   },

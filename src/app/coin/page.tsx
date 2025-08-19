@@ -115,10 +115,12 @@ function CoinDetailContent() {
           <CoinDetailHeader coin={coin} />
 
           {/* Stats Grid */}
-          <CoinStats
-            marketData={coin.market_data}
-            rank={coin.market_cap_rank}
-          />
+          {coin.market_data && (
+            <CoinStats
+              marketData={coin.market_data}
+              rank={coin.market_cap_rank}
+            />
+          )}
 
           {/* Price Changes */}
           <PriceChanges

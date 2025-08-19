@@ -3,7 +3,16 @@
  * Based on the /coins/markets endpoint specification
  */
 
-export interface CoinData {
+// Import and re-export types from schemas for backward compatibility
+import {
+  CoinData as SchemaCoinData,
+  CoinDetailData as SchemaCoinDetailData,
+} from '@/schemas/coingecko';
+export type CoinData = SchemaCoinData;
+export type CoinDetailData = SchemaCoinDetailData;
+
+// Original interface definitions (types now come from schemas)
+interface _CoinDataLegacy {
   id: string;
   symbol: string;
   name: string;
@@ -112,8 +121,8 @@ export interface SearchParams {
   query: string;
 }
 
-// Coin Detail API types
-export interface CoinDetailData {
+// Coin Detail API types (legacy - actual type comes from schemas)
+export interface _CoinDetailDataLegacy {
   id: string;
   symbol: string;
   name: string;

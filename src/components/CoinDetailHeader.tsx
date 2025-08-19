@@ -20,15 +20,15 @@ interface CoinDetailHeaderProps {
 }
 
 export const CoinDetailHeader: FC<CoinDetailHeaderProps> = ({ coin }) => {
-  const currentPrice = coin.market_data.current_price.usd;
-  const priceChange24h = coin.market_data.price_change_percentage_24h;
+  const currentPrice = coin.market_data?.current_price.usd || 0;
+  const priceChange24h = coin.market_data?.price_change_percentage_24h || 0;
   const isPositive = priceChange24h >= 0;
 
   return (
     <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-8">
       <div className="flex items-center gap-4">
         <Image
-          src={coin.image.large}
+          src={coin.image?.large || '/placeholder.png'}
           alt={`${coin.name} logo`}
           width={64}
           height={64}

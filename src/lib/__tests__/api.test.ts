@@ -5,6 +5,7 @@ import {
   buildSearchUrl,
 } from '../api';
 import { CoinData, CoinDetailData } from '@/types/coingecko';
+import { APIValidationError } from '@/schemas/coingecko';
 
 // Mock global fetch
 global.fetch = jest.fn();
@@ -265,9 +266,15 @@ describe('api', () => {
     });
 
     it('handles special coin IDs', async () => {
+      const mockCoinDetail = {
+        id: 'binance-usd',
+        symbol: 'busd',
+        name: 'Binance USD',
+      };
+
       (global.fetch as jest.Mock).mockResolvedValueOnce({
         ok: true,
-        json: async () => ({}),
+        json: async () => mockCoinDetail,
       });
 
       await api.getCoinDetail('binance-usd');
@@ -365,9 +372,23 @@ describe('api', () => {
     it('searches coins successfully', async () => {
       const mockSearchResults = {
         coins: [
-          { id: 'bitcoin', name: 'Bitcoin', symbol: 'BTC' },
-          { id: 'bitcoin-cash', name: 'Bitcoin Cash', symbol: 'BCH' },
+          {
+            id: 'bitcoin',
+            name: 'Bitcoin',
+            symbol: 'BTC',
+            market_cap_rank: 1,
+            thumb: 'https://example.com/btc.png',
+          },
+          {
+            id: 'bitcoin-cash',
+            name: 'Bitcoin Cash',
+            symbol: 'BCH',
+            market_cap_rank: 15,
+            thumb: 'https://example.com/bch.png',
+          },
         ],
+        exchanges: [],
+        categories: [],
       };
 
       (global.fetch as jest.Mock).mockResolvedValueOnce({
@@ -389,7 +410,7 @@ describe('api', () => {
     it('encodes search query with special characters', async () => {
       (global.fetch as jest.Mock).mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ coins: [] }),
+        json: async () => ({ coins: [], exchanges: [], categories: [] }),
       });
 
       await api.searchCoins('BTC/USD & test');
@@ -403,7 +424,7 @@ describe('api', () => {
     it('handles empty search query', async () => {
       (global.fetch as jest.Mock).mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ coins: [] }),
+        json: async () => ({ coins: [], exchanges: [], categories: [] }),
       });
 
       await api.searchCoins('');
@@ -717,7 +738,20 @@ describe('api', () => {
 
   describe('CORS error handling', () => {
     it('retries on CORS error and succeeds', async () => {
-      const mockData = [{ id: 'bitcoin', name: 'Bitcoin' }];
+      const mockData = [
+        {
+          id: 'bitcoin',
+          symbol: 'btc',
+          name: 'Bitcoin',
+          image: 'https://example.com/bitcoin.png',
+          current_price: 45000,
+          market_cap: 850000000000,
+          market_cap_rank: 1,
+          total_volume: 25000000000,
+          price_change_percentage_24h: 2.5,
+          last_updated: '2024-01-01T12:00:00.000Z',
+        },
+      ];
 
       // First call fails with CORS, second succeeds
       (global.fetch as jest.Mock)
@@ -865,6 +899,197 @@ describe('api', () => {
       await expect(api.searchCoins('bitcoin')).rejects.toThrow(
         'Unable to connect to CoinGecko API. This might be a temporary issue. Please try again in a moment.'
       );
+    });
+  });
+
+  describe('schema validation', () => {
+    it('validates correct coin data', async () => {
+      const validData = [
+        {
+          id: 'bitcoin',
+          symbol: 'btc',
+          name: 'Bitcoin',
+          image: 'https://example.com/bitcoin.png',
+          current_price: 45000,
+          market_cap: 850000000000,
+          market_cap_rank: 1,
+          total_volume: 25000000000,
+          price_change_percentage_24h: 2.5,
+          last_updated: '2024-01-01T12:00:00.000Z',
+        },
+      ];
+
+      (global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: true,
+        json: async () => validData,
+      });
+
+      const result = await api.getCoins();
+      expect(result).toEqual(validData);
+    });
+
+    it('throws error for missing required field (current_price)', async () => {
+      const invalidData = [
+        {
+          id: 'bitcoin',
+          symbol: 'btc',
+          name: 'Bitcoin',
+          image: 'https://example.com/bitcoin.png',
+          // missing current_price
+          market_cap: 850000000000,
+          market_cap_rank: 1,
+          total_volume: 25000000000,
+          price_change_percentage_24h: 2.5,
+          last_updated: '2024-01-01T12:00:00.000Z',
+        },
+      ];
+
+      (global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: true,
+        json: async () => invalidData,
+      });
+
+      await expect(api.getCoins()).rejects.toThrow(
+        'Invalid data format received from API'
+      );
+    });
+
+    it('throws error for invalid data type', async () => {
+      const invalidData = [
+        {
+          id: 'bitcoin',
+          symbol: 'btc',
+          name: 'Bitcoin',
+          image: 'https://example.com/bitcoin.png',
+          current_price: 'not-a-number', // Should be number
+          market_cap: 850000000000,
+          market_cap_rank: 1,
+          total_volume: 25000000000,
+          price_change_percentage_24h: 2.5,
+          last_updated: '2024-01-01T12:00:00.000Z',
+        },
+      ];
+
+      (global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: true,
+        json: async () => invalidData,
+      });
+
+      await expect(api.getCoins()).rejects.toThrow(
+        'Invalid data format received from API'
+      );
+    });
+
+    it('validates search response correctly', async () => {
+      const validSearchData = {
+        coins: [
+          {
+            id: 'bitcoin',
+            name: 'Bitcoin',
+            symbol: 'BTC',
+            market_cap_rank: 1,
+            thumb: 'https://example.com/thumb.png',
+          },
+        ],
+        exchanges: [],
+        categories: [],
+      };
+
+      (global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: true,
+        json: async () => validSearchData,
+      });
+
+      const result = await api.searchCoins('bitcoin');
+      expect(result).toEqual(validSearchData);
+    });
+
+    it('throws error for invalid search response', async () => {
+      const invalidSearchData = {
+        coins: [
+          {
+            id: 'bitcoin',
+            // missing required fields: name, symbol, market_cap_rank, thumb
+          },
+        ],
+        exchanges: [],
+        categories: [],
+      };
+
+      (global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: true,
+        json: async () => invalidSearchData,
+      });
+
+      await expect(api.searchCoins('bitcoin')).rejects.toThrow(
+        'Invalid data format received from API'
+      );
+    });
+
+    it('validates price history response', async () => {
+      const validPriceData = {
+        prices: [
+          [1609459200000, 29000],
+          [1609545600000, 32000],
+        ],
+        market_caps: [
+          [1609459200000, 540000000000],
+          [1609545600000, 600000000000],
+        ],
+        total_volumes: [
+          [1609459200000, 40000000000],
+          [1609545600000, 45000000000],
+        ],
+      };
+
+      (global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: true,
+        json: async () => validPriceData,
+      });
+
+      const result = await api.getPriceHistory('bitcoin', '7d');
+      expect(result).toEqual(validPriceData);
+    });
+
+    it('throws error for invalid price history format', async () => {
+      const invalidPriceData = {
+        prices: 'not-an-array', // Should be array of tuples
+      };
+
+      (global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: true,
+        json: async () => invalidPriceData,
+      });
+
+      await expect(api.getPriceHistory('bitcoin', '7d')).rejects.toThrow(
+        'Invalid data format received from API'
+      );
+    });
+
+    it('handles HTTP errors before validation', async () => {
+      (global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: false,
+        status: 429,
+        headers: new Headers(),
+      });
+
+      await expect(api.getCoins()).rejects.toMatchObject({
+        message: 'Rate limit exceeded',
+        status: 429,
+      });
+    });
+
+    it('handles HTTP 404 errors before validation', async () => {
+      (global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: false,
+        status: 404,
+        headers: new Headers(),
+      });
+
+      await expect(api.getCoinDetail('nonexistent')).rejects.toMatchObject({
+        message: 'Resource not found',
+        status: 404,
+      });
     });
   });
 });

@@ -80,6 +80,9 @@ importers:
       tailwind-merge:
         specifier: ^3.3.1
         version: 3.3.1
+      zod:
+        specifier: ^4.0.17
+        version: 4.0.17
     devDependencies:
       '@next/bundle-analyzer':
         specifier: ^15.4.5
@@ -5404,6 +5407,9 @@ packages:
 
   zod@3.25.76:
     resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
+
+  zod@4.0.17:
+    resolution: {integrity: sha512-1PHjlYRevNxxdy2JZ8JcNAw7rX8V9P1AKkP+x/xZfxB0K5FYfuV+Ug6P/6NVSR2jHQ+FzDDoDHS04nYUsOIyLQ==}
 
 snapshots:
 
@@ -11496,3 +11502,5 @@ snapshots:
   yocto-queue@1.2.1: {}
 
   zod@3.25.76: {}
+
+  zod@4.0.17: {}
