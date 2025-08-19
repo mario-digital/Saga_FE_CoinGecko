@@ -20,7 +20,7 @@ interface CoinDetailHeaderProps {
 }
 
 export const CoinDetailHeader: FC<CoinDetailHeaderProps> = ({ coin }) => {
-  const currentPrice = coin.market_data?.current_price.usd || 0;
+  const currentPrice = coin.market_data?.current_price?.usd || 0;
   const priceChange24h = coin.market_data?.price_change_percentage_24h || 0;
   const isPositive = priceChange24h >= 0;
 

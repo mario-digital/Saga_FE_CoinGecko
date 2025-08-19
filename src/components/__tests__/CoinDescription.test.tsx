@@ -77,9 +77,9 @@ describe('CoinDescription', () => {
   it('renders coin description content', () => {
     render(
       <CoinDescription
-        description={mockCoin.description.en}
+        description={mockCoin.description?.en || ''}
         links={mockCoin.links}
-        categories={mockCoin.categories}
+        categories={mockCoin.categories || []}
       />
     );
 
@@ -98,9 +98,9 @@ describe('CoinDescription', () => {
 
     render(
       <CoinDescription
-        description={coinWithLongDesc.description.en}
+        description={coinWithLongDesc.description?.en || ''}
         links={coinWithLongDesc.links}
-        categories={coinWithLongDesc.categories}
+        categories={coinWithLongDesc.categories || []}
       />
     );
 
@@ -117,9 +117,9 @@ describe('CoinDescription', () => {
 
     render(
       <CoinDescription
-        description={coinWithLongDesc.description.en}
+        description={coinWithLongDesc.description?.en || ''}
         links={coinWithLongDesc.links}
-        categories={coinWithLongDesc.categories}
+        categories={coinWithLongDesc.categories || []}
       />
     );
 
@@ -136,9 +136,9 @@ describe('CoinDescription', () => {
   it('renders homepage links', () => {
     render(
       <CoinDescription
-        description={mockCoin.description.en}
+        description={mockCoin.description?.en || ''}
         links={mockCoin.links}
-        categories={mockCoin.categories}
+        categories={mockCoin.categories || []}
       />
     );
 
@@ -154,9 +154,9 @@ describe('CoinDescription', () => {
   it('does not render blockchain explorer links', () => {
     render(
       <CoinDescription
-        description={mockCoin.description.en}
+        description={mockCoin.description?.en || ''}
         links={mockCoin.links}
-        categories={mockCoin.categories}
+        categories={mockCoin.categories || []}
       />
     );
 
@@ -168,9 +168,9 @@ describe('CoinDescription', () => {
   it('renders social links when available', () => {
     render(
       <CoinDescription
-        description={mockCoin.description.en}
+        description={mockCoin.description?.en || ''}
         links={mockCoin.links}
-        categories={mockCoin.categories}
+        categories={mockCoin.categories || []}
       />
     );
 
@@ -198,9 +198,9 @@ describe('CoinDescription', () => {
 
     render(
       <CoinDescription
-        description={coinWithoutSocials.description.en}
+        description={coinWithoutSocials.description?.en || ''}
         links={coinWithoutSocials.links}
-        categories={coinWithoutSocials.categories}
+        categories={coinWithoutSocials.categories || []}
       />
     );
 
@@ -221,7 +221,7 @@ describe('CoinDescription', () => {
       <CoinDescription
         description={coinWithoutDesc.description.en}
         links={coinWithoutDesc.links}
-        categories={coinWithoutDesc.categories}
+        categories={coinWithoutDesc.categories || []}
       />
     );
 
@@ -234,9 +234,9 @@ describe('CoinDescription', () => {
   it('opens links in new tab with security attributes', () => {
     render(
       <CoinDescription
-        description={mockCoin.description.en}
+        description={mockCoin.description?.en || ''}
         links={mockCoin.links}
-        categories={mockCoin.categories}
+        categories={mockCoin.categories || []}
       />
     );
 
@@ -267,9 +267,9 @@ describe('CoinDescription', () => {
 
     render(
       <CoinDescription
-        description={coinWithoutLinks.description.en}
+        description={coinWithoutLinks.description?.en || ''}
         links={coinWithoutLinks.links}
-        categories={coinWithoutLinks.categories}
+        categories={coinWithoutLinks.categories || []}
       />
     );
 
@@ -282,9 +282,9 @@ describe('CoinDescription', () => {
   it('filters out empty links', () => {
     render(
       <CoinDescription
-        description={mockCoin.description.en}
+        description={mockCoin.description?.en || ''}
         links={mockCoin.links}
-        categories={mockCoin.categories}
+        categories={mockCoin.categories || []}
       />
     );
 
@@ -309,9 +309,9 @@ describe('CoinDescription', () => {
 
     render(
       <CoinDescription
-        description={coinWithLongUrl.description.en}
+        description={coinWithLongUrl.description?.en || ''}
         links={coinWithLongUrl.links}
-        categories={coinWithLongUrl.categories}
+        categories={coinWithLongUrl.categories || []}
       />
     );
 
@@ -335,7 +335,7 @@ describe('CoinDescription', () => {
       <CoinDescription
         description={coinWithSpecialChars.description.en}
         links={coinWithSpecialChars.links}
-        categories={coinWithSpecialChars.categories}
+        categories={coinWithSpecialChars.categories || []}
       />
     );
 
@@ -347,9 +347,9 @@ describe('CoinDescription', () => {
   it('renders multiple GitHub repos when available', () => {
     render(
       <CoinDescription
-        description={mockCoin.description.en}
+        description={mockCoin.description?.en || ''}
         links={mockCoin.links}
-        categories={mockCoin.categories}
+        categories={mockCoin.categories || []}
       />
     );
 
@@ -375,9 +375,9 @@ describe('CoinDescription', () => {
 
     render(
       <CoinDescription
-        description={coinWithForum.description.en}
+        description={coinWithForum.description?.en || ''}
         links={coinWithForum.links}
-        categories={coinWithForum.categories}
+        categories={coinWithForum.categories || []}
       />
     );
 
@@ -388,9 +388,9 @@ describe('CoinDescription', () => {
   it('applies correct CSS classes for styling', () => {
     const { container } = render(
       <CoinDescription
-        description={mockCoin.description.en}
+        description={mockCoin.description?.en || ''}
         links={mockCoin.links}
-        categories={mockCoin.categories}
+        categories={mockCoin.categories || []}
       />
     );
 
@@ -416,9 +416,9 @@ describe('CoinDescription', () => {
 
     const { container } = render(
       <CoinDescription
-        description={partialSocial.description.en}
+        description={partialSocial.description?.en || ''}
         links={partialSocial.links}
-        categories={partialSocial.categories}
+        categories={partialSocial.categories || []}
       />
     );
 

@@ -60,16 +60,16 @@ const StatCard: FC<StatCardProps> = ({ title, value, description, icon }) => (
 );
 
 export const CoinStats: FC<CoinStatsProps> = ({ marketData, rank }) => {
-  const marketCap = marketData.market_cap.usd;
-  const volume24h = marketData.total_volume.usd;
-  const circulatingSupply = marketData.circulating_supply;
-  const totalSupply = marketData.total_supply;
-  const maxSupply = marketData.max_supply;
-  const athPrice = marketData.ath.usd;
-  const athDate = marketData.ath_date.usd;
-  const atlPrice = marketData.atl.usd;
-  const atlDate = marketData.atl_date.usd;
-  const currentPrice = marketData.current_price.usd;
+  const marketCap = marketData?.market_cap?.usd || 0;
+  const volume24h = marketData?.total_volume?.usd || 0;
+  const circulatingSupply = marketData?.circulating_supply || 0;
+  const totalSupply = marketData?.total_supply;
+  const maxSupply = marketData?.max_supply;
+  const athPrice = marketData?.ath?.usd || 0;
+  const athDate = marketData?.ath_date?.usd || '';
+  const atlPrice = marketData?.atl?.usd || 0;
+  const atlDate = marketData?.atl_date?.usd || '';
+  const currentPrice = marketData?.current_price?.usd || 0;
 
   // Calculate ATH change percentage
   const athChangePercent = ((currentPrice - athPrice) / athPrice) * 100;
@@ -95,9 +95,9 @@ export const CoinStats: FC<CoinStatsProps> = ({ marketData, rank }) => {
         title="Circulating"
         value={formatLargeNumber(circulatingSupply)}
         description={
-          maxSupply
+          maxSupply && circulatingSupply
             ? `${((circulatingSupply / maxSupply) * 100).toFixed(1)}% of max`
-            : totalSupply
+            : totalSupply && circulatingSupply
               ? `${((circulatingSupply / totalSupply) * 100).toFixed(1)}% of total`
               : undefined
         }
@@ -122,7 +122,7 @@ export const CoinStats: FC<CoinStatsProps> = ({ marketData, rank }) => {
         title="Max Supply"
         value={maxSupply ? formatLargeNumber(maxSupply) : 'No Limit'}
         description={
-          maxSupply
+          maxSupply && circulatingSupply
             ? `${formatLargeNumber(maxSupply - circulatingSupply)} left`
             : 'Unlimited'
         }

@@ -118,7 +118,7 @@ function CoinDetailContent() {
           {coin.market_data && (
             <CoinStats
               marketData={coin.market_data}
-              rank={coin.market_cap_rank}
+              rank={coin.market_cap_rank || 0}
             />
           )}
 
