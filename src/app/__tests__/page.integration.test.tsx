@@ -270,7 +270,9 @@ describe('HomePage Filter Integration', () => {
 
     // Filter to top 10, but our data has no coins in top 10
     (useCoins as jest.Mock).mockReturnValue({
-      coins: mockCoins.filter(c => c.market_cap_rank > 100),
+      coins: mockCoins.filter(
+        c => c.market_cap_rank !== null && c.market_cap_rank > 100
+      ),
       isLoading: false,
       error: null,
       refetch: jest.fn(),

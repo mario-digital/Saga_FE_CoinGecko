@@ -79,6 +79,7 @@ const handleResponse = async (
   if (schema) {
     const result = schema.safeParse(data);
     if (!result.success) {
+      // Don't log validation errors to console - they're handled by the app
       throw new APIValidationError(result.error);
     }
     return result.data;
@@ -191,10 +192,7 @@ export const api = {
           error.constructor &&
           error.constructor.name === 'APIValidationError')
       ) {
-        console.error(
-          'Schema validation failed:',
-          error.zodError?.errors || error
-        );
+        // Don't log to console - handled by the app
         throw new Error('Invalid data format received from API');
       }
       if (error.isCorsError) {
@@ -228,10 +226,7 @@ export const api = {
           error.constructor &&
           error.constructor.name === 'APIValidationError')
       ) {
-        console.error(
-          'Schema validation failed:',
-          error.zodError?.errors || error
-        );
+        // Don't log to console - handled by the app
         throw new Error('Invalid data format received from API');
       }
       if (error.isCorsError) {
@@ -265,10 +260,7 @@ export const api = {
           error.constructor &&
           error.constructor.name === 'APIValidationError')
       ) {
-        console.error(
-          'Schema validation failed:',
-          error.zodError?.errors || error
-        );
+        // Don't log to console - handled by the app
         throw new Error('Invalid data format received from API');
       }
       if (error.isCorsError) {
@@ -319,10 +311,7 @@ export const api = {
           error.constructor &&
           error.constructor.name === 'APIValidationError')
       ) {
-        console.error(
-          'Schema validation failed:',
-          error.zodError?.errors || error
-        );
+        // Don't log to console - handled by the app
         throw new Error('Invalid data format received from API');
       }
       if (error.isCorsError) {

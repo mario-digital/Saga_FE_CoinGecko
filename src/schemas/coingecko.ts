@@ -6,32 +6,33 @@ export const CoinDataSchema = z.object({
   symbol: z.string(),
   name: z.string(),
   image: z.string(),
-  current_price: z.number(),
-  market_cap: z.number(),
-  market_cap_rank: z.number(),
-  fully_diluted_valuation: z.number().optional(),
-  total_volume: z.number(),
-  high_24h: z.number().optional(),
-  low_24h: z.number().optional(),
-  price_change_24h: z.number().optional(),
-  price_change_percentage_24h: z.number(),
-  market_cap_change_24h: z.number().optional(),
-  market_cap_change_percentage_24h: z.number().optional(),
-  circulating_supply: z.number().optional(),
-  total_supply: z.number().optional(),
+  current_price: z.number().nullable(),
+  market_cap: z.number().nullable(),
+  market_cap_rank: z.number().nullable(),
+  fully_diluted_valuation: z.number().nullable().optional(),
+  total_volume: z.number().nullable(),
+  high_24h: z.number().nullable().optional(),
+  low_24h: z.number().nullable().optional(),
+  price_change_24h: z.number().nullable().optional(),
+  price_change_percentage_24h: z.number().nullable(),
+  market_cap_change_24h: z.number().nullable().optional(),
+  market_cap_change_percentage_24h: z.number().nullable().optional(),
+  circulating_supply: z.number().nullable().optional(),
+  total_supply: z.number().nullable().optional(),
   max_supply: z.number().nullable().optional(),
-  ath: z.number().optional(),
-  ath_change_percentage: z.number().optional(),
-  ath_date: z.string().optional(),
-  atl: z.number().optional(),
-  atl_change_percentage: z.number().optional(),
-  atl_date: z.string().optional(),
+  ath: z.number().nullable().optional(),
+  ath_change_percentage: z.number().nullable().optional(),
+  ath_date: z.string().nullable().optional(),
+  atl: z.number().nullable().optional(),
+  atl_change_percentage: z.number().nullable().optional(),
+  atl_date: z.string().nullable().optional(),
   roi: z
     .object({
       times: z.number(),
       currency: z.string(),
       percentage: z.number(),
     })
+    .nullable()
     .optional(),
   last_updated: z.string(),
 });
@@ -43,7 +44,7 @@ export const SearchCoinSchema = z.object({
   id: z.string(),
   name: z.string(),
   symbol: z.string(),
-  market_cap_rank: z.number(),
+  market_cap_rank: z.number().nullable(),
   thumb: z.string(),
 });
 
@@ -74,7 +75,9 @@ export const CoinDetailDataSchema = z
         announcement_url: z.array(z.string()),
         twitter_screen_name: z.string(),
         facebook_username: z.string(),
-        bitcointalk_thread_identifier: z.string().nullable(),
+        bitcointalk_thread_identifier: z
+          .union([z.string(), z.number()])
+          .nullable(),
         telegram_channel_identifier: z.string(),
         subreddit_url: z.string().nullable(),
         repos_url: z.object({
@@ -91,28 +94,31 @@ export const CoinDetailDataSchema = z
         large: z.string(),
       })
       .optional(),
-    market_cap_rank: z.number().optional(),
+    market_cap_rank: z.number().nullable().optional(),
     market_data: z
       .object({
-        current_price: z.record(z.string(), z.number()),
-        market_cap: z.record(z.string(), z.number()),
-        total_volume: z.record(z.string(), z.number()),
-        price_change_percentage_24h: z.number(),
-        price_change_percentage_7d: z.number(),
-        price_change_percentage_30d: z.number(),
-        price_change_percentage_1y: z.number(),
-        ath: z.record(z.string(), z.number()),
-        ath_date: z.record(z.string(), z.string()),
-        atl: z.record(z.string(), z.number()),
-        atl_date: z.record(z.string(), z.string()),
-        circulating_supply: z.number(),
-        total_supply: z.number(),
+        current_price: z.record(z.string(), z.number().nullable()),
+        market_cap: z.record(z.string(), z.number().nullable()),
+        total_volume: z.record(z.string(), z.number().nullable()),
+        price_change_percentage_24h: z.number().nullable(),
+        price_change_percentage_7d: z.number().nullable(),
+        price_change_percentage_30d: z.number().nullable(),
+        price_change_percentage_1y: z.number().nullable(),
+        ath: z.record(z.string(), z.number().nullable()),
+        ath_date: z.record(z.string(), z.string().nullable()),
+        atl: z.record(z.string(), z.number().nullable()),
+        atl_date: z.record(z.string(), z.string().nullable()),
+        circulating_supply: z.number().nullable(),
+        total_supply: z.number().nullable(),
         max_supply: z.number().nullable(),
       })
       .partial()
       .optional(), // Make all market_data fields optional
     categories: z.array(z.string()).optional(),
-    platforms: z.record(z.string(), z.string()).optional(),
+    platforms: z
+      .record(z.string(), z.string().nullable())
+      .nullable()
+      .optional(),
   })
   .passthrough(); // Allow additional fields that may come from API
 

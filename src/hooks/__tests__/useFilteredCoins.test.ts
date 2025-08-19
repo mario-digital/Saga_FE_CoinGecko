@@ -150,7 +150,9 @@ describe('useFilteredCoins', () => {
 
     expect(result.current.filteredCoins).toHaveLength(6);
     expect(
-      result.current.filteredCoins.every(c => c.market_cap_rank <= 100)
+      result.current.filteredCoins.every(
+        c => c.market_cap_rank !== null && c.market_cap_rank <= 100
+      )
     ).toBe(true);
     expect(result.current.filterCount).toBe(6);
   });
