@@ -17,3 +17,5 @@ coverage/
 tsconfig.tsbuildinfo
 *.tsbuildinfo
 .vercel
+
+.idea

@@ -5,7 +5,7 @@ This document outlines the directory structure and organization of the Saga FE C
 ## Project Root
 
 ```
-Saga_FE_Coint_Geko/
+Saga_FE_CoinGecko/
 ├── .bmad-core/                 # BMad agent configuration
 ├── .claude/                    # Claude Code configuration
 ├── docs/                       # Project documentation

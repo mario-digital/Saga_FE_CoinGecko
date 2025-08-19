@@ -8,7 +8,7 @@
 
 ## Quick Deploy
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/mario-digital/Saga_FE_Coin_Geko)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/mario-digital/Saga_FE_CoinGecko)
 
 ## Manual Deployment Steps
 
@@ -17,7 +17,7 @@
 1. Go to [Vercel Dashboard](https://vercel.com/dashboard)
 2. Click "Add New Project"
 3. Import your GitHub repository
-4. Select the repository: `mario-digital/Saga_FE_Coin_Geko`
+4. Select the repository: `mario-digital/Saga_FE_CoinGecko`
 
 ### 2. Configure Build Settings
 
@@ -149,4 +149,4 @@ For issues or questions:
 
 - [Vercel Documentation](https://vercel.com/docs)
 - [Next.js Deployment Guide](https://nextjs.org/docs/deployment)
-- Project Issues: [GitHub Issues](https://github.com/mario-digital/Saga_FE_Coin_Geko/issues)
+- Project Issues: [GitHub Issues](https://github.com/mario-digital/Saga_FE_CoinGecko/issues)

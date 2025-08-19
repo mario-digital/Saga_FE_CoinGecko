@@ -35,7 +35,7 @@ A high-performance single-page application built with Next.js 15, React 19, and 
 ```bash
 # Clone repository
 git clone <repository-url>
-cd Saga_FE_Coint_Geko
+cd Saga_FE_CoinGecko
 
 # Install dependencies
 pnpm install
