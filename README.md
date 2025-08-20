@@ -1,121 +1,162 @@
 # Cryptocurrency Market Data Dashboard
 
-A high-performance single-page application built with Next.js 15, React 19, and TypeScript, implementing real-time cryptocurrency market data visualization through the CoinGecko API v3.
+A high-performance SPA built with **Next.js 15**, **React 19**, and **TypeScript**, showcasing real-time crypto market data via the **CoinGecko v3** API.
 
-## Modes
+[![CI](https://img.shields.io/github/actions/workflow/status/mario-digital/Saga_FE_CoinGecko/ci.yml?branch=main)](https://github.com/mario-digital/Saga_FE_CoinGecko/actions)
+![Coverage](https://img.shields.io/badge/coverage-96.7%25-brightgreen)
 
-- **Spec Mode (Submission)**  
-  Pure static SPA (`output: 'export'`), no API routes, and direct browser calls to the public CoinGecko API. Deployable to any CDN or static host (Netlify, GitHub Pages, S3, etc.).
-- **Production Mode (Optional)**  
-  Real-world architecture with API route proxies, caching, and rate limiting to handle CORS restrictions and vendor quotas. This mode is not part of the submission but demonstrates production-readiness. Available on the `production-mode` branch.
+---
+
+## Executive Summary
+
+- **Spec-first:** static export + CSR (no API routes) per challenge rules.
+- **Data integrity:** Zod schemas at the **network boundary**; components only consume validated DTOs.
+- **Resilience:** typed error taxonomy, explicit **429** handling, **retry** UI, and request cancellation.
+- **Performance:** pagination, dynamic `import()` for charts, preconnect/dns-prefetch; budgeted for LCP/TBT.
+- **Quality gates:** 96.7% coverage (85% branches); `pnpm verify:full` (type-check + lint + coverage) runs locally and in CI.
+
+---
+
+## Screenshots
+
+- ###### Home
+
+<p align="center">
+  <img alt="Home list" src="docs/images/01-home-list.png" width="800" />
+</p>
+
+- ###### Search Filter
+
+<p align="center">
+  <img alt="Search filter active" src="docs/images/02-search-filter.png" width="800" />
+</p>
+
+- ###### Detail Header
+
+<p align="center">
+  <img alt="Coin detail header" src="docs/images/03-detail-header.png" width="800" />
+</p>
+
+- ###### Price Chart
+
+<p align="center">
+  <img alt="Price history chart (dynamic import)" src="docs/images/04-price-chart.png" width="800" />
+</p>
+
+- ###### Backoff retry
+
+<p align="center">
+  <img alt="Error (429) with retry/backoff copy" src="docs/images/06-error-429.png" width="800" />
+</p>
+
+- ###### Summary
+<p align="center">
+  <img alt="Coverage report summary" src="docs/images/coverage-summary.png" width="800" />
+</p>
+
+---
+
+## Modes (Trade-offs)
+
+| Concern       | Spec Mode (submission)             | Production Mode (reference on `production-mode` branch) |
+| ------------- | ---------------------------------- | ------------------------------------------------------- |
+| Deploy        | Static export (`output: 'export'`) | Same, plus proxy for API                                |
+| Data fetching | CSR direct to CoinGecko            | Edge/API **proxy** w/ caching & CORS control            |
+| Rate limits   | Backoff + UI retry                 | Honor `Retry-After`, central quota, cache               |
+| SEO           | CSR only                           | SSR/ISR for key routes + canonical tags                 |
+| Observability | Dev-console                        | Sentry + error boundaries                               |
+
+---
 
 ## Technical Architecture
 
-### Core Technologies
+- **Framework**: Next.js 15.x (App Router, Static Export)
+- **Runtime**: React 19.x
+- **Language**: TypeScript (strict)
+- **UI**: shadcn/ui (Radix primitives)
+- **Styling**: Tailwind CSS
+- **Data**: SWR (stale-while-revalidate)
+- **Charts**: Recharts
+- **Testing**: Jest + React Testing Library
 
-- **Framework**: Next.js 15.1.6 (App Router, Static Export)
-- **Runtime**: React 19.0.0
-- **Language**: TypeScript 5.7.3 (strict mode)
-- **UI Components**: shadcn/ui (Radix UI primitives)
-- **Styling**: Tailwind CSS 3.4.17
-- **Data Fetching**: SWR 2.2.5 (stale-while-revalidate caching)
-- **Charts**: Recharts 2.15.0
-- **Testing**: Jest 29.7.0, React Testing Library 16.1.0
-- **Build Tool**: Next.js bundler with Turbo mode
+---
 
-## System Requirements
+## Data Integrity & Contracts
 
-- Node.js 22.x or higher
-- pnpm 8.x (recommended) or npm/yarn
-- 4GB RAM minimum
-- Modern browser with ES2020 support
+External API data is **validated at the boundary** with **Zod**:
 
-## Installation
+```ts
+// src/schemas/coingecko.ts (excerpt)
+import { z } from 'zod';
 
-```bash
-# Clone repository
-git clone <repository-url>
-cd Saga_FE_CoinGecko
+export const CoinSchema = z.object({
+  id: z.string(),
+  symbol: z.string(),
+  name: z.string(),
+  image: z.string().url().optional(),
+  current_price: z.number(),
+  market_cap: z.number().nullable(),
+  total_volume: z.number().nullable(),
+  price_change_percentage_24h: z.number().nullable(),
+});
 
-# Install dependencies
-pnpm install
-
-# Configure environment
-cp .env.local.example .env.local
+export const CoinsResponseSchema = z.array(CoinSchema);
+export type CoinDTO = z.infer<typeof CoinSchema>;
 ```
 
-### Environment Configuration
-
-```env
-# Required: CoinGecko API Configuration
-NEXT_PUBLIC_COINGECKO_API_KEY=<api-key>
-NEXT_PUBLIC_API_BASE_URL=https://api.coingecko.com/api/v3
-
-# Optional: Development
-NODE_ENV=development
+```ts
+// src/lib/api.ts (excerpt)
+const json = await res.json();
+const parsed = CoinsResponseSchema.safeParse(json);
+if (!parsed.success) throw new APIValidationError(parsed.error.issues);
+return parsed.data; // components only see validated DTOs
 ```
 
-## Development
+**Contract tests** assert: valid payload → parsed DTO; missing/invalid fields → `APIValidationError`; HTTP **429/404** bubble predictably.
 
-```bash
-# Start development server
-pnpm dev
-
-# Run tests
-pnpm test
-pnpm test:coverage
-
-# Type checking
-pnpm type-check
-
-# Linting
-pnpm lint
-pnpm lint:fix
-
-# Build production
-pnpm build
-```
+---
 
 ## Architecture Overview
 
-### Directory Structure
-
 ```
 src/
-├── app/                    # Next.js App Router
-│   ├── coin/              # Dynamic coin detail routes
-│   ├── layout.tsx         # Root layout with providers
-│   └── page.tsx           # Home page (coin listing)
-├── components/            # React components
-│   ├── ui/               # Primitive UI components
-│   ├── CoinList.tsx     # Virtual scrolled coin list
-│   ├── CoinDetailHeader.tsx
-│   ├── PriceHistoryChart.tsx
-│   └── SearchBar.tsx
-├── hooks/                 # Custom React hooks
-│   ├── useCoins.ts       # Coin data fetching
-│   ├── useCoinDetail.ts  # Individual coin details
-│   ├── usePriceHistory.ts
-│   └── useVirtualScroll.ts
-├── lib/                   # Utilities
-│   ├── api.ts            # API client
-│   ├── constants.ts      # Configuration
-│   └── utils.ts          # Helper functions
-└── types/                 # TypeScript definitions
-    └── coingecko.ts      # API response types
+├─ app/                      # Next.js App Router
+│  ├─ coin/                  # Dynamic coin detail routes
+│  ├─ layout.tsx             # Root layout with providers
+│  └─ page.tsx               # Home page (coin listing)
+├─ components/               # Presentational UI
+│  ├─ ui/                    # Primitive UI components
+│  ├─ CoinCard.tsx           # Individual coin display card
+│  ├─ SwipeableCoinCard.tsx  # Mobile swipeable cards
+│  ├─ CoinDetailHeader.tsx   # Coin detail page header
+│  ├─ CoinDetailError.tsx    # Error handling component
+│  ├─ PriceHistoryChart.tsx  # Price chart component
+│  ├─ FilterMarketCap.tsx    # Market cap filtering
+│  ├─ Pagination.tsx         # Page navigation
+│  ├─ SearchCommand.tsx      # Search functionality
+│  └─ Header.tsx             # App header with search
+├─ hooks/                    # Custom React hooks (SWR + transforms)
+│  ├─ useCoins.ts
+│  ├─ useCoinDetail.ts
+│  ├─ usePriceHistory.ts
+│  └─ useVirtualScroll.ts
+├─ lib/                      # Utilities
+│  ├─ api.ts                 # Fetch → validate → DTO
+│  ├─ constants.ts           # Configuration
+│  └─ utils.ts               # Helpers
+└─ schemas/                  # Runtime validation + inferred types
+   └─ coingecko.ts           # Zod schemas + z.infer DTOs
 ```
 
 ### Component Architecture
 
-Components follow a strict separation of concerns:
+- **Presentation** components render UI only.
+- **Hooks** encapsulate business logic and side-effects; server-state stays in SWR.
+- **Containers** (where used) wire hooks to presentational components.
 
-- **Presentation Components**: Handle UI rendering only
-- **Container Components**: Manage state and data fetching
-- **Custom Hooks**: Encapsulate business logic and side effects
+Example pattern:
 
-Example implementation pattern:
-
-```typescript
+```ts
 // Hook (business logic)
 export function useCoins(page: number) {
   const { data, error, isLoading, mutate } = useSWR(
@@ -127,191 +168,107 @@ export function useCoins(page: number) {
 }
 
 // Component (presentation)
-export function CoinList() {
+export function HomePage() {
   const { coins, isLoading, error } = useCoins(page);
-  if (isLoading) return <CoinListSkeleton />;
-  if (error) return <ErrorBoundary error={error} />;
-  return <VirtualScrollList items={coins} />;
+  if (isLoading) return <CoinCardSkeleton />;
+  if (error) return <CoinDetailError error={error} />;
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+      {coins.map(coin => <CoinCard key={coin.id} coin={coin} />)}
+    </div>
+  );
 }
 ```
 
-### Data Flow
+---
 
-1. **API Layer** (`lib/api.ts`): Constructs requests with proper headers and error handling
-2. **SWR Hooks**: Manage caching, revalidation, and request deduplication
-3. **Custom Hooks**: Transform API responses and handle business logic
-4. **Components**: Render UI based on hook state
+## Error Handling & Resilience
 
-## Design Decisions & Challenges
+- **Taxonomy:** `HTTPError(429/404/…)`, `APIValidationError`, `NetworkError`.
+- **429 strategy:** respect `Retry-After` when present, exponential backoff, pause revalidation, visible retry.
+- **Cancellation:** `AbortController` on route/search changes to avoid stale updates.
+- **UI states:** distinct **loading / empty / error** branches with actionable retry.
 
-- **SWR vs React Query** – Chose SWR for its smaller API surface, built-in stale-while-revalidate semantics, and low bundle cost. React Query's richer feature set wasn't necessary for this small SPA.
-- **Static Export + CSR** – Used `output: 'export'` to meet the requirement for a static-deployable SPA. All data is fetched client-side to ensure fresh market data without rebuilding.
-- **CORS Handling** – Direct CoinGecko calls are possible in Spec Mode using their public/demo endpoints. In Production Mode, API routes with caching mitigate CORS and rate limits.
-- **Rate Limit Strategy** – Implemented exponential backoff and retry-after handling to avoid 429 errors, with a visual retry indicator in the UI.
-- **Performance** – Virtual scrolling for large lists, dynamic imports for heavy charts, and preconnect/dns-prefetch to API endpoints.
-- **Error States** – Dedicated components for loading, empty, and error cases. Errors include retry actions for better UX.
-- **Trade-offs** – Production Mode improves reliability and performance but violates the "no API routes" requirement, hence it's on a separate branch.
-
-### State Management
-
-The application uses React's built-in state management with SWR for server state:
-
-- **Local State**: useState for UI state (modals, form inputs)
-- **Server State**: SWR for API data with automatic caching
-- **URL State**: Next.js router for navigation state
-
-## Performance Optimizations
-
-### Virtual Scrolling
-
-Implements custom virtual scrolling for rendering large lists efficiently:
-
-```typescript
-export function useVirtualScroll<T>(
-  items: T[],
-  options: UseVirtualScrollOptions
-): VirtualScrollResult<T> {
-  // Calculates visible range based on scroll position
-  // Only renders items in viewport + overscan
-  // Handles 10,000+ items with 60fps scrolling
-}
-```
-
-### Code Splitting
-
-Dynamic imports for heavy components:
-
-```typescript
-const PriceHistoryChart = dynamic(
-  () => import('@/components/PriceHistoryChart'),
-  {
-    loading: () => <ChartSkeleton />,
-    ssr: false
-  }
-);
-```
-
-### Bundle Optimization
-
-Webpack configuration for optimal chunking:
-
-```javascript
-optimization: {
-  splitChunks: {
-    chunks: 'all',
-    cacheGroups: {
-      framework: {
-        test: /[\\/]node_modules[\\/](react|react-dom)[\\/]/,
-        priority: 40,
-        enforce: true
-      }
-    }
-  }
-}
-```
-
-## Error Handling
-
-### Error Classes
-
-Custom error classes for precise error handling:
-
-```typescript
-export class CoinNotFoundError extends Error {
-  constructor(coinId: string) {
-    super(`Coin with ID "${coinId}" not found`);
-    this.name = 'CoinNotFoundError';
-  }
-}
-
-export class RateLimitError extends Error {
-  retryAfter?: number;
-  constructor(message: string, retryAfter?: number) {
-    super(message);
-    this.name = 'RateLimitError';
-    this.retryAfter = retryAfter;
-  }
-}
-
-export class CorsError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = 'CorsError';
-  }
-}
-```
-
-### CORS Mitigation
-
-Automatic retry mechanism for transient CORS errors:
-
-```typescript
-const fetchWithCorsHandling = async (
-  url: string,
-  options: RequestInit,
-  retries = 1
-): Promise<Response> => {
-  try {
-    return await fetch(url, options);
-  } catch (error) {
-    if (error instanceof TypeError && retries > 0) {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      return fetchWithCorsHandling(url, options, retries - 1);
-    }
-    throw error;
-  }
+```ts
+// SWR retry (excerpt)
+onErrorRetry: (error, key, cfg, revalidate, { retryCount }) => {
+  if (error.status === 429 || retryCount >= 3) return;
+  setTimeout(() => revalidate({ retryCount }), 5000 * 2 ** retryCount);
 };
 ```
 
-### Rate Limit Protection
+---
 
-Exponential backoff with visual countdown:
+## Performance Budgets & Tactics
 
-```typescript
-onErrorRetry: (error, key, config, revalidate, { retryCount }) => {
-  if (error.status === 404 || error.status === 429) return;
-  if (retryCount >= 3) return;
+- **Budgets:** LCP < 2.5s, TBT < 200ms (mid-tier hardware).
+- **Tactics:** paginated grids, dynamic `import()` for charts, memoized transforms, `preconnect`/`dns-prefetch`.
 
-  setTimeout(() => revalidate({ retryCount }), 5000 * Math.pow(2, retryCount));
-};
+---
+
+## Testing & CI
+
+- **Scope:** unit (utils/hooks), **contract** (schema boundary), UI states (loading/empty/error), basic a11y checks.
+- **Coverage:** **96.7%** statements, **85.16%** branches, **92%** functions; enforced via thresholds.
+
+```bash
+pnpm test           # dev
+pnpm test:watch     # watch mode
+pnpm test:ci        # coverage + single worker (CI)
+pnpm verify:fast    # type-check + lint
+pnpm verify:full    # type-check + lint + coverage (CI/pre-push)
 ```
 
-## Testing Strategy
+Jest coverage gate (see `jest.config`):
 
-### Test Coverage
-
-Comprehensive test suite with 100% coverage on critical paths:
-
-- **Unit Tests**: Individual functions and hooks
-- **Integration Tests**: Component interactions
-- **Accessibility Tests**: ARIA compliance
-
-### Testing Patterns
-
-```typescript
-describe('useCoinDetail', () => {
-  it('transforms API errors correctly', () => {
-    const error = { status: 429, message: 'Rate limit' };
-    const result = renderHook(() => useCoinDetail('bitcoin'));
-
-    expect(result.current.error).toBeInstanceOf(RateLimitError);
-    expect(result.current.error.retryAfter).toBe(60);
-  });
-});
+```js
+collectCoverage: true,
+coverageReporters: ["text","html","json-summary"],
+coverageThreshold: { global: { statements: 80, branches: 75, functions: 80, lines: 80 } }
 ```
 
-## API Integration
+---
 
-### Endpoints
+## Installation
 
-- `GET /coins/markets` - Paginated coin listings
-- `GET /coins/{id}` - Detailed coin data
-- `GET /coins/{id}/market_chart` - Historical price data
-- `GET /search` - Search functionality
+```bash
+git clone <repository-url>
+cd Saga_FE_CoinGecko
+pnpm install
+cp .env.local.example .env.local
+```
 
-### Request Optimization
+### Environment
 
-```typescript
+```env
+NEXT_PUBLIC_COINGECKO_API_KEY=<api-key>        # read-only/demo tier
+NEXT_PUBLIC_API_BASE_URL=https://api.coingecko.com/api/v3
+NODE_ENV=development
+```
+
+---
+
+## Development
+
+```bash
+pnpm dev
+pnpm verify:fast        # quick local quality gate
+pnpm verify:full        # full gate: type-check + lint + tests w/ coverage
+pnpm build              # static export build (out/)
+```
+
+---
+
+## API Integration (endpoints)
+
+- `GET /coins/markets` — Paginated coin listings
+- `GET /coins/{coinId}` — Detailed coin data
+- `GET /coins/{coinId}/market_chart` — Historical price data
+- `GET /search` — Search
+
+SWR defaults:
+
+```ts
 const SWR_CONFIG = {
   revalidateOnFocus: false,
   revalidateOnReconnect: true,
@@ -322,12 +279,13 @@ const SWR_CONFIG = {
 };
 ```
 
+---
+
 ## Deployment
 
-### Static Export Configuration
+**Static export configuration** (`next.config.js`):
 
-```javascript
-// next.config.js
+```js
 module.exports = {
   output: 'export',
   trailingSlash: false,
@@ -337,108 +295,59 @@ module.exports = {
 };
 ```
 
-### Build Output
+Build & ship:
 
 ```bash
-pnpm build
-# Generates static HTML in out/ directory
-# Ready for CDN deployment
+pnpm build     # outputs static site to ./out
 ```
 
-### Deployment Targets
+**Primary domain:** https://saga-fe-coin-gecko.vercel.app
 
-- **Vercel**: Zero-configuration deployment
-- **Netlify**: Drop out/ folder
-- **AWS S3 + CloudFront**: Static hosting
-- **GitHub Pages**: Direct deployment
+Canonical:
 
-## Performance Metrics
+```html
+<link rel="canonical" href="https://saga-fe-coin-gecko.vercel.app" />
+```
 
-### Lighthouse Scores
-
-- Performance: 92/100
-- Accessibility: 100/100
-- Best Practices: 100/100
-- SEO: 100/100
-
-### Runtime Performance
-
-- Initial Load: < 2s (3G network)
-- Time to Interactive: < 3s
-- First Contentful Paint: < 1s
-- Virtual Scroll: 60fps with 10,000 items
+---
 
 ## Development Methodology
 
-### AI-Assisted Development
+> Note: I used AI tools for boilerplate and test scaffolding; architecture, data contracts, and resilience patterns were implemented and reviewed manually.
 
-This project utilized AI tools for accelerated development while maintaining code quality:
+Workflow: PRD → component-driven implementation → tests (unit/contract/UI) → perf tuning → docs.
 
-**AI Integration Points:**
+---
 
-- Test generation from specifications
-- Boilerplate code generation
-- Pattern consistency enforcement
-- Documentation maintenance
+## Security & Ops (production posture)
 
-**Human Oversight:**
+- No secrets in client; API keys are read-only demo tier.
+- CSP hardening and Sentry with PII scrubbing in production.
+- Dependency audit in CI.
 
-- Architecture decisions
-- UX/UI design choices
-- Performance optimization strategies
-- Code review and quality assurance
-
-### Development Workflow
-
-1. **Specification**: Detailed PRD with acceptance criteria
-2. **Implementation**: Component-driven development
-3. **Testing**: TDD with comprehensive coverage
-4. **Optimization**: Performance profiling and tuning
-5. **Documentation**: Inline code documentation and README updates
-
-## Security Considerations
-
-- **API Key Protection**: Client-side keys use read-only demo tier
-- **Input Sanitization**: All user inputs validated
-- **XSS Prevention**: React's automatic escaping
-- **CSP Headers**: Content Security Policy configured
-- **Dependency Scanning**: Regular npm audit
+---
 
 ## Browser Support
 
-- Chrome 90+
-- Firefox 88+
-- Safari 14+
-- Edge 90+
-- Mobile browsers (iOS Safari 14+, Chrome Mobile)
+- Chrome 90+, Firefox 88+, Safari 14+, Edge 90+, modern mobile browsers.
 
-## Contributing
+---
 
-### Code Standards
+## Challenge Requirements → Implementation
 
-- TypeScript strict mode compliance
-- ESLint configuration enforcement
-- Prettier formatting
-- Conventional commits
+| Requirement                                              | Where                                               |
+| -------------------------------------------------------- | --------------------------------------------------- |
+| Static SPA (no API routes), deployable to CDN            | `next.config.js (output: 'export')`, Vercel         |
+| ≥3 components + search/filter                            | `src/components/*`, `SearchBar.tsx`, `CoinList.tsx` |
+| Loading / Empty / Error states                           | `src/app/page.tsx` (distinct branches + retry)      |
+| Basic unit tests for hooks/components (+ contract tests) | `src/lib/__tests__/*`                               |
+| README + deployment instructions                         | `README.md`, `DEPLOYMENT.md`                        |
 
-### Testing Requirements
-
-- Minimum 80% coverage for new features
-- Unit tests for all hooks
-- Integration tests for user flows
-- Accessibility testing
-
-### Pull Request Process
-
-1. Feature branch from main
-2. Implement with tests
-3. Pass CI checks
-4. Code review
-5. Merge via squash
+---
 
 ## License
 
-Proprietary - All rights reserved
+Proprietary — All rights reserved
 
 ## Acknowledgments
 
