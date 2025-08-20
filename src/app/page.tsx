@@ -142,8 +142,28 @@ function HomePageContent() {
     [router]
   );
 
-  // Calculate total pages (approximate - CoinGecko doesn't provide total count)
-  const estimatedTotalPages = 100; // Conservative estimate
+  // Calculate total pages based on filter (DEFAULT_PER_PAGE = 50)
+  const getMaxPagesForFilter = (filterValue: string): number => {
+    switch (filterValue) {
+      case 'top10':
+        return 1; // 10 coins / 50 per page = 1 page
+      case 'top50':
+        return 1; // 50 coins / 50 per page = 1 page
+      case 'top100':
+        return 2; // 100 coins / 50 per page = 2 pages
+      default:
+        return 100; // Conservative estimate for 'all'
+    }
+  };
+
+  const estimatedTotalPages = getMaxPagesForFilter(filter);
+
+  // Redirect to page 1 if current page exceeds max for filter
+  useEffect(() => {
+    if (currentPage > estimatedTotalPages) {
+      handlePageChange(1);
+    }
+  }, [currentPage, estimatedTotalPages, handlePageChange]);
 
   // Memoize skeleton loaders to prevent re-renders
   const skeletonLoaders = useMemo(

@@ -28,13 +28,18 @@ export const CoinDataSchema = z.object({
   atl_date: z.string().nullable().optional(),
   roi: z
     .object({
-      times: z.number(),
+      times: z.number().nullable(),
       currency: z.string(),
-      percentage: z.number(),
+      percentage: z.number().nullable(),
     })
     .nullable()
     .optional(),
   last_updated: z.string(),
+  sparkline_in_7d: z
+    .object({
+      price: z.array(z.number()),
+    })
+    .optional(),
 });
 
 export const CoinsResponseSchema = z.array(CoinDataSchema);

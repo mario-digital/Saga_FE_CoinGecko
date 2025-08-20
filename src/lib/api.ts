@@ -192,7 +192,15 @@ export const api = {
           error.constructor &&
           error.constructor.name === 'APIValidationError')
       ) {
-        // Don't log to console - handled by the app
+        // Log the actual validation error in development
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Validation error for getCoins:', {
+            page,
+            perPage,
+            url: buildCoinsMarketsUrl({ page, per_page: perPage }),
+            errors: error.zodError?.errors || error,
+          });
+        }
         throw new Error('Invalid data format received from API');
       }
       if (error.isCorsError) {
