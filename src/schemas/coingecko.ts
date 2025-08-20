@@ -73,12 +73,12 @@ export const CoinDetailDataSchema = z
         official_forum_url: z.array(z.string()),
         chat_url: z.array(z.string()),
         announcement_url: z.array(z.string()),
-        twitter_screen_name: z.string(),
-        facebook_username: z.string(),
+        twitter_screen_name: z.string().nullable(),
+        facebook_username: z.string().nullable(),
         bitcointalk_thread_identifier: z
           .union([z.string(), z.number()])
           .nullable(),
-        telegram_channel_identifier: z.string(),
+        telegram_channel_identifier: z.string().nullable(),
         subreddit_url: z.string().nullable(),
         repos_url: z.object({
           github: z.array(z.string()),
