@@ -139,17 +139,14 @@ describe('TimeRangeSelector', () => {
     });
   });
 
-  it('applies state-based styling classes', () => {
+  it('applies appropriate styling classes', () => {
     const { container } = render(
       <TimeRangeSelector value="7d" onChange={mockOnChange} />
     );
 
     const buttons = screen.getAllByRole('button');
     buttons.forEach(button => {
-      expect(button).toHaveClass(
-        'data-[state=on]:bg-primary',
-        'data-[state=on]:text-primary-foreground'
-      );
+      expect(button).toHaveClass('text-xs', 'sm:text-sm');
     });
   });
 

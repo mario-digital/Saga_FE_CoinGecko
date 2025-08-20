@@ -42,7 +42,9 @@ export const TimeRangeSelector: FC<TimeRangeSelectorProps> = ({
           key={option.value}
           value={option.value}
           aria-label={`Select ${option.label} time range`}
-          className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-1.5"
+          className="text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-1.5 h-7 sm:h-8"
+          variant="default"
+          size="sm"
         >
           {option.label}
         </ToggleGroupItem>
