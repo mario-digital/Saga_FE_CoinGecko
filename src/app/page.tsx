@@ -1,5 +1,6 @@
 'use client';
 
+import { AlertCircle, RefreshCw } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { useRouter, useSearchParams } from 'next/navigation';
 import React, {
@@ -14,6 +15,8 @@ import { CoinCard } from '@/components/CoinCard';
 import { CoinCardSkeleton } from '@/components/CoinCardSkeleton';
 import FilterMarketCap from '@/components/FilterMarketCap';
 import { Pagination } from '@/components/Pagination';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import { useCoins } from '@/hooks/useCoins';
 import { useFilteredCoins } from '@/hooks/useFilteredCoins';
 import { DEFAULT_PER_PAGE } from '@/lib/constants';
@@ -73,6 +76,8 @@ function HomePageContent() {
   });
 
   const [isMounted, setIsMounted] = useState<boolean>(false);
+  const [retryCountdown, setRetryCountdown] = useState<number>(0);
+  const [hasRetriedOnce, setHasRetriedOnce] = useState<boolean>(false);
 
   // Detect if we're on client side after hydration
   useEffect(() => {
@@ -97,6 +102,46 @@ function HomePageContent() {
     coins,
     filter,
   });
+
+  // Detect CORS/rate limit errors and set countdown
+  const isCorsOrRateLimitError =
+    error &&
+    (error.toLowerCase().includes('unable to connect') ||
+      error.toLowerCase().includes('cors') ||
+      error.toLowerCase().includes('network') ||
+      error.toLowerCase().includes('rate limit') ||
+      isRateLimited);
+
+  // Reset retry flag when page changes
+  useEffect(() => {
+    setHasRetriedOnce(false);
+    setRetryCountdown(0);
+  }, [currentPage]);
+
+  // Set countdown when we have a CORS/rate limit error
+  useEffect(() => {
+    if (isCorsOrRateLimitError && !hasRetriedOnce) {
+      setRetryCountdown(45);
+    }
+  }, [error, isCorsOrRateLimitError, hasRetriedOnce]);
+
+  // Countdown timer
+  useEffect(() => {
+    if (retryCountdown > 0) {
+      const timer = setTimeout(() => {
+        setRetryCountdown(retryCountdown - 1);
+      }, 1000);
+      return () => clearTimeout(timer);
+    } else if (
+      retryCountdown === 0 &&
+      isCorsOrRateLimitError &&
+      !hasRetriedOnce
+    ) {
+      // Auto-retry ONCE when countdown reaches 0
+      setHasRetriedOnce(true);
+      refetch();
+    }
+  }, [retryCountdown, isCorsOrRateLimitError, hasRetriedOnce, refetch]);
 
   const handleCoinClick = useCallback(
     (coinId: string): void => {
@@ -175,50 +220,71 @@ function HomePageContent() {
   );
 
   if (error) {
-    // Log error for debugging (only in development)
-    if (process.env.NODE_ENV === 'development') {
+    // Only log actual errors, not handled connection issues
+    if (process.env.NODE_ENV === 'development' && !isCorsOrRateLimitError) {
       console.error('API Error:', error);
     }
 
     return (
-      <div className="text-center py-12 px-4">
-        <div
-          className={`${isRateLimited ? 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800' : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'} border rounded-lg p-6 max-w-md mx-auto`}
-        >
-          <h2
-            className={`text-lg font-semibold ${isRateLimited ? 'text-yellow-900 dark:text-yellow-400' : 'text-red-900 dark:text-red-400'} mb-2`}
-          >
-            {isRateLimited ? 'Rate Limit Reached' : 'Error Loading Coin Data'}
-          </h2>
-          <p
-            className={`${isRateLimited ? 'text-yellow-700 dark:text-yellow-300' : 'text-red-700 dark:text-red-300'} text-sm mb-4`}
-          >
-            {error === 'Load failed'
-              ? 'Unable to connect to CoinGecko API. This may be due to network issues or API restrictions. Please check your connection and try again.'
-              : error}
-          </p>
-          {isRateLimited ? (
-            <p className="text-xs text-gray-600 dark:text-gray-400 mt-2">
-              The free API tier has a limit of 10-30 requests per minute. Please
-              wait a moment before refreshing.
-            </p>
-          ) : (
-            <div className="flex gap-3 justify-center">
-              <button
-                onClick={() => router.refresh()}
-                className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700"
-              >
-                Go Back
-              </button>
-              <button
-                onClick={() => refetch()}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-              >
-                Try Again
-              </button>
+      <div className="container mx-auto px-4 py-12">
+        <Card className="max-w-2xl mx-auto">
+          <CardContent className="pt-8">
+            <div className="flex flex-col items-center justify-center min-h-[300px] text-center">
+              <AlertCircle className="h-10 w-10 text-destructive mb-4" />
+              <div className="space-y-2 mb-6">
+                <h3 className="text-lg font-semibold">
+                  {isCorsOrRateLimitError
+                    ? 'Connection Issue'
+                    : 'Error Loading Coin Data'}
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  {isCorsOrRateLimitError
+                    ? 'Unable to connect to CoinGecko API. This might be a temporary issue.'
+                    : error}
+                </p>
+                {isCorsOrRateLimitError && retryCountdown > 0 && (
+                  <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground mt-4">
+                    <RefreshCw className="w-4 h-4 animate-spin" />
+                    <span>
+                      Retrying automatically in{' '}
+                      <strong className="text-foreground">
+                        {retryCountdown}
+                      </strong>{' '}
+                      seconds...
+                    </span>
+                  </div>
+                )}
+                {isCorsOrRateLimitError && (
+                  <p className="text-xs text-muted-foreground mt-2">
+                    If this persists, try refreshing the page or check your
+                    connection.
+                  </p>
+                )}
+              </div>
+              <div className="flex gap-3">
+                <Button
+                  onClick={() => router.back()}
+                  variant="outline"
+                  size="sm"
+                >
+                  Go Back
+                </Button>
+                <Button
+                  onClick={() => {
+                    setHasRetriedOnce(false);
+                    setRetryCountdown(0);
+                    refetch();
+                  }}
+                  disabled={retryCountdown > 0}
+                  variant={retryCountdown > 0 ? 'secondary' : 'default'}
+                  size="sm"
+                >
+                  {retryCountdown > 0 ? `Wait ${retryCountdown}s` : 'Try Again'}
+                </Button>
+              </div>
             </div>
-          )}
-        </div>
+          </CardContent>
+        </Card>
       </div>
     );
   }
