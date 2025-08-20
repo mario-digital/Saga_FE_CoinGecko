@@ -4,9 +4,9 @@
 
 The app now includes automatic CORS error detection and handling:
 
-1. **Automatic Retry**: When a CORS error is detected, the app will automatically retry the request once after a 1-second delay
+1. **Automatic Retry**: When a CORS error is detected in the fetch layer, the app will automatically retry the request once after a 1-second delay
 2. **User-Friendly Error Messages**: CORS errors show as "Connection Issue" with helpful guidance
-3. **Auto-Retry with Countdown**: The error page shows a 3-second countdown and automatically retries
+3. **Auto-Retry with Countdown**: The error page shows a **45-second countdown** and automatically retries
 
 ## Why CORS Errors Occur
 
@@ -63,15 +63,34 @@ If you're experiencing persistent CORS errors:
 
 The app includes several mitigations:
 
-- Automatic retry on CORS errors
-- Clear error messages with guidance
-- Auto-retry with countdown timer
-- Suggestion to refresh the page if issues persist
+- **Fetch Layer**: Automatic retry once with 1-second delay when CORS error detected
+- **UI Layer**: 45-second countdown timer before auto-retry
+- **Error Messages**: Clear "Connection Issue" message with guidance
+- **Browser Extension Check**: Suggests checking ad blockers/privacy extensions
+- **Fallback Options**: Manual retry button and "Go Back" navigation
 
 ## Testing CORS Handling
 
 To test the CORS error handling:
 
-1. Block api.coingecko.com in your browser's developer tools
+1. Block api.coingecko.com in your browser's developer tools (Network tab)
 2. Or use a browser extension to block the domain
-3. You should see the "Connection Issue" error with auto-retry countdown
+3. You should see the "Connection Issue" error with 45-second auto-retry countdown
+4. The fetch layer will have already attempted one retry before showing the error
+
+## Technical Details
+
+### Error Detection
+
+The app detects CORS errors by checking for:
+
+- `TypeError: Failed to fetch`
+- `TypeError: Load failed`
+- `Network request failed`
+- Any network error with no HTTP status code
+
+### Retry Strategy
+
+1. **Fetch Layer**: 1 retry after 1 second delay (automatic, invisible to user)
+2. **UI Layer**: If still failing, shows error with 45-second countdown before retry
+3. **Manual Option**: User can click "Retry" button at any time

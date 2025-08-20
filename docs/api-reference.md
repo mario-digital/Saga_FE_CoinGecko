@@ -40,26 +40,26 @@ interface CoinMarketData {
   symbol: string; // Coin symbol (e.g., 'btc')
   name: string; // Coin name (e.g., 'Bitcoin')
   image: string; // Coin logo URL
-  current_price: number; // Current price in vs_currency
-  market_cap: number; // Market capitalization
-  market_cap_rank: number; // Market cap ranking
-  fully_diluted_valuation: number | null;
-  total_volume: number; // 24h trading volume
-  high_24h: number; // 24h high price
-  low_24h: number; // 24h low price
-  price_change_24h: number; // 24h price change (absolute)
-  price_change_percentage_24h: number; // 24h price change (percentage)
-  market_cap_change_24h: number;
-  market_cap_change_percentage_24h: number;
-  circulating_supply: number;
-  total_supply: number | null;
-  max_supply: number | null;
-  ath: number; // All-time high
-  ath_change_percentage: number;
-  ath_date: string; // ISO date
-  atl: number; // All-time low
-  atl_change_percentage: number;
-  atl_date: string; // ISO date
+  current_price: number | null; // Current price in vs_currency
+  market_cap: number | null; // Market capitalization
+  market_cap_rank: number | null; // Market cap ranking
+  fully_diluted_valuation?: number | null; // Optional
+  total_volume: number | null; // 24h trading volume
+  high_24h?: number | null; // 24h high price (optional)
+  low_24h?: number | null; // 24h low price (optional)
+  price_change_24h?: number | null; // 24h price change (optional)
+  price_change_percentage_24h: number | null; // 24h price change (%)
+  market_cap_change_24h?: number | null; // Optional
+  market_cap_change_percentage_24h?: number | null; // Optional
+  circulating_supply?: number | null; // Optional
+  total_supply?: number | null; // Optional
+  max_supply?: number | null; // Optional
+  ath?: number | null; // All-time high (optional)
+  ath_change_percentage?: number | null; // Optional
+  ath_date?: string | null; // ISO date (optional)
+  atl?: number | null; // All-time low (optional)
+  atl_change_percentage?: number | null; // Optional
+  atl_date?: string | null; // ISO date (optional)
   roi: {
     times: number;
     currency: string;
@@ -81,9 +81,9 @@ const url = `/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=50&pa
 
 ### 2. Coin Detail Data
 
-**Endpoint**: `/coins/{id}`  
+**Endpoint**: `/coins/{coinId}`  
 **Purpose**: Get detailed coin information including metadata  
-**Used in**: Story 1.6 - Coin Detail View (future)
+**Used in**: Coin Detail Page (`src/app/coin/page.tsx`)
 
 #### Parameters
 
@@ -101,9 +101,9 @@ interface CoinDetailParams {
 
 ### 3. Coin Historical Chart Data
 
-**Endpoint**: `/coins/{id}/market_chart`  
+**Endpoint**: `/coins/{coinId}/market_chart`  
 **Purpose**: Get historical price, market cap, and volume data  
-**Used in**: Story 2.x - Charting Features (future)
+**Used in**: Price History Chart (`src/components/PriceHistoryChart.tsx`)
 
 #### Parameters
 
@@ -121,7 +121,7 @@ interface MarketChartParams {
 
 **Endpoint**: `/search`  
 **Purpose**: Search for coins by name or symbol  
-**Used in**: Story 1.2 - Search Bar (future)
+**Used in**: Search Command (`src/components/SearchCommand.tsx`)
 
 #### Parameters
 
@@ -156,12 +156,15 @@ interface CoinGeckoError {
 ### SWR Configuration
 
 ```typescript
-// Recommended SWR config for CoinGecko API
-const swrConfig = {
-  refreshInterval: 30000, // 30 seconds (respects rate limits)
+// Actual SWR config used in project
+const SWR_CONFIG = {
+  revalidateOnFocus: false,
+  revalidateOnReconnect: true,
+  dedupingInterval: 5000, // 5 seconds
+  focusThrottleInterval: 5000,
   errorRetryCount: 3,
   errorRetryInterval: 5000,
-  dedupingInterval: 10000,
+  // Custom retry logic - no retry on 404 or 429
 };
 ```
 
@@ -198,6 +201,6 @@ NEXT_PUBLIC_COINGECKO_API_KEY=your_api_key_here
 
 ---
 
-**Last Updated**: 2025-08-04  
+**Last Updated**: 2025-08-20  
 **Version**: 1.0  
 **Maintained by**: Development Team
